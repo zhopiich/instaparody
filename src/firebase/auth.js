@@ -1,0 +1,83 @@
+import { ref } from "vue";
+
+// firebase imports
+import { auth } from "./firebase.js";
+import { addUserDoc } from "./firestore.js";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
+
+export const signUp = async ({ email, username, password }) => {
+  const err = {
+    isErr: false,
+    msg: null,
+  };
+  let uid;
+
+  await createUserWithEmailAndPassword(auth, email, password)
+    .then((credential) => {
+      //
+      console.log("Signed Up!");
+      uid = credential.user.uid;
+    })
+    .catch((error) => {
+      console.log("err code: ", error.code);
+      console.log(error.message);
+
+      err.isErr = true;
+      err.msg = error.message;
+    });
+
+  await addUserDoc({ uid, username });
+
+  return err;
+};
+
+export const signIn = async (email, password) => {
+  const err = {
+    isErr: false,
+    msg: null,
+  };
+
+  await signInWithEmailAndPassword(auth, email, password)
+    .then((credential) => {
+      //
+      // console.log("Signed In!");
+      // console.log(credential.user);
+    })
+    .catch((error) => {
+      console.log("err code: ", error.code);
+      console.log(error.message);
+
+      err.isErr = true;
+      err.msg = error.message;
+    });
+
+  return err;
+};
+
+export const logOut = async () => {
+  await signOut(auth)
+    // .then(() => {
+    //   console.log("logged Out!");
+    // })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+export const updateUserProfile = async (profileData) => {
+  updateProfile(auth.currentUser, { ...profileData })
+    .then(() => {
+      // Profile updated!
+      // ...
+    })
+    .catch((error) => {
+      // An error occurred
+      // ...
+    });
+};

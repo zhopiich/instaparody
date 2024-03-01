@@ -1,0 +1,23 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, "PingFang SC", "Microsoft Yahei", sans-serif;
+}
+
+input,
+textarea {
+  border: 1px solid #e8e8e8;
+  outline: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+}
