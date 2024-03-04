@@ -1,6 +1,6 @@
 <template>
   <div class="py-2 bg-purple-500 flex flex-col">
-    <div v-for="contact in contacts" @click="enterChat(contact.name)">
+    <div v-for="contact in contacts" @click="enterChat(contact.chatId)">
       <div class="flex gap-3 items-center p-2 py-1 cursor-pointer">
         <div class="avatar online">
           <div class="w-16 rounded-full">
@@ -9,8 +9,9 @@
         </div>
 
         <div class="flex flex-col flex-1">
-          <div class="flex gap-3 justify-between">
-            <p class="font-bold text-gray-200">{{ contact.name }}</p>
+          <div class="flex gap-2 justify-start">
+            <p class="font-bold text-gray-200">{{ contact.displayName }}</p>
+            <p class="text-gray-200">@{{ contact.username }}</p>
           </div>
         </div>
       </div>
@@ -27,24 +28,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-const enterChat = (who) => {
-  messageStore.chooseWho(who);
+const enterChat = (chatId) => {
+  messageStore.loadLastMessages(chatId);
+  messageStore.setCurrentChat(chatId);
   messageStore.enterChat(true);
 };
 
 const userToContact = ref(null);
 
 const getUser = async () => {
-  await messageStore.contactUser(userToContact.value);
+  await messageStore.addContact(userToContact.value);
   await messageStore.loadContacts();
 };
 
-const contacts = ref([]);
+const contacts = computed(() => messageStore.contactsList);
 
 onMounted(async () => {
   await messageStore.loadContacts();

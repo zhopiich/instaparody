@@ -1,6 +1,6 @@
 <template>
   <div
-    class="z-[1] fixed bottom-0 right-0 mr-5 bg-orange-400 h-[500px] w-[400px] transition-transform duration-300"
+    class="z-[1] fixed bottom-0 right-0 mr-5 bg-orange-400 h-[500px] w-[450px] transition-transform duration-300"
     :class="isExtended ? 'translate-y-0' : 'translate-y-full'"
   >
     <div

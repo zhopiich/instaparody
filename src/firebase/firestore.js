@@ -114,5 +114,5 @@ export const addChat = async (vals) => {
     ...vals,
   });
 
-  return { docRef };
+  return docRef;
 };

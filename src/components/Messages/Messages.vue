@@ -1,60 +1,49 @@
 <template>
+  <div class="z-[2] absolute">
+    <button class="btn" @click="leaveChat">Back</button>
+  </div>
   <div class="w-full h-full grid grid-rows-[1fr_56px]">
-    <div class="bg-zinc-200 w-full px-3 pt-3 pb-2 overflow-auto" @click="back">
-      <div
-        v-for="message in list"
-        class="chat"
-        :class="message.from === me ? 'chat-end' : 'chat-start'"
-      >
-        <div
-          class="chat-bubble"
-          :class="{ 'chat-bubble-warning': message.from === me }"
-        >
-          {{ message.content }}
-        </div>
-        <div class="chat-footer opacity-50">
-          <time>{{ message.at }}</time>
-
-          <div v-if="message.from === me" class="inline-block">
-            {{ " · " }}
-            {{ message.isSeen ? "Seen" : "Sent" }}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="flex">
-      <input
-        v-model="messageContent"
-        type="text"
-        placeholder="Write Message"
-        class="input input-bordered w-full max-w-xs"
+    <div class="bg-zinc-200 w-full px-3 overflow-auto" @click="back">
+      <MessageBubble
+        v-for="(message, index) in list"
+        :key="message.id"
+        :message="message"
+        :index="index"
       />
-      <button class="btn btn-success" @click="sendMessage">Send Message</button>
     </div>
+
+    <MessageInput />
   </div>
 </template>
 
 <script setup>
-import { ref, shallowRef, onMounted } from "vue";
+import MessageBubble from "./MessageBubble.vue";
+import MessageInput from "./MessageInput.vue";
+
+import { ref, shallowRef, computed, onMounted, onUnmounted, watch } from "vue";
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-const back = () => {
+import { useUserStore } from "../../stores/user.js";
+const userStore = useUserStore();
+
+const leaveChat = () => {
   messageStore.enterChat(false);
+  messageStore.triggerUnSubMessages();
 };
 
-const list = ref([]);
-
-const messageContent = ref(null);
-
-const sendMessage = async () => {
-  await messageStore.sendMessage(messageContent.value);
-  messageContent.value = null;
-};
+const list = computed(() => messageStore.messagesList);
 
 onMounted(() => {
-  messageStore.messagesListener();
+  // messageStore.messagesListener();
+});
+
+onUnmounted(() => {
+  if (messageStore.isEnterChat === false) {
+    messageStore.cleanChat();
+    console.log("**chat clear");
+  }
 });
 </script>
 
