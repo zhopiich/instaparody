@@ -1,7 +1,4 @@
 <template>
-  <div class="z-[2] absolute">
-    <button class="btn" @click="leaveChat">Back</button>
-  </div>
   <div class="w-full h-full grid grid-rows-[1fr_56px]">
     <div class="bg-zinc-200 w-full px-3 overflow-auto" @click="back">
       <MessageBubble
@@ -27,11 +24,6 @@ const messageStore = useMessageStore();
 
 import { useUserStore } from "../../stores/user.js";
 const userStore = useUserStore();
-
-const leaveChat = () => {
-  messageStore.enterChat(false);
-  messageStore.triggerUnSubMessages();
-};
 
 const list = computed(() => messageStore.messagesList);
 

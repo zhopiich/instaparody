@@ -1,6 +1,14 @@
 <template>
   <div class="py-2 bg-purple-500 flex flex-col">
-    <div v-for="contact in contacts" @click="enterChat(contact.chatId)">
+    <div
+      v-for="contact in contacts"
+      @click="
+        enterChat(contact.chatId, {
+          username: contact.username,
+          displayName: contact.displayName,
+        })
+      "
+    >
       <div class="flex gap-3 items-center p-2 py-1 cursor-pointer">
         <div class="avatar online">
           <div class="w-16 rounded-full">
@@ -8,10 +16,15 @@
           </div>
         </div>
 
-        <div class="flex flex-col flex-1">
+        <div class="flex flex-col" id="flex">
           <div class="flex gap-2 justify-start">
             <p class="font-bold text-gray-200">{{ contact.displayName }}</p>
             <p class="text-gray-200">@{{ contact.username }}</p>
+          </div>
+          <div class="">
+            <div class="h-6 max-w-[348px] whitespace-nowrap overflow-hidden">
+              {{ contact.lastMessage }}
+            </div>
           </div>
         </div>
       </div>
@@ -33,9 +46,10 @@ import { ref, computed, onMounted } from "vue";
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-const enterChat = (chatId) => {
+const enterChat = (chatId, { displayName, username }) => {
   messageStore.loadLastMessages(chatId);
   messageStore.setCurrentChat(chatId);
+  messageStore.setCurrentContact({ displayName, username });
   messageStore.enterChat(true);
 };
 
@@ -53,4 +67,8 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+#flex {
+  flex: 1 0 auto;
+}
+</style>

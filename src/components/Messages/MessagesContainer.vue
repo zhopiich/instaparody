@@ -4,10 +4,23 @@
     :class="isExtended ? 'translate-y-0' : 'translate-y-full'"
   >
     <div
-      class="h-11 absolute -top-11 w-full bg-amber-800 text-4xl hover:cursor-pointer"
+      class="z-[2] h-14 absolute -top-14 w-full px-4 flex bg-amber-300 text-4xl hover:cursor-pointer"
       @click="toggle"
     >
-      {{ isExtended ? "ˇ" : "^" }}
+      <div v-if="isEnterChat">
+        <button class="btn" @click.stop="leaveChat">Back</button>
+      </div>
+
+      <div v-if="!isEnterChat" class="grow font-bold">Messages</div>
+      <div v-else class="grow flex flex-col justify-center">
+        <div class="font-bold text-[20px] leading-6">
+          {{ currentContact.displayName }}
+        </div>
+        <div class="text-[13px] leading-4">@{{ currentContact.username }}</div>
+      </div>
+
+      <div class="w-14 text-center">{{ isExtended ? "ˇ" : "^" }}</div>
+      <!-- <div class="w-14">a</div> -->
     </div>
 
     <Transition name="slide">
@@ -21,15 +34,23 @@
 <script setup>
 import Chat from "./Chat.vue";
 
+import { ref, shallowRef, computed, onMounted } from "vue";
+
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-import { ref, shallowRef, onMounted } from "vue";
+const currentContact = computed(() => messageStore.currentContact);
+const isEnterChat = computed(() => messageStore.isEnterChat);
 
 const isExtended = ref(false);
 
 const toggle = () => {
   isExtended.value = !isExtended.value;
+};
+
+const leaveChat = () => {
+  messageStore.enterChat(false);
+  messageStore.triggerUnSubMessages();
 };
 
 onMounted(() => {});

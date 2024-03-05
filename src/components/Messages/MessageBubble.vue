@@ -7,7 +7,7 @@
     ]"
   >
     <div
-      class="chat-bubble"
+      class="chat-bubble leading-7"
       :class="{ 'chat-bubble-warning': message.from === me }"
     >
       {{ message.content }}

@@ -26,7 +26,11 @@ const messageContent = ref(null);
 const sendMessage = async (content) => {
   messageContent.value = null;
   messageStore.appendLocalList(content);
-  await messageStore.sendMessage(content);
+  // await messageStore.sendMessage(content);
+  await Promise.all([
+    messageStore.sendMessage(content),
+    messageStore.updateLastMessage(content),
+  ]);
 };
 </script>
 

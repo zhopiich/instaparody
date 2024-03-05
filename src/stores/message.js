@@ -35,10 +35,15 @@ export const useMessageStore = defineStore("message", () => {
   const messagesList = ref(null);
 
   const isEnterChat = ref(false);
+  const currentContact = ref({ displayName: null, username: null });
   let currentChatId = null;
 
   const setCurrentChat = (chatId) => {
     currentChatId = chatId;
+  };
+
+  const setCurrentContact = ({ displayName, username }) => {
+    currentContact.value = { displayName, username };
   };
 
   const enterChat = (bool) => {
@@ -128,6 +133,7 @@ export const useMessageStore = defineStore("message", () => {
       ...(chat.usersInfo[0].userId === userStore.user.uid
         ? chat.usersInfo[1]
         : chat.usersInfo[0]),
+      lastMessage: chat.lastMessage,
       chatId: chat.id,
     }));
   };
@@ -203,6 +209,14 @@ export const useMessageStore = defineStore("message", () => {
     });
   };
 
+  const updateLastMessage = async (lastMessage) => {
+    const chatRef = doc(db, "messages", currentChatId);
+
+    await updateDoc(chatRef, {
+      lastMessage,
+    });
+  };
+
   const appendLocalList = (content) => {
     messagesList.value.push({ from: userStore.user.uid, content });
   };
@@ -211,8 +225,10 @@ export const useMessageStore = defineStore("message", () => {
     contactsList,
     messagesList,
     isEnterChat,
+    currentContact,
     cleanChat,
     setCurrentChat,
+    setCurrentContact,
     enterChat,
     addContact,
     loadContacts,
@@ -221,6 +237,7 @@ export const useMessageStore = defineStore("message", () => {
     loadLastMessages,
     triggerUnSubMessages,
     sendMessage,
+    updateLastMessage,
     appendLocalList,
     findChat,
   };
