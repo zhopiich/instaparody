@@ -1,13 +1,8 @@
 <template>
   <div class="py-2 bg-purple-500 flex flex-col">
     <div
-      v-for="contact in contacts"
-      @click="
-        enterChat(contact.chatId, {
-          username: contact.username,
-          displayName: contact.displayName,
-        })
-      "
+      v-for="(contact, index) in contacts"
+      @click="enterChat(contact.chatId, index)"
     >
       <div class="flex gap-3 items-center p-2 py-1 cursor-pointer">
         <div class="avatar online">
@@ -46,10 +41,10 @@ import { ref, computed, onMounted } from "vue";
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-const enterChat = (chatId, { displayName, username }) => {
+const enterChat = (chatId, indexContact) => {
   messageStore.loadLastMessages(chatId);
   messageStore.setCurrentChat(chatId);
-  messageStore.setCurrentContact({ displayName, username });
+  messageStore.setCurrentContact(indexContact);
   messageStore.enterChat(true);
 };
 
@@ -57,13 +52,12 @@ const userToContact = ref(null);
 
 const getUser = async () => {
   await messageStore.addContact(userToContact.value);
-  await messageStore.loadContacts();
 };
 
 const contacts = computed(() => messageStore.contactsList);
 
 onMounted(async () => {
-  await messageStore.loadContacts();
+  // await messageStore.loadContacts();
 });
 </script>
 

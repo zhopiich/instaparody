@@ -28,6 +28,8 @@ import {
   and,
 } from "firebase/firestore";
 
+import { dateToRelative } from "../utils/date";
+
 export const useMessageStore = defineStore("message", () => {
   const meInfo = ref(null);
 
@@ -35,16 +37,20 @@ export const useMessageStore = defineStore("message", () => {
   const messagesList = ref(null);
 
   const isEnterChat = ref(false);
-  const currentContact = ref({ displayName: null, username: null });
   let currentChatId = null;
 
   const setCurrentChat = (chatId) => {
     currentChatId = chatId;
   };
 
-  const setCurrentContact = ({ displayName, username }) => {
-    currentContact.value = { displayName, username };
+  const selectedContactIndex = ref(null);
+  const setCurrentContact = (index) => {
+    selectedContactIndex.value = index;
   };
+
+  const currentContact = computed(
+    () => contactsList.value[selectedContactIndex.value]
+  );
 
   const enterChat = (bool) => {
     isEnterChat.value = bool;
@@ -55,6 +61,7 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   // Contact a user
+
   const userStore = useUserStore();
   const getUserInfo = (allUserInfo, userId) => {
     const { gender, intro, mobilePhone, website, ...userInfo } = {
@@ -99,7 +106,7 @@ export const useMessageStore = defineStore("message", () => {
     const contact = getUserInfo(querySnap.docs[0].data(), querySnap.docs[0].id);
 
     //
-    const { isChatExists, chatId } = await findChat({
+    const { isChatExists } = await findChat({
       userId1: me.userId,
       userId2: contact.userId,
     });
@@ -108,11 +115,17 @@ export const useMessageStore = defineStore("message", () => {
       return;
     }
 
-    // const chatRef =
+    // const newChatRef =
     await addChat({
       // users: [me.userId, contact.userId],
       users: { [me.userId]: true, [contact.userId]: true },
       usersInfo: [{ ...me }, { ...contact }],
+
+      lastMessage: null,
+      lastSeeAt: {
+        [me.userId]: null,
+        [contact.userId]: null,
+      },
     });
   };
 
@@ -131,11 +144,55 @@ export const useMessageStore = defineStore("message", () => {
 
     contactsList.value = results.map((chat) => ({
       ...(chat.usersInfo[0].userId === userStore.user.uid
-        ? chat.usersInfo[1]
-        : chat.usersInfo[0]),
+        ? { ...chat.usersInfo[1], index: 1 }
+        : { ...chat.usersInfo[0], index: 0 }),
       lastMessage: chat.lastMessage,
       chatId: chat.id,
     }));
+  };
+
+  const contactsListener = () => {
+    console.log("**Contacts Listening...");
+
+    const messagesRef = collection(db, "messages");
+    const q = query(
+      messagesRef,
+      // where("users", "array-contains", userStore.user.uid)
+      where(`users.${userStore.user.uid}`, "==", true)
+    );
+
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        console.log("contacts listener triggered! ");
+        const results = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+
+        contactsList.value = results.map((chat) => ({
+          ...(chat.usersInfo[0].userId === userStore.user.uid
+            ? {
+                ...chat.usersInfo[1],
+                index: 1,
+                lastSeeAt: chat.lastSeeAt[chat.usersInfo[1].userId],
+              }
+            : {
+                ...chat.usersInfo[0],
+                index: 0,
+                lastSeeAt: chat.lastSeeAt[chat.usersInfo[0].userId],
+              }),
+          lastMessage: chat.lastMessage,
+          // lastSeeAt: chat.lastSeeAt,
+          chatId: chat.id,
+        }));
+      },
+      (err) => {
+        console.log(err.message);
+
+        contactsList.value = "error";
+      }
+    );
   };
 
   const messagesListener = (chatId) => {
@@ -146,7 +203,7 @@ export const useMessageStore = defineStore("message", () => {
     return onSnapshot(
       q,
       (snapshot) => {
-        console.log("contacts listener triggered! ");
+        console.log("messages listener triggered! ");
         const results = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
@@ -173,36 +230,10 @@ export const useMessageStore = defineStore("message", () => {
     console.log("**messages unsubbed");
   };
 
-  const contactsListener = () => {
-    const contactsRef = collection(db, "messages");
-    const q = query(
-      contactsRef,
-      where("users", "array-contains", userStore.user.uid)
-    );
-
-    return onSnapshot(
-      q,
-      (snapshot) => {
-        console.log("contacts listener triggered! ");
-        const results = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-
-        contactsList.value = results;
-      },
-      (err) => {
-        console.log(err.message);
-
-        contactsList.value = "error";
-      }
-    );
-  };
-
   const sendMessage = async (content) => {
-    const chatRef = collection(db, "messages");
+    const messagesRef = collection(db, "messages");
 
-    await addDoc(collection(chatRef, currentChatId, "chat"), {
+    await addDoc(collection(messagesRef, currentChatId, "chat"), {
       from: userStore.user.uid,
       content,
       at: serverTimestamp(),
@@ -218,7 +249,50 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   const appendLocalList = (content) => {
-    messagesList.value.push({ from: userStore.user.uid, content });
+    messagesList.value.push({ from: userStore.user.uid, at: null, content });
+  };
+
+  // Update lastSeeAt
+
+  const messagesReading = ref([]);
+  const isKept = ref({});
+
+  const readMessage = (messageId) => {
+    messagesReading.value.push(messageId);
+    isKept.value[messageId] = false;
+  };
+
+  const keepLastMessage = (messageId) => {
+    isKept.value[messageId] = true;
+  };
+
+  const updateLastSeeAt = async (time) => {
+    const chatRef = doc(db, "messages", currentChatId);
+
+    await updateDoc(chatRef, {
+      [`lastSeeAt.${userStore.user.uid}`]: time,
+    });
+  };
+
+  const lastSeeAt = ref(null);
+
+  const setWhenLastSee = (time) => {
+    if (lastSeeAt.value && time.seconds <= lastSeeAt.value.seconds) {
+      return;
+    }
+
+    lastSeeAt.value = time;
+  };
+
+  const resetLastSee = () => {
+    messagesReading.value = [];
+    isKept.value = {};
+    lastSeeAt.value = null;
+  };
+
+  const updateAndReset = () => {
+    updateLastSeeAt(lastSeeAt.value);
+    resetLastSee();
   };
 
   return {
@@ -240,5 +314,12 @@ export const useMessageStore = defineStore("message", () => {
     updateLastMessage,
     appendLocalList,
     findChat,
+    updateLastSeeAt,
+    setWhenLastSee,
+    updateAndReset,
+    messagesReading,
+    keepLastMessage,
+    isKept,
+    readMessage,
   };
 });

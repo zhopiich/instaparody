@@ -7,6 +7,12 @@
         :message="message"
         :index="index"
       />
+      <div class="h-0" ref="bottomBeacon"></div>
+
+      <!--  -->
+      <div class="absolute bottom-[50%] right-[50%]">
+        {{ isBottom }}
+      </div>
     </div>
 
     <MessageInput />
@@ -27,14 +33,25 @@ const userStore = useUserStore();
 
 const list = computed(() => messageStore.messagesList);
 
+const bottomBeacon = ref(null);
+const isBottom = ref(null);
+
+const observerBottom = new IntersectionObserver(
+  ([{ isIntersecting }]) => {
+    isBottom.value = isIntersecting;
+  },
+  {
+    threshold: 1,
+  }
+);
+
 onMounted(() => {
-  // messageStore.messagesListener();
+  observerBottom.observe(bottomBeacon.value);
 });
 
 onUnmounted(() => {
   if (messageStore.isEnterChat === false) {
     messageStore.cleanChat();
-    console.log("**chat clear");
   }
 });
 </script>

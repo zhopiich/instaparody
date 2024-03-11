@@ -53,7 +53,9 @@ const leaveChat = () => {
   messageStore.triggerUnSubMessages();
 };
 
-onMounted(() => {});
+onMounted(() => {
+  messageStore.contactsListener();
+});
 </script>
 
 <style scoped>
