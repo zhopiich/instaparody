@@ -26,11 +26,10 @@ const messageContent = ref(null);
 const sendMessage = async (content) => {
   messageContent.value = null;
   messageStore.appendLocalList(content);
-  // await messageStore.sendMessage(content);
-  await Promise.all([
-    messageStore.sendMessage(content),
-    messageStore.updateLastMessage(content),
-  ]);
+
+  const messageRef = await messageStore.sendMessage(content);
+  const messageId = messageRef.id;
+  await messageStore.updateLastMessage({ content, id: messageId });
 };
 </script>
 

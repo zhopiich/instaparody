@@ -128,6 +128,9 @@ const profilePageURL = computed(() => {
   return "/";
 });
 
+import { useMessageStore } from "../stores/message";
+const messageStore = useMessageStore();
+
 // onMounted(async () => {
 //   // if (userPnia.value) {
 //   // await userStore.getUserDoc(userPnia.value.uid);
@@ -137,6 +140,9 @@ const profilePageURL = computed(() => {
 async function logout() {
   postStore.resetIsLikedByMe();
   // postStore.cleanPostsAll();
+
+  messageStore.enterChat(false);
+
   await logOut();
   router.push("/login");
 }

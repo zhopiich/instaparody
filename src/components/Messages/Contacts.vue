@@ -18,7 +18,7 @@
           </div>
           <div class="">
             <div class="h-6 max-w-[348px] whitespace-nowrap overflow-hidden">
-              {{ contact.lastMessage }}
+              {{ contact.lastMessage?.content }}
             </div>
           </div>
         </div>

@@ -1,30 +1,27 @@
 <template>
-  <!-- <button class="z-[10] btn" @click="messageStore.updateLastSeeAt(message.at)">
-    test
-  </button> -->
-
   <div
-    class="chat mt-6 py-0"
-    :class="[
-      message.from === me ? 'chat-end' : 'chat-start',
-      { lastMessage: isLast },
-    ]"
+    class="chat pt-0 pb-6"
+    :class="[isFromMe ? 'chat-end' : 'chat-start', { lastMessage: isLast }]"
   >
     <div
-      class="chat-bubble leading-7"
-      :class="{ 'chat-bubble-warning': message.from === me }"
+      class="chat-bubble leading-7 relative"
+      :class="{ 'chat-bubble-warning': isFromMe }"
       :id="message.id"
     >
       {{ message.content }}
+      <!-- <div
+        class="absolute h-0 top-1/2 pointer-events-none"
+        id="seenBeacon"
+      ></div> -->
     </div>
     <div class="chat-footer opacity-50">
       <time v-if="message.at">{{ dateToRelative(message.at.seconds) }}</time>
 
-      <div v-if="message.from === me && message.at" class="inline-block">
+      <div v-if="isFromMe && message.at" class="inline-block">
         {{ " · " }}
         {{ isSeen ? "Seen" : "Sent" }}
       </div>
-      <div v-if="message.from === me && !message.at">Sending...</div>
+      <div v-if="isFromMe && !message.at">Sending...</div>
     </div>
   </div>
 </template>
@@ -40,20 +37,13 @@ import {
   watchEffect,
 } from "vue";
 
-const props = defineProps(["message", "index"]);
+const props = defineProps(["message", "index", "messagesViewport"]);
 const messageId = props.message.id;
+
+const emit = defineEmits(["lastMounted"]);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
-
-const isSeen = computed(() => {
-  if (!props.message.at) return;
-  if (!messageStore.currentContact.lastSeeAt) return;
-
-  return (
-    messageStore.currentContact.lastSeeAt.seconds >= props.message.at.seconds
-  );
-});
 
 const list = computed(() => messageStore.messagesList);
 
@@ -61,12 +51,20 @@ import { useUserStore } from "../../stores/user.js";
 const userStore = useUserStore();
 
 const me = userStore.user.uid;
+const isFromMe = props.message.from === me;
+
+const isSeen = computed(() => {
+  if (!props.message.at || !messageStore.currentContact.lastSeeAt) return;
+
+  const byWho = !isFromMe ? "me" : "other";
+
+  return (
+    messageStore.currentContact.lastSeeAt[byWho].seconds >=
+    props.message.at.seconds
+  );
+});
 
 import { dateToRelative } from "../../utils/date";
-
-const scrollToBottom = (element) => {
-  element.scrollIntoView({ block: "end", behavior: "smooth" });
-};
 
 //
 const isLast = computed(() => props.index + 1 === list.value.length);
@@ -75,9 +73,7 @@ const isLast = computed(() => props.index + 1 === list.value.length);
 // }
 
 let observer;
-const setObserver = () => {
-  const bubble = document.getElementById(messageId);
-
+const setObserver = (el) => {
   observer = new IntersectionObserver(
     (entries, observer) => {
       if (entries[0].isIntersecting) {
@@ -96,34 +92,39 @@ const setObserver = () => {
             messageStore.updateAndReset();
           }
 
-          observer.unobserve(bubble);
+          observer.unobserve(el);
         }, 500);
       }
     },
     {
-      // root: ul, // 觀察窗口為 ul 的元素範圍
-      // threshold: [0, 0.75],
-      // threshold: [threshold],
+      // root: messagesViewport,
+      // threshold: 1,
     }
   );
 
-  observer.observe(bubble);
+  observer.observe(el);
 };
 
 onMounted(() => {
-  if (props.message.from !== me) {
+  if (!isFromMe) {
     // window[messageId] = document.getElementById(messageId);
     // console.log(window[messageId]);
 
     if (!isSeen.value) {
+      // const seenBeacon = ref(null);
+      // const seenBeacon = document.getElementById("seenBeacon");
+      const bubble = document.getElementById(messageId);
+
       //
-      setObserver();
+      setObserver(bubble);
     }
   }
 
   if (isLast.value) {
-    const lastMessage = document.querySelector(".lastMessage");
-    scrollToBottom(lastMessage);
+    // const lastMessage = document.querySelector(".lastMessage");
+    //   scrollToBottom(lastMessage);
+    // console.log(lastMessage.innerText, "mounted");
+    emit("lastMounted", isFromMe);
   }
 });
 

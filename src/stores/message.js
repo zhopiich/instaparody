@@ -151,6 +151,9 @@ export const useMessageStore = defineStore("message", () => {
     }));
   };
 
+  // const lastMessageIds = ref({});
+  const lastMessagesAt = ref({});
+
   const contactsListener = () => {
     console.log("**Contacts Listening...");
 
@@ -175,25 +178,86 @@ export const useMessageStore = defineStore("message", () => {
             ? {
                 ...chat.usersInfo[1],
                 index: 1,
-                lastSeeAt: chat.lastSeeAt[chat.usersInfo[1].userId],
+                lastSeeAt: {
+                  me: chat.lastSeeAt[chat.usersInfo[0].userId],
+                  other: chat.lastSeeAt[chat.usersInfo[1].userId],
+                },
               }
             : {
                 ...chat.usersInfo[0],
                 index: 0,
-                lastSeeAt: chat.lastSeeAt[chat.usersInfo[0].userId],
+                lastSeeAt: {
+                  me: chat.lastSeeAt[chat.usersInfo[1].userId],
+                  other: chat.lastSeeAt[chat.usersInfo[0].userId],
+                },
               }),
           lastMessage: chat.lastMessage,
-          // lastSeeAt: chat.lastSeeAt,
           chatId: chat.id,
         }));
+
+        // Update lastMessagesAt if there's new
+        contactsList.value.forEach(async (contact) => {
+          if (!contact.lastMessage) return;
+
+          // if (!lastMessagesAt.value[contact.chatId]) {
+          //   lastMessagesAt.value[contact.chatId] = {
+          //     messageId: null,
+          //     at: null,
+          //   };
+          // }
+
+          if (
+            !lastMessagesAt.value[contact.chatId] ||
+            lastMessagesAt.value[contact.chatId].messageId !==
+              contact.lastMessage.id
+          ) {
+            const lastMessageRef = await getDoc(contact.lastMessage.docRef);
+
+            lastMessagesAt.value[contact.chatId] = {
+              messageId: contact.lastMessage.id,
+              at: lastMessageRef.data().at,
+            };
+          }
+        });
+
+        console.log(lastMessagesAt.value);
       },
       (err) => {
         console.log(err.message);
 
-        contactsList.value = "error";
+        // contactsList.value = "error";
       }
     );
   };
+
+  const areThereNews = computed(() => {
+    if (!contactsList.value) return;
+
+    return contactsList.value.map((contact) => {
+      // if (lastMessagesAt.value[contact.chatId] && contact.lastSeeAt.me) {
+      //   return {
+      //     [contact.chatId]:
+      //       contact.lastMessage.from !== userStore.user.uid &&
+      //       lastMessagesAt.value[contact.chatId].at.seconds >
+      //         contact.lastSeeAt.me.seconds,
+      //   };
+      // } else {
+      //   return {
+      //     [contact.chatId]: false,
+      //   };
+      // }
+
+      return {
+        [contact.chatId]:
+          !contact.lastSeeAt.me ||
+          (lastMessagesAt.value[contact.chatId] &&
+            contact.lastSeeAt.me &&
+            contact.lastMessage.from !== userStore.user.uid &&
+            lastMessagesAt.value[contact.chatId].at.seconds >
+              contact.lastSeeAt.me.seconds),
+      };
+    });
+  });
 
   const messagesListener = (chatId) => {
     const messagesRef = collection(db, "messages");
@@ -233,18 +297,25 @@ export const useMessageStore = defineStore("message", () => {
   const sendMessage = async (content) => {
     const messagesRef = collection(db, "messages");
 
-    await addDoc(collection(messagesRef, currentChatId, "chat"), {
+    return await addDoc(collection(messagesRef, currentChatId, "chat"), {
       from: userStore.user.uid,
       content,
       at: serverTimestamp(),
     });
   };
 
-  const updateLastMessage = async (lastMessage) => {
+  const updateLastMessage = async ({ content, id }) => {
     const chatRef = doc(db, "messages", currentChatId);
 
+    const messageDocRef = doc(chatRef, "chat", id);
+
     await updateDoc(chatRef, {
-      lastMessage,
+      lastMessage: {
+        content,
+        id,
+        docRef: messageDocRef,
+        from: userStore.user.uid,
+      },
     });
   };
 
@@ -295,6 +366,10 @@ export const useMessageStore = defineStore("message", () => {
     resetLastSee();
   };
 
+  // Notification
+
+  const newMessages = ref([]);
+
   return {
     contactsList,
     messagesList,
@@ -321,5 +396,6 @@ export const useMessageStore = defineStore("message", () => {
     keepLastMessage,
     isKept,
     readMessage,
+    areThereNews,
   };
 });
