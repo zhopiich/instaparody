@@ -27,6 +27,7 @@ import {
   serverTimestamp,
   and,
 } from "firebase/firestore";
+import { uploadFile } from "../firebase/storage.js";
 
 import { dateToRelative } from "../utils/date";
 
@@ -219,8 +220,6 @@ export const useMessageStore = defineStore("message", () => {
             };
           }
         });
-
-        console.log(lastMessagesAt.value);
       },
       (err) => {
         console.log(err.message);
@@ -294,17 +293,40 @@ export const useMessageStore = defineStore("message", () => {
     console.log("**messages unsubbed");
   };
 
-  const sendMessage = async (content) => {
-    const messagesRef = collection(db, "messages");
+  const sendMessage = async (content, image = null) => {
+    let imageUrl = null;
+    if (image) {
+      imageUrl = await uploadFile(image, "messageImages/");
+    }
 
-    return await addDoc(collection(messagesRef, currentChatId, "chat"), {
+    const data = {
       from: userStore.user.uid,
       content,
+      image: imageUrl,
       at: serverTimestamp(),
-    });
+    };
+
+    const removeNullValue = (obj) => {
+      const result = {};
+      for (const key in obj) {
+        if (obj[key]) {
+          result[key] = obj[key];
+        }
+      }
+      return result;
+    };
+
+    const messagesRef = collection(db, "messages");
+
+    return await addDoc(
+      collection(messagesRef, currentChatId, "chat"),
+      removeNullValue(data)
+    );
   };
 
   const updateLastMessage = async ({ content, id }) => {
+    const isImageSent = isImageSending.value;
+
     const chatRef = doc(db, "messages", currentChatId);
 
     const messageDocRef = doc(chatRef, "chat", id);
@@ -312,6 +334,7 @@ export const useMessageStore = defineStore("message", () => {
     await updateDoc(chatRef, {
       lastMessage: {
         content,
+        isImageSent,
         id,
         docRef: messageDocRef,
         from: userStore.user.uid,
@@ -320,7 +343,19 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   const appendLocalList = (content) => {
-    messagesList.value.push({ from: userStore.user.uid, at: null, content });
+    messagesList.value.push({
+      from: userStore.user.uid,
+      at: null,
+      content,
+      image: imagePreview.value,
+    });
+
+    if (imagePreview.value) {
+      isImageSending.value = true;
+      imagePreview.value = null;
+    } else {
+      isImageSending.value = false;
+    }
   };
 
   // Update lastSeeAt
@@ -371,15 +406,14 @@ export const useMessageStore = defineStore("message", () => {
   const newMessages = ref([]);
 
   // Image
-  const imageObjUrl = ref("");
+  const imagePreview = ref(null);
 
-  const imagePost = ref(null);
+  // const imagePost = ref(null);
+
+  const isImageSending = ref(false);
 
   const setImagePreview = (imageFile) => {
-    imageObjUrl.value = URL.createObjectURL(imageFile);
-
-    //
-    console.log(imageObjUrl.value);
+    imagePreview.value = URL.createObjectURL(imageFile);
   };
 
   return {
@@ -409,7 +443,8 @@ export const useMessageStore = defineStore("message", () => {
     isKept,
     readMessage,
     areThereNews,
-    imageObjUrl,
+    imagePreview,
+    isImageSending,
     setImagePreview,
   };
 });

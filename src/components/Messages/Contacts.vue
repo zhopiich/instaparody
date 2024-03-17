@@ -18,7 +18,16 @@
           </div>
           <div class="">
             <div class="h-6 max-w-[348px] whitespace-nowrap overflow-hidden">
-              {{ contact.lastMessage?.content }}
+              {{
+                !contact.lastMessage?.content &&
+                contact.lastMessage?.isImageSent
+                  ? contact.lastMessage?.from === contact.userId
+                    ? `${contact.displayName} sent a picture`
+                    : "You sent a picture"
+                  : contact.lastMessage?.content
+                  ? contact.lastMessage?.content
+                  : null
+              }}
             </div>
           </div>
         </div>

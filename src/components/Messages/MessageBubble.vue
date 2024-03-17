@@ -4,10 +4,20 @@
     :class="[isFromMe ? 'chat-end' : 'chat-start', { lastMessage: isLast }]"
   >
     <div
-      class="chat-bubble leading-7 relative"
+      class="chat-bubble leading-7"
       :class="{ 'chat-bubble-warning': isFromMe }"
       :id="message.id"
     >
+      <div
+        v-if="
+          (!message.at && messageStore.isImageSending) ||
+          (message.at && message.image)
+        "
+        class="w-[280px] aspect-square flex justify-center items-center"
+      >
+        <img :src="message.image" class="max-h-full max-w-full" />
+      </div>
+
       {{ message.content }}
       <!-- <div
         class="absolute h-0 top-1/2 pointer-events-none"

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full grid grid-rows-[1fr_56px]">
+  <div class="w-full h-full grid" id="gridContainer">
     <div class="relative overflow-hidden" id="messagesViewport">
       <div class="h-full overflow-auto">
         <div ref="messagesFlow" class="relative bg-zinc-200 min-h-full px-3">
@@ -20,7 +20,7 @@
             />
           </template>
 
-          <div class="h-0" ref="bottomBeacon"></div>
+          <div class="h-2 absolute bottom-0" ref="bottomBeacon"></div>
         </div>
       </div>
       <ToBottomButton :isBottom="isBottom" :messagesFlow="messagesFlow" />
@@ -45,6 +45,8 @@ import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 const list = computed(() => messageStore.messagesList);
 
+const heightInput = computed(() => (messageStore.imagePreview ? 300 : 56));
+
 import { useUserStore } from "../../stores/user.js";
 const userStore = useUserStore();
 const me = userStore.user.uid;
@@ -58,7 +60,7 @@ const observerBottom = new IntersectionObserver(
     isBottom.value = isIntersecting;
   },
   {
-    threshold: 1,
+    threshold: 0,
   }
 );
 
@@ -117,4 +119,9 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+#gridContainer {
+  /* grid-template-rows: 1fr 300px; */
+  grid-template-rows: 1fr v-bind(heightInput + "px");
+}
+</style>
