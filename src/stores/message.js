@@ -370,6 +370,18 @@ export const useMessageStore = defineStore("message", () => {
 
   const newMessages = ref([]);
 
+  // Image
+  const imageObjUrl = ref("");
+
+  const imagePost = ref(null);
+
+  const setImagePreview = (imageFile) => {
+    imageObjUrl.value = URL.createObjectURL(imageFile);
+
+    //
+    console.log(imageObjUrl.value);
+  };
+
   return {
     contactsList,
     messagesList,
@@ -397,5 +409,7 @@ export const useMessageStore = defineStore("message", () => {
     isKept,
     readMessage,
     areThereNews,
+    imageObjUrl,
+    setImagePreview,
   };
 });

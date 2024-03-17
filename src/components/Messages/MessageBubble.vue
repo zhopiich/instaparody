@@ -35,9 +35,15 @@ import {
   onBeforeUnmount,
   watch,
   watchEffect,
+  toRef,
 } from "vue";
 
-const props = defineProps(["message", "index", "messagesViewport"]);
+const props = defineProps([
+  "message",
+  "isFromMe",
+  "isLast",
+  "messagesViewport",
+]);
 const messageId = props.message.id;
 
 const emit = defineEmits(["lastMounted"]);
@@ -45,18 +51,11 @@ const emit = defineEmits(["lastMounted"]);
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-const list = computed(() => messageStore.messagesList);
-
-import { useUserStore } from "../../stores/user.js";
-const userStore = useUserStore();
-
-const me = userStore.user.uid;
-const isFromMe = props.message.from === me;
-
 const isSeen = computed(() => {
-  if (!props.message.at || !messageStore.currentContact.lastSeeAt) return;
+  const byWho = !props.isFromMe ? "me" : "other";
 
-  const byWho = !isFromMe ? "me" : "other";
+  if (!props.message.at || !messageStore.currentContact.lastSeeAt[byWho])
+    return;
 
   return (
     messageStore.currentContact.lastSeeAt[byWho].seconds >=
@@ -65,12 +64,6 @@ const isSeen = computed(() => {
 });
 
 import { dateToRelative } from "../../utils/date";
-
-//
-const isLast = computed(() => props.index + 1 === list.value.length);
-// if (props.index + 1 === list.value.length) {
-//   isLast.value = true;
-// }
 
 let observer;
 const setObserver = (el) => {
@@ -106,7 +99,7 @@ const setObserver = (el) => {
 };
 
 onMounted(() => {
-  if (!isFromMe) {
+  if (!props.isFromMe) {
     // window[messageId] = document.getElementById(messageId);
     // console.log(window[messageId]);
 
@@ -120,11 +113,11 @@ onMounted(() => {
     }
   }
 
-  if (isLast.value) {
+  if (props.isLast) {
     // const lastMessage = document.querySelector(".lastMessage");
     //   scrollToBottom(lastMessage);
     // console.log(lastMessage.innerText, "mounted");
-    emit("lastMounted", isFromMe);
+    emit("lastMounted", props.isFromMe);
   }
 });
 

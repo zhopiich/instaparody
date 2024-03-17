@@ -36,3 +36,7 @@ export function dateToRelative(dateStr = null, short = null) {
     day: "numeric",
   });
 }
+
+export function getTimeComponents(dateStr = null, short = null) {
+  if (!dateStr) return;
+}

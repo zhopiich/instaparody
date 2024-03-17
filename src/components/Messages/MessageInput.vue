@@ -1,5 +1,14 @@
 <template>
   <div class="flex">
+    <label class="w-12 flex justify-center items-center">
+      <FontAwesomeIcon :icon="faImage" class="fa-xl cursor-pointer" />
+      <input
+        type="file"
+        accept="image/*"
+        class="hidden"
+        @change="handleImagePreview"
+      />
+    </label>
     <input
       v-model="messageContent"
       type="text"
@@ -13,15 +22,26 @@
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
+
 import { ref, shallowRef, computed, onMounted, watch } from "vue";
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-import { useUserStore } from "../../stores/user.js";
-const userStore = useUserStore();
+// import { useUserStore } from "../../stores/user.js";
+// const userStore = useUserStore();
 
 const messageContent = ref(null);
+
+const handleImagePreview = (event) => {
+  const imageFile = event.target.files[0];
+  if (imageFile) {
+    messageStore.setImagePreview(imageFile);
+    // imagePost.value = imageFile;
+  }
+};
 
 const sendMessage = async (content) => {
   messageContent.value = null;

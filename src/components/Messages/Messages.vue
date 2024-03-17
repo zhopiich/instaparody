@@ -2,14 +2,24 @@
   <div class="w-full h-full grid grid-rows-[1fr_56px]">
     <div class="relative overflow-hidden" id="messagesViewport">
       <div class="h-full overflow-auto">
-        <div ref="messagesFlow" class="bg-zinc-200 min-h-full px-3">
-          <MessageBubble
-            v-for="(message, index) in list"
-            :key="message.id"
-            :message="message"
-            :index="index"
-            @last-mounted.once="scrollToBottom"
-          />
+        <div ref="messagesFlow" class="relative bg-zinc-200 min-h-full px-3">
+          <template v-for="(message, index) in list" :key="message.id">
+            <DateTag
+              v-if="message.at"
+              :prevMessageAt="list[index - 1]?.at.seconds"
+              :messageAt="message.at.seconds"
+              :isFromMe="message.from === me"
+              :isLast="index + 1 === list.length"
+              @last-mounted.once="scrollDrivedByDateTag"
+            />
+            <MessageBubble
+              :message="message"
+              :isFromMe="message.from === me"
+              :isLast="index + 1 === list.length"
+              @last-mounted.once="scrollDrivedByMessage"
+            />
+          </template>
+
           <div class="h-0" ref="bottomBeacon"></div>
         </div>
       </div>
@@ -22,6 +32,7 @@
 
 <script setup>
 import MessageBubble from "./MessageBubble.vue";
+import DateTag from "./DateTag.vue";
 import MessageInput from "./MessageInput.vue";
 import ToBottomButton from "./TobottomButton.vue";
 
@@ -32,11 +43,12 @@ const messagesFlow = ref(null);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
+const list = computed(() => messageStore.messagesList);
 
 import { useUserStore } from "../../stores/user.js";
 const userStore = useUserStore();
-
-const list = computed(() => messageStore.messagesList);
+const me = userStore.user.uid;
+// const isFromMe = props.messageFrom === me;
 
 const bottomBeacon = ref(null);
 const isBottom = ref(null);
@@ -62,10 +74,36 @@ const isBottomExceptFirstTime = (() => {
   };
 })();
 
-const scrollToBottom = (isFromMe) => {
-  if (!isBottomExceptFirstTime(isFromMe)) return;
+const isSameAsPrevExceptFirstTime = (() => {
+  let executed = false;
+  return (isFromMe, isSameAsPrev) => {
+    if (!executed) {
+      executed = true;
+      return false;
+    }
 
-  messagesFlow.value.scrollIntoView({ block: "end", behavior: "smooth" });
+    return isFromMe && !isSameAsPrev;
+  };
+})();
+
+const scrollToBottom = () => {
+  messagesFlow.value.scrollIntoView({
+    block: "end",
+    behavior: "smooth",
+  });
+};
+
+const scrollDrivedByMessage = (isFromMe) => {
+  // Scroll to bottom anyway when messages flow loaded
+  if (isBottomExceptFirstTime(isFromMe)) {
+    scrollToBottom();
+  }
+};
+
+const scrollDrivedByDateTag = ([isSameAsPrev, isFromMe]) => {
+  if (isSameAsPrevExceptFirstTime(isFromMe, isSameAsPrev)) {
+    scrollToBottom();
+  }
 };
 
 onMounted(() => {
