@@ -27,6 +27,7 @@
         class="absolute h-0 top-1/2 pointer-events-none"
         id="seenBeacon"
       ></div> -->
+      <DeleteButton v-if="isFromMe" :id="message.id" :isLast="isLast" />
     </div>
     <div class="chat-footer opacity-50">
       <time v-if="message.at">{{ dateToRelative(message.at.seconds) }}</time>
@@ -41,6 +42,8 @@
 </template>
 
 <script setup>
+import DeleteButton from "./DeleteButton.vue";
+
 import {
   ref,
   shallowRef,

@@ -324,8 +324,11 @@ export const useMessageStore = defineStore("message", () => {
     );
   };
 
-  const updateLastMessage = async ({ content, id }) => {
-    const isImageSent = isImageSending.value;
+  const updateLastMessage = async (
+    { content, id },
+    isImageSent = isImageSending.value
+  ) => {
+    // const isImageSent = isImageSending.value;
 
     const chatRef = doc(db, "messages", currentChatId);
 
@@ -355,6 +358,24 @@ export const useMessageStore = defineStore("message", () => {
       imagePreview.value = null;
     } else {
       isImageSending.value = false;
+    }
+  };
+
+  const deleteMessage = async (messageId, isLast = false) => {
+    const chatRef = doc(db, "messages", currentChatId);
+
+    const messageDocRef = doc(chatRef, "chat", messageId);
+
+    await deleteDoc(messageDocRef);
+
+    // Update last message if the last message was deleted
+    if (isLast) {
+      const lastMessage = messagesList.value[messagesList.value.length - 1];
+      //
+      const content = lastMessage.content || null;
+      const isImageSent = lastMessage.image ? true : false;
+
+      await updateLastMessage({ content, id: lastMessage.id }, isImageSent);
     }
   };
 
@@ -452,6 +473,7 @@ export const useMessageStore = defineStore("message", () => {
     sendMessage,
     updateLastMessage,
     appendLocalList,
+    deleteMessage,
     findChat,
     updateLastSeeAt,
     setWhenLastSee,
