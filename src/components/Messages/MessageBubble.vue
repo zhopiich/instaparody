@@ -15,7 +15,11 @@
         "
         class="w-[280px] aspect-square flex justify-center items-center"
       >
-        <img :src="message.image" class="max-h-full max-w-full" />
+        <img
+          :src="message.image"
+          class="max-h-full max-w-full"
+          @click="messageStore.openImageViewer(message.image)"
+        />
       </div>
 
       {{ message.content }}

@@ -416,6 +416,24 @@ export const useMessageStore = defineStore("message", () => {
     imagePreview.value = URL.createObjectURL(imageFile);
   };
 
+  const removeImagePreview = () => {
+    imagePreview.value = null;
+  };
+
+  const isShowImageViewer = ref(false);
+
+  const imageViewedSrc = ref(null);
+
+  const openImageViewer = (src) => {
+    imageViewedSrc.value = src;
+    isShowImageViewer.value = true;
+  };
+
+  const closeImageViewer = () => {
+    isShowImageViewer.value = false;
+    imageViewedSrc.value = null;
+  };
+
   return {
     contactsList,
     messagesList,
@@ -446,5 +464,10 @@ export const useMessageStore = defineStore("message", () => {
     imagePreview,
     isImageSending,
     setImagePreview,
+    removeImagePreview,
+    isShowImageViewer,
+    imageViewedSrc,
+    openImageViewer,
+    closeImageViewer,
   };
 });

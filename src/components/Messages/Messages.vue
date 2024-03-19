@@ -27,6 +27,7 @@
     </div>
 
     <MessageInput />
+    <ImageViewer />
   </div>
 </template>
 
@@ -35,6 +36,7 @@ import MessageBubble from "./MessageBubble.vue";
 import DateTag from "./DateTag.vue";
 import MessageInput from "./MessageInput.vue";
 import ToBottomButton from "./TobottomButton.vue";
+import ImageViewer from "./ImageViewer.vue";
 
 import { ref, shallowRef, computed, onMounted, onUnmounted, watch } from "vue";
 
