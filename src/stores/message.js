@@ -258,6 +258,34 @@ export const useMessageStore = defineStore("message", () => {
     });
   });
 
+  // For new messages indicator line
+
+  const newMessages = ref([]);
+
+  const appendNewMessage = ({ id, at }) => {
+    newMessages.value.push({ id, at });
+  };
+
+  const removeNewMessage = (id) => {
+    newMessages.value = newMessages.value.filter(
+      (message) => message.id !== id
+    );
+  };
+
+  const resetNewMessages = () => {
+    newMessages.value = [];
+  };
+
+  const firstNewMessageId = computed(() =>
+    newMessages.value.length > 0
+      ? newMessages.value.reduce((acc, cur) => {
+          console.log("in reduce", acc.at.seconds);
+
+          return acc.at.seconds <= cur.at.seconds ? acc : cur;
+        }).id
+      : null
+  );
+
   const messagesListener = (chatId) => {
     const messagesRef = collection(db, "messages");
     const chatRef = collection(messagesRef, chatId, "chat");
@@ -424,7 +452,7 @@ export const useMessageStore = defineStore("message", () => {
 
   // Notification
 
-  const newMessages = ref([]);
+  // const newMessages = ref([]);
 
   // Image
   const imagePreview = ref(null);
@@ -467,6 +495,11 @@ export const useMessageStore = defineStore("message", () => {
     addContact,
     loadContacts,
     contactsListener,
+    newMessages,
+    appendNewMessage,
+    removeNewMessage,
+    resetNewMessages,
+    firstNewMessageId,
     messagesListener,
     loadLastMessages,
     triggerUnSubMessages,

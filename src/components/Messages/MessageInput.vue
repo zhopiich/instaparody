@@ -61,6 +61,8 @@ const cancelSendImage = () => {
 };
 
 const sendMessage = async (content, image = null) => {
+  messageStore.resetNewMessages();
+
   if (image) {
     imageToBeSent.value = null;
   }

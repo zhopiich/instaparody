@@ -22,7 +22,8 @@
         />
       </div>
 
-      {{ message.content }}
+      <p class="text-lg">{{ message.content }}</p>
+
       <!-- <div
         class="absolute h-0 top-1/2 pointer-events-none"
         id="seenBeacon"
@@ -30,7 +31,7 @@
       <DeleteButton v-if="isFromMe" :id="message.id" :isLast="isLast" />
     </div>
     <div class="chat-footer opacity-50">
-      <time v-if="message.at">{{ dateToRelative(message.at.seconds) }}</time>
+      <time v-if="message.at">{{ time.hour + ":" + time.minute }}</time>
 
       <div v-if="isFromMe && message.at" class="inline-block">
         {{ " · " }}
@@ -80,7 +81,22 @@ const isSeen = computed(() => {
   );
 });
 
-import { dateToRelative } from "../../utils/date";
+import { getTime } from "../../utils/date";
+let time;
+if (!props.message.at) {
+  const unwatch = watch(
+    () => props.message.at,
+    (newVal) => {
+      if (typeof newVal.seconds === "number" && !Number.isNaN(newVal.seconds)) {
+        time = getTime(newVal.seconds);
+
+        unwatch();
+      }
+    }
+  );
+} else {
+  time = getTime(props.message.at.seconds);
+}
 
 let observer;
 const setObserver = (el) => {
@@ -123,9 +139,12 @@ onMounted(() => {
     if (!isSeen.value) {
       // const seenBeacon = ref(null);
       // const seenBeacon = document.getElementById("seenBeacon");
-      const bubble = document.getElementById(messageId);
+      messageStore.appendNewMessage({
+        id: messageId,
+        at: props.message.at,
+      });
 
-      //
+      const bubble = document.getElementById(messageId);
       setObserver(bubble);
     }
   }

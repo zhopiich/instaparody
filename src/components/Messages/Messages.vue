@@ -12,6 +12,11 @@
               :isLast="index + 1 === list.length"
               @last-mounted.once="scrollDrivedByDateTag"
             />
+            <NewMessageIndicator
+              v-if="messageStore.firstNewMessageId === message.id"
+              :isMoreThanOne="messageStore.newMessages.length > 1"
+              @mounted.once="scrollDrivedByIndicator"
+            />
             <MessageBubble
               :message="message"
               :isFromMe="message.from === me"
@@ -34,6 +39,7 @@
 <script setup>
 import MessageBubble from "./MessageBubble.vue";
 import DateTag from "./DateTag.vue";
+import NewMessageIndicator from "./NewMessageIndicator.vue";
 import MessageInput from "./MessageInput.vue";
 import ToBottomButton from "./TobottomButton.vue";
 import ImageViewer from "./ImageViewer.vue";
@@ -68,10 +74,10 @@ const observerBottom = new IntersectionObserver(
 
 const isBottomExceptFirstTime = (() => {
   let executed = false;
-  return (isFromMe) => {
+  return (isFromMe, firstBool = true) => {
     if (!executed) {
       executed = true;
-      return true;
+      return firstBool;
     }
 
     return isBottom.value || isFromMe;
@@ -103,6 +109,8 @@ const scrollDrivedByMessage = (isFromMe) => {
     scrollToBottom();
   }
 };
+
+const scrollDrivedByIndicator = scrollDrivedByMessage;
 
 const scrollDrivedByDateTag = ([isSameAsPrev, isFromMe]) => {
   if (isSameAsPrevExceptFirstTime(isFromMe, isSameAsPrev)) {

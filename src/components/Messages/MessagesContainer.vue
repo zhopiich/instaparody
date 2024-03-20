@@ -51,6 +51,7 @@ const toggle = () => {
 const leaveChat = () => {
   messageStore.enterChat(false);
   messageStore.triggerUnSubMessages();
+  messageStore.resetNewMessages();
 };
 
 onMounted(() => {

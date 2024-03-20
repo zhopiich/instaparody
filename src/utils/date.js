@@ -37,6 +37,22 @@ export function dateToRelative(dateStr = null, short = null) {
   });
 }
 
-export function getTimeComponents(dateStr = null, short = null) {
+export function getTime(dateStr = null) {
   if (!dateStr) return;
+
+  const date = new Date(dateStr * 1000);
+
+  const getDigits = (method) => {
+    let digits = method;
+    if (digits.toString().length === 1) {
+      digits = "0" + digits;
+    }
+
+    return digits;
+  };
+
+  return {
+    hour: getDigits(date.getHours()),
+    minute: getDigits(date.getMinutes()),
+  };
 }
