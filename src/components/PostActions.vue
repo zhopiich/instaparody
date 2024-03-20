@@ -16,9 +16,9 @@
     /><span>{{ post.comments || "" }}</span>
     <TheIcon
       icon="favorite"
-      @click="postStore.toggleActions(post.id, 'favor')"
-      :fill="post.favoredByMe ? '#FFD12E' : 'none'"
-      :stroke="post.favoredByMe ? '#FFD12E' : '#000000'"
+      @click="postStore.toggleActions({ postId: post.id, post, type: 'saved' })"
+      :fill="isSavedByMe ? '#FFD12E' : 'none'"
+      :stroke="isSavedByMe ? '#FFD12E' : '#000000'"
     /><span>{{ post.saves || "" }}</span>
   </div>
 </template>
@@ -45,10 +45,15 @@ const postStore = usePostStore();
 // const userStore = useUserStore();
 
 const isLikedByMe = computed(() => postStore.isLikedByMe[props.post.id]);
+const isSavedByMe = computed(() => postStore.isSavedByMe[props.post.id]);
 
 onMounted(async () => {
-  if (postStore.isLikedByMe[props.post.id] === undefined) {
-    postStore.loadIsLikedByMe(props.post.id);
+  // if (postStore.isLikedByMe[props.post.id] === undefined) {
+  if (!postStore.isLikedByMe[props.post.id]) {
+    postStore.loadIsActedByMe({ postId: props.post.id, type: "liked" });
+  }
+  if (!postStore.isSavedByMe[props.post.id]) {
+    postStore.loadIsActedByMe({ postId: props.post.id, type: "saved" });
   }
 });
 </script>

@@ -1,5 +1,7 @@
 <template>
-  <div v-if="postsStatus === 'loading'" class="loading">Loading...</div>
+  <div v-if="postsStatus === 'loading'" class="loading loading-dots loading-md">
+    <!-- Loading... -->
+  </div>
   <div v-else-if="postsStatus === 'error'" class="error">Error</div>
   <div v-else-if="postsStatus === 'empty'" class="nopost">No post</div>
   <!-- <div v-else-if="isResultEmpty" class="noresult">No result</div> -->
@@ -18,7 +20,7 @@ defineProps({
 </script>
 
 <style scoped>
-.loading,
+/* .loading, */
 .error,
 .nopost,
 .noresult {

@@ -27,7 +27,13 @@
     </div>
   </div>
 
-  <div class="tabContent">
+  <div class="tabContent relative">
+    <p
+      class="absolute top-0 -translate-y-full pb-4 text-gray-500"
+      v-if="currentTab === 'saved' && postsStatus !== 'loading'"
+    >
+      Only you can see what you've saved
+    </p>
     <!-- <PostList :isPostsEmpty="posts.length === 0"> -->
     <PostList :postsStatus="postsStatus">
       <PostImageItem
@@ -113,9 +119,15 @@ const currentTab = ref("created");
 // );
 const switchTab = (tab) => {
   currentTab.value = tab.type;
-  postStore.loadPostsFiltered(currentTab.value, {
-    username: route.params.username,
-  });
+  postStore.loadPostsFiltered(
+    currentTab.value,
+    route.params.username === user.value.username &&
+      currentTab.value === "saved"
+      ? // Firebase security rules that make the documents
+        // accessible only to their creator require uid
+        { userId: userStore.user.uid }
+      : { username: route.params.username }
+  );
 };
 
 // user

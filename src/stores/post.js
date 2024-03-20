@@ -64,17 +64,23 @@ export const usePostStore = defineStore("post", () => {
 
     switch (filtered) {
       case "liked":
-      case "saved":
         col = "likes";
-      case "created":
-        filter = where(
-          // Get a property key depending on its value
-          `${filtered}By.${Object.keys(who).find((key) => who[key])}`,
-          "==",
-          `${who.userId || who.username}`
-        );
         break;
+      case "saved":
+        col = "saves";
+        break;
+      // case "created":
+      // break;
       // default:
+    }
+
+    if (filtered) {
+      filter = where(
+        // Get a property key depending on its value
+        `${filtered}By.${Object.keys(who).find((key) => who[key])}`,
+        "==",
+        `${who.userId || who.username}`
+      );
     }
 
     // if (searchTerm) {
@@ -204,88 +210,100 @@ export const usePostStore = defineStore("post", () => {
   }
 
   const isLikedByMe = ref({});
+  const isSavedByMe = ref({});
 
-  // const actions = {
-  //   like: {
-  //     actedBies: "liked_bies",
-  //     actedByME: "likedByMe",
-  //     actPost: likePost,
-  //   },
-  //   favor: {
-  //     actedBies: "favored_bies",
-  //     actedByME: "favoredByMe",
-  //     actPost: favorPost,
-  //   },
-  // };
-  async function toggleActions({ postId, post }) {
+  async function toggleActions({ postId, post, type = "liked" } = {}) {
     if (!userStore.isLoggedIn) return;
 
+    let receiver, col, actedBy, actedAt, count;
+    switch (type) {
+      case "liked":
+        receiver = isLikedByMe;
+        col = "likes";
+        actedBy = "likedBy";
+        actedAt = "likedAt";
+        count = "likes";
+        break;
+      case "saved":
+        receiver = isSavedByMe;
+        col = "saves";
+        actedBy = "savedBy";
+        actedAt = "savedAt";
+        count = "saves";
+        break;
+    }
+
     let n;
-    if (isLikedByMe.value[post.id]) {
+    if (receiver.value[post.id]) {
       n = -1;
 
-      await deleteDoc(doc(db, "likes", isLikedByMe.value[post.id]));
+      await deleteDoc(doc(db, col, receiver.value[post.id]));
 
-      isLikedByMe.value[post.id] = false;
+      receiver.value[post.id] = false;
     } else {
       n = 1;
 
-      const docRef = await addDoc(collection(db, "likes"), {
+      const docRef = await addDoc(collection(db, col), {
         postId: post.id,
         image: post.image,
         description: post.description,
         createdBy: post.createdBy,
         createdAt: post.createdAt,
-        likedBy: {
+        [actedBy]: {
           avatar: userStore.user.photoURL,
           userId: userStore.user.uid,
           username: userStore.userDoc.username,
         },
-        likedAt: serverTimestamp(),
+        [actedAt]: serverTimestamp(),
       });
 
-      isLikedByMe.value[post.id] = docRef.id;
+      receiver.value[post.id] = docRef.id;
     }
 
     const postRef = doc(db, "posts", post.id);
 
     await updateDoc(postRef, {
-      likes: increment(n),
+      [count]: increment(n),
     });
   }
 
-  async function loadIsLikedByMe(_postId) {
+  async function loadIsActedByMe({ postId, type = "liked" } = {}) {
     if (!userStore.isLoggedIn) return;
 
+    let receiver, col, actedBy;
+    switch (type) {
+      case "liked":
+        receiver = isLikedByMe;
+        col = "likes";
+        actedBy = "likedBy";
+        break;
+      case "saved":
+        receiver = isSavedByMe;
+        col = "saves";
+        actedBy = "savedBy";
+        break;
+    }
+
     const q = query(
-      collection(db, "likes"),
-      where("likedBy.userId", "==", userStore.user.uid)
+      collection(db, col),
+      where(actedBy + ".userId", "==", userStore.user.uid)
     );
 
-    const postsLiked = await getDocs(q);
-    const likedByUser = postsLiked.docs.find((post) => {
-      return post.data().postId === _postId;
+    const postsActed = await getDocs(q);
+    const actedByUser = postsActed.docs.find((post) => {
+      return post.data().postId === postId;
     });
 
-    if (likedByUser) {
-      isLikedByMe.value[_postId] = likedByUser.id;
+    if (actedByUser) {
+      receiver.value[postId] = actedByUser.id;
     } else {
-      isLikedByMe.value[_postId] = false;
+      receiver.value[postId] = false;
     }
   }
 
-  function resetIsLikedByMe() {
-    isLikedByMe.value = {};
-    console.log("isLikedByMe", isLikedByMe);
-  }
-
-  // No need
-  // async function updateActionsCount(id) {
-  //   const post = list.value.find((post) => post.id === id);
-  //   const newCounts = await loadActionsCount(id);
-  //   for (const action in newCounts) {
-  //     post[action] = newCounts[action];
-  //   }
+  // function resetIsLikedByMe() {
+  //   isLikedByMe.value = {};
+  //   console.log("isLikedByMe", isLikedByMe);
   // }
 
   const commentStore = useCommentStore();
@@ -340,7 +358,8 @@ export const usePostStore = defineStore("post", () => {
     // searchResult,
     searchPosts,
     isLikedByMe,
-    loadIsLikedByMe,
-    resetIsLikedByMe,
+    isSavedByMe,
+    loadIsActedByMe,
+    // resetIsLikedByMe,
   };
 });
