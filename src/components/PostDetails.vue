@@ -2,7 +2,15 @@
   <TheModal @close="postStore.hidePostDetails">
     <!-- slot following -->
     <div class="postDetails">
-      <img class="postImage" :src="post.image" alt="" />
+      <div class="relative">
+        <img
+          v-if="post.image || post.images.length === 1"
+          class="postImage"
+          :src="post.image || post.images[0]"
+          alt=""
+        />
+        <ImageCarousel v-else :imagesUrl="postImages" />
+      </div>
 
       <div class="postMeta">
         <div class="author">
@@ -91,6 +99,8 @@
 </template>
 
 <script setup>
+const getUUID = () => window.crypto.randomUUID();
+
 import { ref, computed, onMounted } from "vue";
 import { useRoute, onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
 
@@ -98,6 +108,8 @@ import TheIcon from "./TheIcon.vue";
 import TheAvatar from "./TheAvatar.vue";
 import PostActions from "./PostActions.vue";
 import TheModal from "./TheModal.vue";
+import ImageCarousel from "./ImageCarousel.vue";
+
 //
 // import LikesList from "./LikesList.vue";
 
@@ -116,6 +128,14 @@ const props = defineProps({
     type: Boolean,
   },
 });
+
+const postImages = ref([]);
+if (props.post.images && props.post.images.length > 1) {
+  postImages.value = props.post.images.map((image) => ({
+    url: image,
+    id: getUUID(),
+  }));
+}
 
 const postId = computed(() => {
   if (props.isLikedOrSaved) {

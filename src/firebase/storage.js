@@ -8,6 +8,7 @@ export const uploadFile = async (file, path = "images/") => {
   if (!file) return;
 
   const { name, type } = file;
+
   const storageRef = ref(storage, path + name);
   const uploadTask = uploadBytesResumable(storageRef, file, {
     contentType: type,

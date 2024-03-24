@@ -188,11 +188,15 @@ export const usePostStore = defineStore("post", () => {
 
   const userStore = useUserStore();
 
-  async function uploadPost({ image, description }) {
-    const imageUrl = await uploadFile(image);
+  async function uploadPost({ images, description }) {
+    // const imageUrl = await uploadFile(image);
+
+    const imagesUrl = await Promise.all(
+      images.map((image) => uploadFile(image))
+    );
 
     await addPost({
-      image: imageUrl,
+      images: imagesUrl,
       description,
       createdBy: {
         displayName: userStore.user.displayName,

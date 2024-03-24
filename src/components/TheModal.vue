@@ -1,12 +1,21 @@
 <template>
   <Teleport to="body">
-    <div class="modalFrame z-50" :class="{ overlay: stack !== 1 }">
-      <div class="backdrop"></div>
-
+    <div
+      class="modalFrame z-50"
+      :class="{ overlay: stack !== 1 }"
+      @click.self="$emit('close')"
+    >
+      <div class="backdrop pointer-events-none"></div>
+      <button
+        class="text-center absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors"
+        @click="$emit('close')"
+      >
+        <FontAwesomeIcon
+          :icon="faXmark"
+          class="text-white leading-none fa-lg cursor-pointer"
+        />
+      </button>
       <div class="modalContent">
-        <button class="closeBtn" @click="$emit('close')">
-          <TheIcon icon="close" viewbox="-3 -3 60 60" />
-        </button>
         <slot></slot>
       </div>
     </div>
@@ -14,8 +23,11 @@
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+
 import { onMounted, onUnmounted } from "vue";
-import TheIcon from "./TheIcon.vue";
+// import TheIcon from "./TheIcon.vue";
 
 const props = defineProps({
   stack: {

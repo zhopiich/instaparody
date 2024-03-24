@@ -2,21 +2,11 @@
   <TheModal @close="postStore.toggleShowPostUpload(false)">
     <!-- slot following -->
     <div class="postUpload">
-      <label class="upload">
-        <img
-          v-if="imageObjUrl"
-          :src="imageObjUrl"
-          class="preview"
-          :class="{ previewBackground: imagePost !== null }"
-        />
-        <TheIcon v-else icon="upload-image" />
-        <input
-          type="file"
-          accept="image/*"
-          class="fileChooser"
-          @change="handleImageUpload"
-        />
-      </label>
+      <div class="w=[640px] h-[640px] relative">
+        <DragAndDropInput @edit-imagesFile="handleImagesPosted" />
+      </div>
+
+      <!--  -->
       <div class="postContent">
         <textarea
           placeholder="Write something..."
@@ -33,32 +23,29 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRoute } from "vue-router";
+// import { useRoute } from "vue-router";
 import TheModal from "./TheModal.vue";
 import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
+import DragAndDropInput from "./DragAndDropInput.vue";
 
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
 
-const route = useRoute();
+// const route = useRoute();
 
-const imageObjUrl = ref("");
+const imagesPosted = ref([]);
 
-const imagePost = ref(null);
 const descriptionPost = ref("");
 
-async function handleImageUpload(e) {
-  const imageFile = e.target.files[0];
-  if (imageFile) {
-    imageObjUrl.value = URL.createObjectURL(imageFile);
-    imagePost.value = imageFile;
-  }
+async function handleImagesPosted(ImagesFile) {
+  imagesPosted.value = ImagesFile;
 }
+
 function publishPost() {
   postStore.uploadPost(
     {
-      image: imagePost.value,
+      images: imagesPosted.value,
       description: descriptionPost.value,
     }
     // route.name
