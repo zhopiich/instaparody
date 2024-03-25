@@ -1,39 +1,41 @@
 <template>
-  <div class="w-full h-full grid" id="gridContainer">
-    <div class="relative overflow-hidden" id="messagesViewport">
-      <div class="h-full overflow-auto">
-        <div ref="messagesFlow" class="relative bg-zinc-200 min-h-full px-3">
-          <template v-for="(message, index) in list" :key="message.id">
-            <DateTag
-              v-if="message.at"
-              :prevMessageAt="list[index - 1]?.at.seconds"
-              :messageAt="message.at.seconds"
-              :isFromMe="message.from === me"
-              :isLast="index + 1 === list.length"
-              @last-mounted.once="scrollDrivedByDateTag"
-            />
-            <NewMessageIndicator
-              v-if="messageStore.firstNewMessageId === message.id"
-              :isMoreThanOne="messageStore.newMessages.length > 1"
-              @mounted.once="scrollDrivedByIndicator"
-            />
-            <MessageBubble
-              :message="message"
-              :isFromMe="message.from === me"
-              :isLast="index + 1 === list.length"
-              @last-mounted.once="scrollDrivedByMessage"
-            />
-          </template>
+  <MessageDragAndDrop v-slot="slotProps">
+    <div class="w-full h-full grid" id="chatRoom">
+      <div class="relative overflow-hidden" id="messagesViewport">
+        <div class="h-full overflow-auto">
+          <div ref="messagesFlow" class="relative bg-zinc-200 min-h-full px-3">
+            <template v-for="(message, index) in list" :key="message.id">
+              <DateTag
+                v-if="message.at"
+                :prevMessageAt="list[index - 1]?.at.seconds"
+                :messageAt="message.at.seconds"
+                :isFromMe="message.from === me"
+                :isLast="index + 1 === list.length"
+                @last-mounted.once="scrollDrivedByDateTag"
+              />
+              <NewMessageIndicator
+                v-if="messageStore.firstNewMessageId === message.id"
+                :isMoreThanOne="messageStore.newMessages.length > 1"
+                @mounted.once="scrollDrivedByIndicator"
+              />
+              <MessageBubble
+                :message="message"
+                :isFromMe="message.from === me"
+                :isLast="index + 1 === list.length"
+                @last-mounted.once="scrollDrivedByMessage"
+              />
+            </template>
 
-          <div class="h-2 absolute bottom-0" ref="bottomBeacon"></div>
+            <div class="h-2 absolute bottom-0" ref="bottomBeacon"></div>
+          </div>
         </div>
+        <ToBottomButton :isBottom="isBottom" :messagesFlow="messagesFlow" />
       </div>
-      <ToBottomButton :isBottom="isBottom" :messagesFlow="messagesFlow" />
-    </div>
 
-    <MessageInput />
-    <ImageViewer />
-  </div>
+      <MessageInput />
+      <ImageViewer />
+    </div>
+  </MessageDragAndDrop>
 </template>
 
 <script setup>
@@ -43,6 +45,7 @@ import NewMessageIndicator from "./NewMessageIndicator.vue";
 import MessageInput from "./MessageInput.vue";
 import ToBottomButton from "./TobottomButton.vue";
 import ImageViewer from "./ImageViewer.vue";
+import MessageDragAndDrop from "./MessageDragAndDrop.vue";
 
 import { ref, shallowRef, computed, onMounted, onUnmounted, watch } from "vue";
 
@@ -130,7 +133,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-#gridContainer {
+#chatRoom {
   /* grid-template-rows: 1fr 300px; */
   grid-template-rows: 1fr v-bind(heightInput + "px");
 }

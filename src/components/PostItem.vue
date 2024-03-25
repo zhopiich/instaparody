@@ -12,7 +12,7 @@
       />
       <div
         v-if="post.images && post.images.length > 1"
-        class="absolute right-0 bottom-0 bg-white/55 rounded backdrop-blur m-3 p-1"
+        class="absolute right-0 bottom-0 bg-white/35 rounded backdrop-blur m-3 p-1"
       >
         <FontAwesomeIcon :icon="faImages" class="text-2xl" />
       </div>

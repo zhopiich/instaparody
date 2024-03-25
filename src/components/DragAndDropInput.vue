@@ -2,6 +2,7 @@
   <div
     class="h-full w-full absolute top-0"
     @dragover="dragover"
+    @dragenter="dragenter"
     @dragleave="dragleave"
     @drop="drop"
   >
@@ -110,6 +111,7 @@ const addImages = () => {
   if (newImagesFile.length > 0) {
     let imagesArray = [];
     imagesArray.push(...newImagesFile);
+    if (!imagesArray.every((file) => file.type.startsWith("image/"))) return;
 
     imageFiles.value.push(...imagesArray);
 
@@ -127,6 +129,11 @@ watch(
     emit("editImagesFile", imageFiles.value);
   }
 );
+
+// const dragenter = (e) => {
+//   e.preventDefault();
+//   isDraggingOver.value = true;
+// };
 
 const dragover = (e) => {
   e.preventDefault();

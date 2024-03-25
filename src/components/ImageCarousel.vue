@@ -48,6 +48,22 @@
           {{ ">" }}
         </button>
       </div>
+
+      <div
+        v-if="isShowIndicators"
+        class="flex absolute top-4 w-full justify-center pointer-events-none"
+      >
+        <template v-for="(n, index) in images.length" :key="index">
+          <div
+            v-if="index === movement"
+            class="w-[6px] aspect-square rounded-full mr-1 last:mr-0 bg-sky-400"
+          ></div>
+          <div
+            v-else
+            class="w-[6px] aspect-square rounded-full mr-1 last:mr-0 bg-white"
+          ></div>
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -60,6 +76,7 @@ const props = defineProps({
   isDraggingOver: { type: Boolean },
   isDraggable: { type: Boolean, default: true },
   isFocusRequired: { type: Boolean, default: false },
+  isShowIndicators: { type: Boolean, default: true },
 });
 const images = toRef(props.imagesUrl);
 

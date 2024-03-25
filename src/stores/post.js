@@ -249,7 +249,7 @@ export const usePostStore = defineStore("post", () => {
 
       const docRef = await addDoc(collection(db, col), {
         postId: post.id,
-        image: post.image,
+        images: post.images,
         description: post.description,
         createdBy: post.createdBy,
         createdAt: post.createdAt,
@@ -305,10 +305,10 @@ export const usePostStore = defineStore("post", () => {
     }
   }
 
-  // function resetIsLikedByMe() {
-  //   isLikedByMe.value = {};
-  //   console.log("isLikedByMe", isLikedByMe);
-  // }
+  function resetIsActedByMe() {
+    isLikedByMe.value = {};
+    isSavedByMe.value = {};
+  }
 
   const commentStore = useCommentStore();
 
@@ -364,6 +364,6 @@ export const usePostStore = defineStore("post", () => {
     isLikedByMe,
     isSavedByMe,
     loadIsActedByMe,
-    // resetIsLikedByMe,
+    resetIsActedByMe,
   };
 });

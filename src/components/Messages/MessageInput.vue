@@ -8,6 +8,7 @@
     <label class="w-12 flex justify-center items-center">
       <FontAwesomeIcon :icon="faImage" class="fa-xl cursor-pointer" />
       <input
+        id="imageInput"
         type="file"
         accept="image/*"
         class="hidden"
@@ -22,7 +23,7 @@
     />
     <button
       class="btn btn-success"
-      @click="sendMessage(messageContent, imageToBeSent)"
+      @click="sendMessage(messageContent, messageStore.imageToBeSent)"
     >
       Send
     </button>
@@ -45,26 +46,24 @@ const messageStore = useMessageStore();
 
 const messageContent = ref(null);
 
-const imageToBeSent = ref(null);
-
 const handleImagePreview = (event) => {
   const imageFile = event.target.files[0];
   if (imageFile) {
     messageStore.setImagePreview(imageFile);
-    imageToBeSent.value = imageFile;
+    messageStore.setImageToBeSent(imageFile);
   }
 };
 
 const cancelSendImage = () => {
   messageStore.removeImagePreview();
-  imageToBeSent.value = null;
+  messageStore.removeImageToBeSent();
 };
 
 const sendMessage = async (content, image = null) => {
   messageStore.resetNewMessages();
 
   if (image) {
-    imageToBeSent.value = null;
+    messageStore.removeImageToBeSent();
   }
 
   messageContent.value = null;

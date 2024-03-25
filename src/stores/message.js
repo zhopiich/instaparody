@@ -456,6 +456,7 @@ export const useMessageStore = defineStore("message", () => {
 
   // Image
   const imagePreview = ref(null);
+  const imageToBeSent = ref(null);
 
   // const imagePost = ref(null);
 
@@ -467,6 +468,14 @@ export const useMessageStore = defineStore("message", () => {
 
   const removeImagePreview = () => {
     imagePreview.value = null;
+  };
+
+  const setImageToBeSent = (imageFile) => {
+    imageToBeSent.value = imageFile;
+  };
+
+  const removeImageToBeSent = () => {
+    imageToBeSent.value = null;
   };
 
   const isShowImageViewer = ref(false);
@@ -520,6 +529,9 @@ export const useMessageStore = defineStore("message", () => {
     isImageSending,
     setImagePreview,
     removeImagePreview,
+    setImageToBeSent,
+    removeImageToBeSent,
+    imageToBeSent,
     isShowImageViewer,
     imageViewedSrc,
     openImageViewer,

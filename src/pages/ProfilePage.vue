@@ -29,7 +29,7 @@
 
   <div class="tabContent relative">
     <p
-      class="absolute top-0 -translate-y-full pb-4 text-gray-500"
+      class="absolute top-0 w-fit whitespace-nowrap -translate-y-full pb-6 text-gray-500"
       v-if="currentTab === 'saved' && postsStatus !== 'loading'"
     >
       Only you can see what you've saved

@@ -1,6 +1,6 @@
 <template>
   <NavBarSliding>
-    <nav class="navbar" :class="{ showSearch: isShowSearch }">
+    <nav class="navbar z-10" :class="{ showSearch: isShowSearch }">
       <router-link class="logo" :class="{ hiddenSearch: isShowSearch }" to="/"
         ><img src="../assets/logo.svg"
       /></router-link>
@@ -138,7 +138,7 @@ const messageStore = useMessageStore();
 // });
 
 async function logout() {
-  postStore.resetIsLikedByMe();
+  postStore.resetIsActedByMe();
   // postStore.cleanPostsAll();
 
   messageStore.enterChat(false);

@@ -1,12 +1,27 @@
 <template>
   <div class="postItem">
     <!-- <img :src="post.image" alt="" width="100%" height="100%" style="background: #eee;" /> -->
-    <img
+    <!-- <img
       class="postImage"
       @click="handlePostDetails"
       :src="post.image"
       alt=""
-    />
+    /> -->
+
+    <div class="w-full aspect-square overflow-hidden relative">
+      <img
+        class="h-full w-full object-cover cursor-pointer"
+        @click="handlePostDetails"
+        :src="post.image || post.images[0]"
+        alt=""
+      />
+      <div
+        v-if="post.images && post.images.length > 1"
+        class="absolute right-0 bottom-0 bg-white/35 rounded backdrop-blur m-3 p-1"
+      >
+        <FontAwesomeIcon :icon="faImages" class="text-2xl" />
+      </div>
+    </div>
   </div>
   <PostDetails
     v-if="isShowPostDetails && post.id === postIdClicked"
@@ -16,6 +31,9 @@
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faImages } from "@fortawesome/free-solid-svg-icons";
+
 import { ref, computed, onMounted } from "vue";
 
 import TheAvatar from "../components/TheAvatar.vue";
