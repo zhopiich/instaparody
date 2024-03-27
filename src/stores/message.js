@@ -34,24 +34,37 @@ import { dateToRelative } from "../utils/date";
 export const useMessageStore = defineStore("message", () => {
   const meInfo = ref(null);
 
+  const isExtended = ref(false);
+
+  const toggle = (bool = null) => {
+    if (bool !== true && bool !== false) {
+      isExtended.value = !isExtended.value;
+    } else {
+      isExtended.value = bool;
+    }
+  };
+
   const contactsList = ref(null);
   const messagesList = ref(null);
 
   const isEnterChat = ref(false);
-  let currentChatId = null;
+  const currentChatId = ref(null);
 
   const setCurrentChat = (chatId) => {
-    currentChatId = chatId;
+    currentChatId.value = chatId;
   };
 
-  const selectedContactIndex = ref(null);
-  const setCurrentContact = (index) => {
-    selectedContactIndex.value = index;
-  };
+  // const selectedContactIndex = ref(null);
+  // const setCurrentContact = ({ index = null, chatId = null } = {}) => {
+  //   selectedContactIndex.value = index;
+  // };
 
-  const currentContact = computed(
-    () => contactsList.value[selectedContactIndex.value]
+  const currentContact = computed(() =>
+    contactsList.value.find((contact) => contact.chatId === currentChatId.value)
   );
+  // const currentContact = computed(
+  //   () => contactsList.value[selectedContactIndex.value]
+  // );
 
   const enterChat = (bool) => {
     isEnterChat.value = bool;
@@ -90,34 +103,43 @@ export const useMessageStore = defineStore("message", () => {
     return { isChatExists: list.length !== 0, chatId: list[0] };
   };
 
-  const addContact = async (_username) => {
-    const q = query(
-      collection(db, "users"),
-      where("username", "==", _username)
-    );
-
-    const querySnap = await getDocs(q);
-
-    if (querySnap.docs.length === 0) {
-      console.log("No Such User");
-      return;
-    }
-
+  const addContact = async ({
+    username = null,
+    userId = null,
+    avatar = null,
+    displayName = null,
+  } = {}) => {
     const me = getUserInfo(userStore.userDoc, userStore.user.uid);
-    const contact = getUserInfo(querySnap.docs[0].data(), querySnap.docs[0].id);
+    let contact;
+
+    if (!avatar || !displayName) {
+      const q = query(
+        collection(db, "users"),
+        where("username", "==", username)
+      );
+
+      const querySnap = await getDocs(q);
+
+      if (querySnap.docs.length === 0) {
+        console.log("No Such User");
+        return;
+      }
+
+      contact = getUserInfo(querySnap.docs[0].data(), querySnap.docs[0].id);
+    }
+    contact = { username, userId, avatar, displayName };
 
     //
-    const { isChatExists } = await findChat({
+    const { isChatExists, chatId } = await findChat({
       userId1: me.userId,
       userId2: contact.userId,
     });
 
     if (isChatExists) {
-      return;
+      return chatId;
     }
 
-    // const newChatRef =
-    await addChat({
+    const newChatRef = await addChat({
       // users: [me.userId, contact.userId],
       users: { [me.userId]: true, [contact.userId]: true },
       usersInfo: [{ ...me }, { ...contact }],
@@ -128,6 +150,8 @@ export const useMessageStore = defineStore("message", () => {
         [contact.userId]: null,
       },
     });
+
+    return newChatRef.id;
   };
 
   const loadContacts = async () => {
@@ -195,6 +219,8 @@ export const useMessageStore = defineStore("message", () => {
           lastMessage: chat.lastMessage,
           chatId: chat.id,
         }));
+
+        console.log(contactsList.value);
 
         // Update lastMessagesAt if there's new
         contactsList.value.forEach(async (contact) => {
@@ -347,7 +373,7 @@ export const useMessageStore = defineStore("message", () => {
     const messagesRef = collection(db, "messages");
 
     return await addDoc(
-      collection(messagesRef, currentChatId, "chat"),
+      collection(messagesRef, currentChatId.value, "chat"),
       removeNullValue(data)
     );
   };
@@ -358,7 +384,7 @@ export const useMessageStore = defineStore("message", () => {
   ) => {
     // const isImageSent = isImageSending.value;
 
-    const chatRef = doc(db, "messages", currentChatId);
+    const chatRef = doc(db, "messages", currentChatId.value);
 
     const messageDocRef = doc(chatRef, "chat", id);
 
@@ -390,7 +416,7 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   const deleteMessage = async (messageId, isLast = false) => {
-    const chatRef = doc(db, "messages", currentChatId);
+    const chatRef = doc(db, "messages", currentChatId.value);
 
     const messageDocRef = doc(chatRef, "chat", messageId);
 
@@ -422,7 +448,7 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   const updateLastSeeAt = async (time) => {
-    const chatRef = doc(db, "messages", currentChatId);
+    const chatRef = doc(db, "messages", currentChatId.value);
 
     await updateDoc(chatRef, {
       [`lastSeeAt.${userStore.user.uid}`]: time,
@@ -493,13 +519,15 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   return {
+    isExtended,
+    toggle,
     contactsList,
     messagesList,
     isEnterChat,
     currentContact,
     cleanChat,
     setCurrentChat,
-    setCurrentContact,
+    // setCurrentContact,
     enterChat,
     addContact,
     loadContacts,

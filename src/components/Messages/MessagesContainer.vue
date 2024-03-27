@@ -5,7 +5,7 @@
   >
     <div
       class="z-[2] h-14 absolute -top-14 w-full px-4 flex bg-amber-300 text-4xl hover:cursor-pointer"
-      @click="toggle"
+      @click="messageStore.toggle"
     >
       <div v-if="isEnterChat">
         <button class="btn" @click.stop="leaveChat">Back</button>
@@ -42,11 +42,7 @@ const messageStore = useMessageStore();
 const currentContact = computed(() => messageStore.currentContact);
 const isEnterChat = computed(() => messageStore.isEnterChat);
 
-const isExtended = ref(false);
-
-const toggle = () => {
-  isExtended.value = !isExtended.value;
-};
+const isExtended = computed(() => messageStore.isExtended);
 
 const leaveChat = () => {
   messageStore.enterChat(false);

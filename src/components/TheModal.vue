@@ -1,12 +1,13 @@
 <template>
   <Teleport to="body">
     <div
-      class="modalFrame z-50"
+      class="modalFrame"
       :class="{ overlay: stack !== 1 }"
       @click.self="$emit('close')"
     >
       <div class="backdrop pointer-events-none"></div>
       <button
+        v-if="isShowCloseBtn"
         class="text-center absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors"
         @click="$emit('close')"
       >
@@ -33,6 +34,10 @@ const props = defineProps({
   stack: {
     type: Number,
     default: 1,
+  },
+  isShowCloseBtn: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -69,7 +74,7 @@ body.modal-open {
 }
 
 .modalFrame.overlay {
-  z-index: v-bind(stack);
+  z-index: v-bind(stack * 10);
 }
 
 .backdrop {

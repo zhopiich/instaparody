@@ -1,11 +1,16 @@
 <template>
-  <div class="postActions">
+  <div class="postActions w-[80px]">
     <TheIcon
       icon="like"
       @click="postStore.toggleActions({ postId: post.id, post })"
       :fill="isLikedByMe ? '#FF3C3C' : 'none'"
       :stroke="isLikedByMe ? '#FF3C3C' : '#000000'"
-    /><span>{{ post.likes || "" }}</span>
+    /><span
+      v-if="post.likes"
+      class="hover:underline hover:cursor-pointer"
+      @click="showLikes(post.id)"
+      >{{ post.likes }}</span
+    >
     <TheIcon
       icon="comment"
       @click="
@@ -13,18 +18,20 @@
       "
       fill="none"
       stroke="#000000"
-    /><span>{{ post.comments || "" }}</span>
+    /><span v-if="post.comments">{{ post.comments }}</span>
     <TheIcon
       icon="favorite"
       @click="postStore.toggleActions({ postId: post.id, post, type: 'saved' })"
       :fill="isSavedByMe ? '#FFD12E' : 'none'"
       :stroke="isSavedByMe ? '#FFD12E' : '#000000'"
-    /><span>{{ post.saves || "" }}</span>
+    /><span v-if="post.saves">{{ post.saves }}</span>
   </div>
+  <LikesList v-if="isShowLikesList" @close="closeLikes" />
 </template>
 
 <script setup>
 import TheIcon from "./TheIcon.vue";
+import LikesList from "./LikesList.vue";
 
 import { ref, onMounted, computed, watchEffect, watch } from "vue";
 
@@ -46,6 +53,20 @@ const postStore = usePostStore();
 
 const isLikedByMe = computed(() => postStore.isLikedByMe[props.post.id]);
 const isSavedByMe = computed(() => postStore.isSavedByMe[props.post.id]);
+
+const isShowLikesList = ref(false);
+
+const showLikes = (postId) => {
+  isShowLikesList.value = true;
+
+  postStore.getUsersLike(postId);
+};
+
+const closeLikes = () => {
+  isShowLikesList.value = false;
+
+  postStore.cleanUsersLike();
+};
 
 onMounted(async () => {
   // if (postStore.isLikedByMe[props.post.id] === undefined) {

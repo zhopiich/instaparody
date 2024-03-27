@@ -2,7 +2,7 @@
   <div class="py-2 bg-purple-500 flex flex-col">
     <div
       v-for="(contact, index) in contacts"
-      @click="enterChat(contact.chatId, index)"
+      @click="enterChat(contact.chatId)"
     >
       <div class="flex gap-3 items-center p-2 py-1 cursor-pointer">
         <div class="avatar online">
@@ -50,10 +50,9 @@ import { ref, computed, onMounted } from "vue";
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-const enterChat = (chatId, indexContact) => {
+const enterChat = (chatId) => {
   messageStore.loadLastMessages(chatId);
   messageStore.setCurrentChat(chatId);
-  messageStore.setCurrentContact(indexContact);
   messageStore.enterChat(true);
 };
 

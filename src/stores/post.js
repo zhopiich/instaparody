@@ -257,6 +257,7 @@ export const usePostStore = defineStore("post", () => {
           avatar: userStore.user.photoURL,
           userId: userStore.user.uid,
           username: userStore.userDoc.username,
+          displayName: userStore.user.displayName,
         },
         [actedAt]: serverTimestamp(),
       });
@@ -338,6 +339,26 @@ export const usePostStore = defineStore("post", () => {
     leadPostsShown(postsResult);
   }
 
+  const usersLike = ref([]);
+
+  const getUsersLike = async (postId) => {
+    //
+    const colRef = collection(db, "likes");
+    const q = query(colRef, where("postId", "==", postId));
+
+    const querySnapshot = await getDocs(q);
+
+    // const results = querySnapshot.docs.map((doc) => ({
+    //   ...doc.data(),
+    //   id: doc.id,
+    // }));
+    usersLike.value = querySnapshot.docs.map((doc) => doc.data().likedBy);
+  };
+
+  const cleanUsersLike = () => {
+    usersLike.value = [];
+  };
+
   return {
     isShowPostUpload,
     toggleShowPostUpload,
@@ -365,5 +386,8 @@ export const usePostStore = defineStore("post", () => {
     isSavedByMe,
     loadIsActedByMe,
     resetIsActedByMe,
+    usersLike,
+    getUsersLike,
+    cleanUsersLike,
   };
 });
