@@ -359,6 +359,38 @@ export const usePostStore = defineStore("post", () => {
     usersLike.value = [];
   };
 
+  const infoUserCard = ref({});
+
+  const getPostsByUser = async (_userId) => {
+    if (infoUserCard.value.userId && infoUserCard.value.userId === _userId)
+      return;
+
+    infoUserCard.value = {};
+    infoUserCard.value.userId = _userId;
+
+    const userRef = doc(db, "users", _userId);
+
+    const postsRef = collection(db, "posts");
+    const queryPosts = query(
+      postsRef,
+      where("createdBy.userId", "==", _userId),
+      orderBy("createdAt", "desc")
+    );
+
+    const [userSnap, postsSnap] = await Promise.all([
+      getDoc(userRef),
+      getDocs(queryPosts),
+    ]);
+
+    infoUserCard.value.intro = userSnap.data().intro;
+
+    const posts = postsSnap.docs.map((doc) => doc.data());
+    infoUserCard.value.countPosts = posts.length;
+    infoUserCard.value.last3Posts = posts
+      .slice(0, 3)
+      .map((post) => post.image || post.images[0]);
+  };
+
   return {
     isShowPostUpload,
     toggleShowPostUpload,
@@ -389,5 +421,7 @@ export const usePostStore = defineStore("post", () => {
     usersLike,
     getUsersLike,
     cleanUsersLike,
+    infoUserCard,
+    getPostsByUser,
   };
 });

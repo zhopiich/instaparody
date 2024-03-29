@@ -17,26 +17,24 @@
       <div class="grow overflow-auto">
         <div>
           <div v-for="user in list">
-            <div class="flex gap-3 items-center px-4 py-2">
-              <div class="avatar">
-                <div class="w-14 rounded-full">
-                  <router-link :to="profilePageURL(user.username)">
-                    <img :src="user.avatar" class="cursor-pointer" />
-                  </router-link>
-                </div>
-              </div>
-
-              <div class="grow flex flex-col *:cursor-pointer">
-                <router-link :to="profilePageURL(user.username)">
-                  <p class="font-bold">{{ user.displayName }}</p>
-                  <p class="text-slate-500">@{{ user.username }}</p>
-                </router-link>
+            <div class="flex items-center justify-between px-4 py-2">
+              <div class="">
+                <UserPlate
+                  :isCardFixed="true"
+                  :user="{
+                    username: user.username,
+                    avatar: user.avatar,
+                    displayName: user.displayName,
+                    userId: user.userId,
+                  }"
+                  :widthAvatar="14"
+                />
               </div>
 
               <div class="flex items-center">
                 <div
                   v-if="user.userId !== userStore.user.uid"
-                  class="px-4 py-[7px] bg-sky-500 rounded-md"
+                  class="px-4 py-[7px] bg-sky-500 rounded-md cursor-pointer"
                   @click="
                     enterChat({
                       username: user.username,
@@ -63,6 +61,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import TheModal from "./TheModal.vue";
+import UserPlate from "./UserPlate.vue";
 
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();

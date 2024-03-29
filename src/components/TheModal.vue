@@ -74,7 +74,7 @@ body.modal-open {
 }
 
 .modalFrame.overlay {
-  z-index: v-bind(stack * 10);
+  /* z-index: v-bind(stack + 10); */
 }
 
 .backdrop {

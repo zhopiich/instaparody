@@ -20,13 +20,23 @@
 
     <div class="postInfo">
       <div class="postMeta">
-        <TheAvatar :src="post?.createdBy?.avatar" />
-        <!-- To Be A Link to Profile Page -->
-        <!-- <span>{{ post?.createdBy?.displayName }}</span> -->
+        <!-- <TheAvatar :src="post?.createdBy?.avatar" />
 
         <router-link :to="'/' + post?.createdBy?.username"
           ><span>{{ post?.createdBy?.displayName }}</span></router-link
-        >
+        > -->
+
+        <div class="userPlate">
+          <UserPlate
+            :user="{
+              username: post?.createdBy?.username,
+              avatar: post?.createdBy?.avatar,
+              displayName: post?.createdBy?.displayName,
+              userId: post?.createdBy?.userId,
+            }"
+            :widthAvatar="12"
+          />
+        </div>
 
         <span class="postPubDate">
           {{ dateToRelative(post.createdAt?.seconds) }}
@@ -55,6 +65,7 @@ import { ref, computed, onMounted, toRefs } from "vue";
 import TheAvatar from "../components/TheAvatar.vue";
 import PostActions from "../components/PostActions.vue";
 import PostDetails from "./PostDetails.vue";
+import UserPlate from "./UserPlate.vue";
 
 import { dateToRelative } from "../utils/date";
 
@@ -113,15 +124,15 @@ onMounted(() => {
 .postMeta {
   display: grid;
   grid-template-areas:
-    "avatar name actions"
+    "userPlate userPlate actions"
     "pubDate pubDate actions";
   grid-template-columns: 42px 1fr 3fr;
   row-gap: 6px;
   min-height: 82px;
 }
 
-.postMeta .avatar {
-  grid-area: avatar;
+.userPlate {
+  grid-area: userPlate;
 }
 
 .postMeta .postPubDate {

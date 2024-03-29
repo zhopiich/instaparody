@@ -1,0 +1,123 @@
+<template>
+  <TheTooltip
+    :bottom="bottom"
+    :right="right"
+    :dimensions="dimensions"
+    :isFixed="isFixed"
+  >
+    <div
+      class="w-[370px] bg-white flex flex-col rounded-lg overflow-hidden shadow-xl"
+    >
+      <div class="flex gap-4 px-4 pt-4">
+        <div class="avatar">
+          <div class="w-16 rounded-full">
+            <router-link :to="'/' + user.username">
+              <img :src="user.avatar" class="cursor-pointer" />
+            </router-link>
+          </div>
+        </div>
+        <div
+          class="grow flex flex-col justify-center items-start *:cursor-pointer"
+        >
+          <router-link :to="'/' + user.username">
+            <p class="font-bold">{{ user.displayName }}</p>
+            <p class="text-slate-500">@{{ user.username }}</p>
+          </router-link>
+        </div>
+        <div class="flex flex-col justify-center items-center px-4">
+          <p class="font-bold text-lg">{{ countPosts }}</p>
+          <p class="text-slate-600">
+            {{ "post" + `${countPosts !== 1 ? "s" : ""}` }}
+          </p>
+        </div>
+      </div>
+
+      <div class="px-4 min-h-6 flex w-full items-center">
+        <p class="py-6">{{ intro }}</p>
+      </div>
+
+      <!-- <div class="flex gap-1"> -->
+      <div class="grid grid-cols-3 gap-1 *:aspect-square">
+        <!-- <div v-for="image in last3Posts" class="grow basis-0 aspect-square"> -->
+        <div v-if="!last3Posts || !last3Posts.length" v-for="n in 3">
+          <div class="w-full h-full bg-slate-400"></div>
+        </div>
+        <div v-else v-for="image in last3Posts">
+          <img class="w-full h-full object-cover" :src="image" alt="" />
+        </div>
+      </div>
+
+      <div
+        class="flex justify-center items-center *:cursor-pointer *:select-none"
+      >
+        <router-link
+          v-if="isMe"
+          to="/profile/edit"
+          class="m-4 rounded-lg py-1.5 grow *:text-center bg-neutral-100"
+        >
+          <p class="text-black">Edit profile</p>
+        </router-link>
+
+        <div
+          v-else
+          class="m-4 rounded-lg py-1.5 grow *:text-center bg-sky-500"
+          @click="
+            enterChat({
+              username: user.username,
+              userId: user.userId,
+              avatar: user.avatar,
+              displayName: user.displayName,
+            })
+          "
+        >
+          <p class="text-white">Contact</p>
+        </div>
+      </div>
+    </div>
+  </TheTooltip>
+</template>
+
+<script setup>
+import TheTooltip from "./TheTooltip.vue";
+
+import { ref, computed, onMounted, toRefs, onBeforeMount } from "vue";
+
+import { usePostStore } from "../stores/post";
+const postStore = usePostStore();
+
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
+
+import { useMessageStore } from "../stores/message";
+const messageStore = useMessageStore();
+
+const props = defineProps(["isFixed", "bottom", "right", "dimensions", "user"]);
+
+const isMe = props.user.userId === userStore.user.uid;
+
+//
+const last3Posts = computed(() => postStore.infoUserCard.last3Posts);
+const countPosts = computed(() => postStore.infoUserCard.countPosts);
+const intro = computed(() => postStore.infoUserCard.intro);
+
+const enterChat = async ({ ...userInfo }) => {
+  const chatId = await messageStore.addContact({ ...userInfo });
+
+  // emit("close");
+  // if (postStore.isShowPostDetails) {
+  //   postStore.hidePostDetails();
+  // }
+
+  messageStore.loadLastMessages(chatId);
+  messageStore.setCurrentChat(chatId);
+
+  messageStore.toggle(true);
+  messageStore.enterChat(true);
+};
+
+onBeforeMount(() => {
+  postStore.getPostsByUser(props.user.userId);
+});
+</script>
+
+<style scoped></style>
