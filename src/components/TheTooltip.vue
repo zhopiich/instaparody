@@ -6,7 +6,7 @@
     :class="[
       isFixed ? 'fixed' : 'absolute',
       bottom < heightTooltip ? 'down' : 'up',
-      right < widthTooltip ? 'right-0' : 'left',
+      right < widthTooltip ? 'right-4' : 'left',
     ]"
   >
     <slot></slot>

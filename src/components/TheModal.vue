@@ -1,33 +1,37 @@
 <template>
-  <Teleport to="body">
-    <div
-      class="modalFrame"
-      :class="{ overlay: stack !== 1 }"
-      @click.self="$emit('close')"
+  <!-- <Teleport to="body"> -->
+  <div
+    class="modalFrame"
+    :class="{ overlay: stack !== 1 }"
+    @click.self="$emit('close')"
+  >
+    <Transition name="fade">
+      <div v-if="isBraced" class="backdrop pointer-events-none"></div
+    ></Transition>
+    <button
+      v-if="isShowCloseBtn"
+      class="text-center absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors"
+      @click="$emit('close')"
     >
-      <div class="backdrop pointer-events-none"></div>
-      <button
-        v-if="isShowCloseBtn"
-        class="text-center absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors"
-        @click="$emit('close')"
-      >
-        <FontAwesomeIcon
-          :icon="faXmark"
-          class="text-white leading-none fa-lg cursor-pointer"
-        />
-      </button>
-      <div class="modalContent">
+      <FontAwesomeIcon
+        :icon="faXmark"
+        class="text-white leading-none fa-lg cursor-pointer"
+      />
+    </button>
+    <Transition name="zoom">
+      <div v-if="isBraced" class="modalContent">
         <slot></slot>
       </div>
-    </div>
-  </Teleport>
+    </Transition>
+  </div>
+  <!-- </Teleport> -->
 </template>
 
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
-import { onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 // import TheIcon from "./TheIcon.vue";
 
 const props = defineProps({
@@ -43,13 +47,22 @@ const props = defineProps({
 
 defineEmits(["close"]);
 
+const isFirst = ref(false);
+
+const isBraced = ref(false);
+
+// div.classList.contains('secondary');
+
 onMounted(() => {
-  if (props.stack === 1) {
+  if (!document.body.classList.contains("modal-open")) {
+    isFirst.value = true;
     document.body.classList.add("modal-open");
   }
+
+  isBraced.value = true;
 });
 onUnmounted(() => {
-  if (props.stack === 1) {
+  if (isFirst.value) {
     document.body.classList.remove("modal-open");
   }
 });
@@ -61,6 +74,29 @@ body.modal-open {
 }
 </style>
 <style scoped>
+.zoom-enter-active {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.zoom-enter-from {
+  transform: scale(0.98);
+}
+.zoom-enter-to {
+  transform: scale(1);
+}
+
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from {
+  opacity: 0.5;
+}
+.fade-enter-to {
+  opacity: 1;
+}
+
+/*  */
 .modalFrame {
   position: fixed;
   width: 100vw;
@@ -70,12 +106,12 @@ body.modal-open {
   top: 0;
   display: grid;
   place-items: center;
-  z-index: 10;
+  z-index: 60;
 }
 
-.modalFrame.overlay {
-  /* z-index: v-bind(stack + 10); */
-}
+/* .modalFrame.overlay {
+  z-index: v-bind(stack + 10);
+} */
 
 .backdrop {
   background: rgba(0, 0, 0, 0.56);

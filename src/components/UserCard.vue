@@ -6,7 +6,7 @@
     :isFixed="isFixed"
   >
     <div
-      class="w-[370px] bg-white flex flex-col rounded-lg overflow-hidden shadow-xl"
+      class="w-[370px] bg-white flex flex-col rounded-lg overflow-hidden shadow-xl border border-neutral-200"
     >
       <div class="flex gap-4 px-4 pt-4">
         <div class="avatar">

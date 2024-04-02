@@ -13,32 +13,40 @@
       </div>
 
       <div class="postMeta">
-        <div class="author">
-          <TheAvatar :src="post?.createdBy?.avatar" />
-          <span>{{ post?.createdBy?.displayName }}</span>
+        <div class="p-4 border-b">
+          <UserPlate
+            :isCardFixed="true"
+            :user="{
+              username: post.createdBy.username,
+              avatar: post.createdBy.avatar,
+              displayName: post.createdBy.displayName,
+              userId: post.createdBy.userId,
+            }"
+            :widthAvatar="14"
+          />
+
+          <pre class="postDesc mt-2"
+            >{{ post.description }}
+        </pre
+          >
         </div>
-        <pre class="postDesc"
-          >{{ post.description }}
-        </pre>
 
         <div v-if="!userStore.isLoggedIn">
           **Please log in to see comments**
         </div>
-        <div v-else class="comments">
+        <div v-else class="comments p-4">
           <div class="comment" v-for="comment in comments">
-            <TheAvatar :src="comment.createdBy?.avatar" />
-
-            <!-- <span
-              class="user"
-              @click="pushProfilePage(comment.createdBy.username)"
-              >{{ comment.createdBy?.displayName }}</span
-            > -->
-
-            <router-link :to="'/' + comment?.createdBy?.username"
-              ><span class="user">{{
-                comment.createdBy?.displayName
-              }}</span></router-link
-            >
+            <UserPlate
+              :isCardFixed="true"
+              :user="{
+                username: comment.createdBy.username,
+                avatar: comment.createdBy.avatar,
+                displayName: comment.createdBy.displayName,
+                userId: comment.createdBy.userId,
+              }"
+              :isUsernameShown="false"
+              :widthAvatar="10"
+            />
 
             <span class="commentDate">{{
               dateToRelative(comment.createdAt?.seconds, "short")
@@ -61,7 +69,7 @@
           @close="show2ndModal = false"
         ></LikesList> -->
         <!--  -->
-        <div class="actions">
+        <div class="actions p-4">
           <PostActions v-if="!isLikedOrSaved" :post="post" />
           <span class="postPubDate">
             {{ dateToRelative(post.createdAt?.seconds) }}
@@ -109,6 +117,7 @@ import TheAvatar from "./TheAvatar.vue";
 import PostActions from "./PostActions.vue";
 import TheModal from "./TheModal.vue";
 import ImageCarousel from "./ImageCarousel.vue";
+import UserPlate from "./UserPlate.vue";
 
 //
 // import LikesList from "./LikesList.vue";
@@ -144,10 +153,6 @@ const postId = computed(() => {
     return props.post.id;
   }
 });
-
-// onMounted(() => {
-//   console.log("details!!", props.post.id);
-// });
 
 // Required even if access in template
 const userStore = useUserStore();
@@ -185,14 +190,6 @@ onBeforeRouteLeave(() => {
   console.log("RouteLeave in postDetails");
   postStore.toggleShowPostDetails(false);
 });
-
-// const router = useRouter();
-
-// const pushProfilePage = (username) => {
-//   router.push("/" + username);
-// };
-//
-// const show2ndModal = ref(false);
 </script>
 
 <style scoped>
@@ -211,11 +208,11 @@ onBeforeRouteLeave(() => {
 }
 
 .postMeta {
-  padding: 24px;
-  padding-top: 36px;
+  /* padding: 24px; */
+  /* padding-top: 36px; */
   display: grid;
   align-items: start;
-  grid-template-rows: max-content max-content 1fr max-content;
+  grid-template-rows: max-content 1fr max-content;
   max-height: 100%;
   height: 100%;
 }
@@ -229,14 +226,14 @@ onBeforeRouteLeave(() => {
 .postDesc {
   width: 100%;
   white-space: pre-wrap;
-  margin-top: 24px;
+  /* margin-top: 24px; */
 }
 
 .comments {
   display: grid;
   grid-template-columns: 1fr;
   grid-auto-rows: max-content;
-  grid-gap: 28px;
+  grid-gap: 14px;
   align-items: start;
   overflow-y: auto;
   height: 100%;
@@ -254,7 +251,7 @@ onBeforeRouteLeave(() => {
   grid-template-columns: 34px 1fr 1fr;
   align-items: center;
   column-gap: 10px;
-  row-gap: 14px;
+  row-gap: 4px;
 }
 
 .commentDate {
@@ -283,9 +280,9 @@ onBeforeRouteLeave(() => {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   align-items: center;
-  margin: 20px -24px 0px -24px;
-  padding: 20px 24px 0 24px;
-  row-gap: 16px;
+  /* margin: 20px -24px 0px -24px; */
+  /* padding: 20px 24px 0 24px; */
+  row-gap: 12px;
 }
 
 .postActions > :deep(svg) {

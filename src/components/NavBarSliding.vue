@@ -7,10 +7,13 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 
+const emits = defineEmits(["turn"]);
+
 // Select the element after mounted
 let navbar = null;
 
 let lastYPosition = 0;
+let lastDirection = false;
 
 const navbarPosition = ref(0);
 
@@ -65,6 +68,12 @@ function onScroll() {
     //   navbar.classList.remove("noShadow");
     // }
     navbarPosition.value = navbarPosition.value + displacement;
+
+    const direction = displacement >= 0;
+    if (lastDirection !== direction) {
+      emits("turn", direction);
+      lastDirection = direction;
+    }
   }
 }
 

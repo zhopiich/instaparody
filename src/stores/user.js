@@ -23,6 +23,8 @@ import {
   doc,
   deleteDoc,
   updateDoc,
+  and,
+  or,
 } from "firebase/firestore";
 
 //
@@ -120,6 +122,40 @@ export const useUserStore = defineStore("user", () => {
 
   const isLoggedIn = computed(() => user.value && user.value !== "guest");
 
+  // Search
+  const results = ref(null);
+
+  const cleanResults = () => {
+    results.value = null;
+  };
+
+  const search = async (term) => {
+    if (results) results.value = null;
+
+    const usersRef = collection(db, "users");
+
+    const queryUsers = query(
+      usersRef,
+      or(
+        and(
+          where("displayName", ">=", term),
+          where("displayName", "<=", term + "\uf8ff")
+        ),
+        and(
+          where("username", ">=", term),
+          where("username", "<=", term + "\uf8ff")
+        )
+      )
+    );
+
+    const usersSnap = await getDocs(queryUsers);
+
+    results.value = usersSnap.docs.map((doc) => ({
+      ...doc.data(),
+      userId: doc.id,
+    }));
+  };
+
   return {
     user,
     userDoc,
@@ -129,5 +165,8 @@ export const useUserStore = defineStore("user", () => {
     initializeAuthListener,
     initializeUser,
     isLoggedIn,
+    results,
+    cleanResults,
+    search,
   };
 });

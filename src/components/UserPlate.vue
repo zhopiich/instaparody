@@ -1,24 +1,33 @@
 <template>
   <div
     ref="target"
-    class="flex gap-3 relative"
-    @mouseenter="mouseenter"
-    @mouseleave="mouseleave"
+    class="flex items-center w-full gap-3 relative"
+    @mouseenter="isShowCard ? mouseenter() : null"
+    @mouseleave="isShowCard ? mouseleave() : null"
   >
     <div class="avatar">
       <div class="rounded-full" :class="`w-${widthAvatar}`">
-        <router-link :to="profilePageURL(user.username)">
+        <router-link v-if="isLink" :to="profilePageURL(user.username)">
           <img :src="user.avatar" class="cursor-pointer" />
         </router-link>
+
+        <img v-else :src="user.avatar" />
       </div>
     </div>
-    <div class="grow flex flex-col justify-center items-start *:cursor-pointer">
-      <router-link :to="profilePageURL(user.username)">
-        <p class="font-bold">{{ user.displayName }}</p>
-        <p v-if="isUsernameShown" class="text-slate-500">
-          @{{ user.username }}
+
+    <div
+      class="grow flex flex-col justify-center items-start *:whitespace-nowrap"
+    >
+      <router-link v-if="isLink" :to="profilePageURL(user.username)">
+        <p class="font-bold cursor-pointer hover:text-zinc-400">
+          {{ user.displayName }}
         </p>
       </router-link>
+
+      <p v-else class="font-bold">
+        {{ user.displayName }}
+      </p>
+      <p v-if="isUsernameShown" class="text-slate-500">@{{ user.username }}</p>
     </div>
 
     <Transition>
@@ -38,6 +47,7 @@
 import UserCard from "./UserCard.vue";
 
 defineProps({
+  isShowCard: { type: Boolean, default: true },
   isCardFixed: { type: Boolean, default: false },
   user: { type: Object },
   isUsernameShown: { type: Boolean, default: true },
@@ -45,6 +55,7 @@ defineProps({
     type: Number,
     default: 14,
   },
+  isLink: { type: Boolean, default: true },
 });
 
 const profilePageURL = (username) => {
@@ -52,7 +63,7 @@ const profilePageURL = (username) => {
 };
 
 //
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 
 const target = ref(null);
 
@@ -104,6 +115,13 @@ const mouseleave = () => {
     isShowTooltip.value = false;
   }
 };
+
+onBeforeUnmount(() => {
+  if (delay) {
+    clearTimeout(delay);
+    delay = null;
+  }
+});
 </script>
 
 <style scoped>

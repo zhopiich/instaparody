@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <div class="postInfo">
+    <div class="postInfo px-6 py-4">
       <div class="postMeta">
         <!-- <TheAvatar :src="post?.createdBy?.avatar" />
 
@@ -99,10 +99,6 @@ onMounted(() => {
   border-radius: 8px;
   /* width: 483px; */
   @apply max-lg:w-80 lg:w-[430px];
-}
-
-.postInfo {
-  padding: 24px;
 }
 
 /* .postImage {

@@ -1,43 +1,14 @@
 <template>
-  <NavBarSliding>
+  <NavBarSliding @turn="changeDirection">
     <nav class="navbar z-10" :class="{ showSearch: isShowSearch }">
       <router-link class="logo" :class="{ hiddenSearch: isShowSearch }" to="/"
         ><img src="../assets/logo.svg"
       /></router-link>
-
-      <div class="searchInput" :class="{ hiddenSearch: !isShowSearch }">
-        <input
-          type="text"
-          v-model="searchTerm"
-          placeholder="isSubmerged"
-          @keyup.enter="leadToResultPage(searchTerm)"
-        />
-        <div class="searchIcon">
-          <TheIcon icon="search" />
-        </div>
-        <button
-          v-if="searchTerm !== ''"
-          class="cleanSearchBtn hidden"
-          @click="cleanSearchTerm"
-        >
-          <TheIcon icon="close-round" />
-        </button>
-        <TheButton
-          v-else
-          class="cancelSearchBtn"
-          color="immerse"
-          @click="toggleShowSearch(false)"
-        >
-          Cancel
-        </TheButton>
-      </div>
-      <button
-        class="searchBtn"
-        :class="{ hiddenSearch: isShowSearch }"
-        @click="toggleShowSearch(true)"
-      >
-        <TheIcon icon="search" />
-      </button>
+      <Search
+        :isShowSearch="isShowSearch"
+        :direction="direction"
+        @toggle="toggleShowSearch"
+      />
 
       <div class="navItems">
         <button
@@ -78,6 +49,7 @@ import TheAvatar from "./TheAvatar.vue";
 import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
 import NavBarSliding from "./NavBarSliding.vue";
+import Search from "./Search.vue";
 
 // import { userListener, getUser, updateUser } from "../firebase/firestore.js";
 
@@ -96,18 +68,6 @@ function publishPost() {
 const isShowSearch = ref(false);
 function toggleShowSearch(bool) {
   isShowSearch.value = bool;
-}
-
-const searchTerm = ref("");
-const cleanSearchTerm = () => {
-  searchTerm.value = "";
-};
-
-async function leadToResultPage(term) {
-  router.push({
-    name: "search_result",
-    query: { q: term },
-  });
 }
 
 import { useUserStore } from "../stores/user";
@@ -146,6 +106,12 @@ async function logout() {
   await logOut();
   router.push("/login");
 }
+
+const direction = ref(null);
+
+const changeDirection = (bool) => {
+  direction.value = bool;
+};
 </script>
 
 <style scoped>
@@ -165,9 +131,9 @@ async function logout() {
     grid-template-columns: auto 1fr auto;
   }
 
-  .searchBtn.hiddenSearch {
+  /* .searchBtn.hiddenSearch {
     @apply hidden;
-  }
+  } */
 }
 
 @screen max-sm {
@@ -185,59 +151,10 @@ async function logout() {
   height: 38px;
 }
 
-.searchInput {
-  position: relative;
-  justify-self: center;
-  margin: 0;
-  @apply max-lg:max-w-[351px] lg:w-[430px];
-}
-
-.searchInput input {
-  height: 40px;
-  padding: 0 12px 0 38px;
-  background: #f1f1f1;
-  border-radius: 12px;
-}
-
-.searchIcon {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.cleanSearchBtn,
-.cancelSearchBtn {
-  position: absolute;
-  background: none;
-  border: none;
-  right: 6px;
-  top: 0;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.cancelSearchBtn {
-  @apply sm:hidden;
-}
-
 :deep(.button.immerse) {
   color: rgb(214, 50, 50);
   padding: 6px;
   font-size: 14px;
-}
-
-.searchBtn {
-  justify-self: end;
-  margin-right: 18px;
-  @apply h-10 w-10 rounded-xl border border-solid border-neutral-500 sm:hidden;
 }
 
 .navItems {

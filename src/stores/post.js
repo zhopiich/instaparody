@@ -92,14 +92,6 @@ export const usePostStore = defineStore("post", () => {
 
     const colRef = collection(db, col);
 
-    // const q = query(
-    //   ...[
-    //     colRef,
-    //     orderBy("description"),
-    //     startAt(searchTerm),
-    //     endAt(searchTerm + "\uf8ff"),
-    //   ].filter((i) => i)
-    // );
     const q = query(
       ...[
         colRef,
