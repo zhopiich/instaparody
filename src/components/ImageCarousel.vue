@@ -1,19 +1,18 @@
 <template>
-  <div class="w-full h-full absolute top-0 overflow-hidden">
-    <div class="flex" id="images">
+  <div
+    class="w-full h-full absolute top-0 overflow-hidden"
+    ref="imageViewport"
+    id="imageViewport"
+  >
+    <div class="" id="images">
       <Transition>
-        <div
-          :class="[
-            movement % 2 === 0 ? 'movementEven' : 'movementOdd',
-            // `max-w-[${widthImage * images.length}px]`,
-          ]"
-        >
-          <TransitionGroup name="fade" tag="ul" class="h-[640px]">
+        <div :class="[movement % 2 === 0 ? 'movementEven' : 'movementOdd']">
+          <TransitionGroup name="slide" tag="ul">
             <div
               v-for="(image, index) in images"
-              class="aspect-square relative inline-block"
-              :class="`h-[${widthImage}px]`"
+              class="relative inline-block"
               :key="image.id"
+              id="image"
             >
               <img
                 :src="image.url"
@@ -32,26 +31,26 @@
     >
       <div
         v-if="movement > 0"
-        class="left-0 absolute h-full w-fit flex items-center ml-2"
+        class="left-0 absolute h-full w-fit flex items-center ml-4"
         :class="{ 'pointer-events-auto': !isDraggingOver }"
       >
-        <button @click="prev" class="btn btn-circle cursor-pointer">
-          {{ "<" }}
+        <button @click="prev" class="btn btn-circle btn-sm cursor-pointer">
+          <FontAwesomeIcon :icon="faAngleLeft" class="" />
         </button>
       </div>
       <div
         v-if="movement < images.length - 1"
-        class="right-0 absolute h-full w-fit flex items-center mr-2"
+        class="right-0 absolute h-full w-fit flex items-center mr-4"
         :class="{ 'pointer-events-auto': !isDraggingOver }"
       >
-        <button @click="next" class="btn btn-circle cursor-pointer">
-          {{ ">" }}
+        <button @click="next" class="btn btn-circle btn-sm cursor-pointer">
+          <FontAwesomeIcon :icon="faAngleRight" class="" />
         </button>
       </div>
 
       <div
         v-if="isShowIndicators"
-        class="flex absolute top-4 w-full justify-center pointer-events-none"
+        class="flex absolute bottom-4 w-full justify-center pointer-events-none"
       >
         <template v-for="(n, index) in images.length" :key="index">
           <div
@@ -69,7 +68,12 @@
 </template>
 
 <script setup>
-import { ref, toRef, computed, onMounted, watch } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faAngleRight, faAngleLeft } from "@fortawesome/free-solid-svg-icons";
+
+import { ref, toRef, computed, onMounted, onUnmounted, watch } from "vue";
+
+const imageViewport = ref(null);
 
 const props = defineProps({
   imagesUrl: { type: Array },
@@ -82,7 +86,15 @@ const images = toRef(props.imagesUrl);
 
 const lengthimages = computed(() => images.value.length);
 
-const widthImage = 640;
+const widthImage = ref(0);
+const heightImage = ref(0);
+
+const resizeObserver = new ResizeObserver((entries) => {
+  const entry = entries[0];
+  const { width, height } = entry.contentRect;
+  widthImage.value = width;
+  heightImage.value = height;
+});
 
 const movement = ref(0);
 const movementOdd = computed(() => {
@@ -112,8 +124,6 @@ watch(
     if (oldVal !== 0 && newVal > oldVal) {
       movement.value = oldVal;
     }
-
-    // emit("inputChanged", imageFiles.value);
   }
 );
 
@@ -124,11 +134,24 @@ if (props.isFocusRequired) {
     emit("switchFocus", newVal);
   });
 }
+
+onMounted(() => {
+  resizeObserver.observe(imageViewport.value);
+});
+
+onUnmounted(() => {
+  resizeObserver.disconnect();
+});
 </script>
 
 <style scoped>
 #images {
   width: v-bind(widthImage * lengthimages + "px");
+}
+
+#image {
+  width: v-bind(widthImage + "px");
+  height: v-bind(heightImage + "px");
 }
 
 .movementOdd {
@@ -139,17 +162,11 @@ if (props.isFocusRequired) {
   transform: translateX(v-bind(-widthImage * movementEven + "px"));
 }
 
-.fade-move {
+.slide-move {
   transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  /*   opacity: 0; */
-  /*   transform: scaleY(0.01) translate(30px, 0); */
-}
-
-.fade-leave-active {
+.slide-leave-active {
   position: absolute;
 }
 

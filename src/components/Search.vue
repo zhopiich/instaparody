@@ -12,7 +12,7 @@
     >
       <FontAwesomeIcon
         :icon="faCircleXmark"
-        class="fa-xl cursor-pointer hover:text-[#435f8e]"
+        class="fa-lg cursor-pointer hover:text-[#435f8e]"
         @click="cleanSearchTerm"
       />
     </div>

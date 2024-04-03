@@ -28,7 +28,7 @@
         />
       </div>
 
-      <div v-if="isDraggingOver" class="absolute top-0 mt-6 text-[30px]">
+      <div v-if="isDraggingOver" class="absolute top-0 mt-8 text-[34px]">
         Drop
       </div>
       <div
@@ -55,26 +55,13 @@
       :isFocusRequired="true"
       @switch-focus="handleIndex"
     />
-    <div v-if="imageFiles.length > 0" class="absolute top-0 right-0 mt-1 mr-1">
+    <div v-if="imageFiles.length > 0" class="absolute top-0 right-0 m-4">
       <button
-        class="btn btn-circle cursor-pointer scale-75"
+        class="btn btn-circle cursor-pointer"
         :class="{ 'pointer-events-none': isDraggingOver }"
         @click="remove"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+        <FontAwesomeIcon :icon="faTrashCan" class="fa-xl scale-125" />
       </button>
     </div>
     <div
@@ -90,6 +77,7 @@ const getUUID = () => window.crypto.randomUUID();
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 import ImageCarousel from "./ImageCarousel.vue";
 
