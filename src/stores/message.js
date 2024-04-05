@@ -26,6 +26,7 @@ import {
   arrayRemove,
   serverTimestamp,
   and,
+  or,
 } from "firebase/firestore";
 import { uploadFile } from "../firebase/storage.js";
 
@@ -110,8 +111,10 @@ export const useMessageStore = defineStore("message", () => {
     displayName = null,
   } = {}) => {
     const me = getUserInfo(userStore.userDoc, userStore.user.uid);
-    let contact;
 
+    if (username === me.username || userId === me.userId) return;
+
+    let contact;
     if (!avatar || !displayName) {
       const q = query(
         collection(db, "users"),
@@ -126,8 +129,9 @@ export const useMessageStore = defineStore("message", () => {
       }
 
       contact = getUserInfo(querySnap.docs[0].data(), querySnap.docs[0].id);
+    } else {
+      contact = { username, userId, avatar, displayName };
     }
-    contact = { username, userId, avatar, displayName };
 
     //
     const { isChatExists, chatId } = await findChat({
@@ -518,6 +522,18 @@ export const useMessageStore = defineStore("message", () => {
     imageViewedSrc.value = null;
   };
 
+  // Search users to add to contact
+
+  const isShowSearch = ref(false);
+
+  const toggleSearch = (bool = null) => {
+    if (bool === null) {
+      isShowSearch.value = !isShowSearch.value;
+    } else {
+      isShowSearch.value = bool;
+    }
+  };
+
   return {
     isExtended,
     toggle,
@@ -564,5 +580,7 @@ export const useMessageStore = defineStore("message", () => {
     imageViewedSrc,
     openImageViewer,
     closeImageViewer,
+    isShowSearch,
+    toggleSearch,
   };
 });

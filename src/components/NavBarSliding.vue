@@ -7,7 +7,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 
-const emits = defineEmits(["turn"]);
+const emits = defineEmits(["turn", "scroll"]);
 
 // Select the element after mounted
 let navbar = null;
@@ -56,6 +56,7 @@ function onScroll() {
 
   if (navbarPosition.value + displacement >= navbarHeight.value) {
     navbarPosition.value = navbarHeight.value;
+
     // At the moment the navbar retracts completely,
     // remove its shadow
     // navbar.classList.add("noShadow");
@@ -76,6 +77,16 @@ function onScroll() {
     }
   }
 }
+
+watch(navbarPosition, (newVal, oldVal) => {
+  if (newVal === navbarHeight.value) {
+    emits("scroll", "folded");
+  } else if (newVal === 0) {
+    emits("scroll", "expanded");
+  } else if (oldVal === navbarHeight.value || oldVal === 0) {
+    emits("scroll", "transition");
+  }
+});
 
 onMounted(() => {
   // The class name is valid only after mounted

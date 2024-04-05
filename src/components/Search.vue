@@ -1,6 +1,12 @@
 <template>
   <div class="searchInput relative" :class="{ hiddenSearch: !isShowSearch }">
-    <input type="text" v-model="searchTerm" placeholder="Search" />
+    <input
+      type="text"
+      v-model="searchTerm"
+      placeholder="Search"
+      ref="input"
+      @keydown.esc.stop="handleEscKey"
+    />
     <div
       class="absolute left-0 h-full aspect-square flex justify-center items-center"
     >
@@ -25,7 +31,11 @@
       Cancel
     </TheButton> -->
     <SearchResults
-      v-if="searchTerm.trim().length > 0 && !direction"
+      v-if="
+        searchTerm.trim().length > 0 &&
+        (!direction || navbarPosition === 'expanded') &&
+        navbarPosition !== 'folded'
+      "
       @resultClicked="cleanSearchTerm"
     />
   </div>
@@ -54,8 +64,10 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 
-defineProps(["isShowSearch", "direction"]);
+defineProps(["isShowSearch", "direction", "navbarPosition"]);
 defineEmits(["toggle"]);
+
+const input = ref(null);
 
 const searchTerm = ref("");
 const cleanSearchTerm = () => {
@@ -88,6 +100,15 @@ const handleSearch = () => {
 };
 
 watch(searchTerm, handleSearch);
+
+const handleEscKey = () => {
+  if (searchTerm.value) {
+    cleanSearchTerm();
+    return;
+  }
+
+  input.value.blur();
+};
 </script>
 
 <style scoped>

@@ -33,14 +33,6 @@
         </div>
       </div>
     </div>
-
-    <input
-      v-model="userToContact"
-      type="text"
-      placeholder="Type here"
-      class="input input-bordered w-full max-w-xs"
-    />
-    <button class="btn btn-warning" @click="getUser">Get user</button>
   </div>
 </template>
 
@@ -54,12 +46,6 @@ const enterChat = (chatId) => {
   messageStore.loadLastMessages(chatId);
   messageStore.setCurrentChat(chatId);
   messageStore.enterChat(true);
-};
-
-const userToContact = ref(null);
-
-const getUser = async () => {
-  await messageStore.addContact(userToContact.value);
 };
 
 const contacts = computed(() => messageStore.contactsList);

@@ -1,5 +1,5 @@
 <template>
-  <NavBarSliding @turn="changeDirection">
+  <NavBarSliding @turn="changeDirection" @scroll="changePosition">
     <nav class="navbar z-10" :class="{ showSearch: isShowSearch }">
       <router-link class="logo" :class="{ hiddenSearch: isShowSearch }" to="/"
         ><img src="../assets/logo.svg"
@@ -7,6 +7,7 @@
       <Search
         :isShowSearch="isShowSearch"
         :direction="direction"
+        :navbarPosition="navbarPosition"
         @toggle="toggleShowSearch"
       />
 
@@ -111,6 +112,12 @@ const direction = ref(null);
 
 const changeDirection = (bool) => {
   direction.value = bool;
+};
+
+const navbarPosition = ref(0);
+
+const changePosition = (position) => {
+  navbarPosition.value = position;
 };
 </script>
 

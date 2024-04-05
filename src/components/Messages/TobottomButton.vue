@@ -2,10 +2,10 @@
   <Transition>
     <div
       v-if="!isBottom"
-      class="absolute w-full bottom-0 mb-2 flex justify-center"
+      class="absolute w-full bottom-0 mb-2 flex justify-center pointer-events-none *:pointer-events-auto"
     >
       <button class="" @click="goToBottom">
-        <FontAwesomeIcon :icon="faCircleArrowDown" class="fa-xl" />
+        <FontAwesomeIcon :icon="faCircleArrowDown" class="fa-lg scale-125" />
       </button>
     </div>
   </Transition>

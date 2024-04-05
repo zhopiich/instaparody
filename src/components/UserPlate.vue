@@ -7,7 +7,11 @@
   >
     <div class="avatar">
       <div class="rounded-full" :class="`w-${widthAvatar}`">
-        <router-link v-if="isLink" :to="profilePageURL(user.username)">
+        <router-link
+          v-if="isLink"
+          :to="profilePageURL(user.username)"
+          @click.stop="$emit('linkClicked')"
+        >
           <img :src="user.avatar" class="cursor-pointer" />
         </router-link>
 
@@ -18,7 +22,11 @@
     <div
       class="grow flex flex-col justify-center items-start *:whitespace-nowrap"
     >
-      <router-link v-if="isLink" :to="profilePageURL(user.username)">
+      <router-link
+        v-if="isLink"
+        :to="profilePageURL(user.username)"
+        @click.stop="$emit('linkClicked')"
+      >
         <p class="font-bold cursor-pointer hover:text-zinc-400">
           {{ user.displayName }}
         </p>
@@ -58,9 +66,9 @@ defineProps({
   isLink: { type: Boolean, default: true },
 });
 
-const profilePageURL = (username) => {
-  return "/" + username;
-};
+defineEmits(["linkClicked"]);
+
+const profilePageURL = (username) => "/" + username;
 
 //
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";

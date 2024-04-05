@@ -1,30 +1,26 @@
 <template>
-  <!-- <Teleport to="body"> -->
-  <div
-    class="modalFrame"
-    :class="{ overlay: stack !== 1 }"
-    @click.self="$emit('close')"
-  >
-    <Transition name="fade">
-      <div v-if="isBraced" class="backdrop pointer-events-none"></div
-    ></Transition>
-    <button
-      v-if="isShowCloseBtn"
-      class="text-center absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors"
-      @click="$emit('close')"
-    >
-      <FontAwesomeIcon
-        :icon="faXmark"
-        class="text-white leading-none fa-lg cursor-pointer"
-      />
-    </button>
-    <Transition name="zoom">
-      <div v-if="isBraced" class="modalContent">
-        <slot></slot>
-      </div>
-    </Transition>
-  </div>
-  <!-- </Teleport> -->
+  <Teleport to="body">
+    <div class="modalFrame" @click.self="$emit('close')">
+      <Transition name="fade">
+        <div v-if="isBraced" class="backdrop pointer-events-none"></div
+      ></Transition>
+      <button
+        v-if="isShowCloseBtn"
+        class="text-center absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors"
+        @click="$emit('close')"
+      >
+        <FontAwesomeIcon
+          :icon="faXmark"
+          class="text-white leading-none fa-lg cursor-pointer"
+        />
+      </button>
+      <Transition name="zoom">
+        <div v-if="isBraced" class="modalContent">
+          <slot></slot>
+        </div>
+      </Transition>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
@@ -45,7 +41,7 @@ const props = defineProps({
   },
 });
 
-defineEmits(["close"]);
+const emits = defineEmits(["close"]);
 
 const isFirst = ref(false);
 
@@ -54,22 +50,22 @@ const isBraced = ref(false);
 // div.classList.contains('secondary');
 
 onMounted(() => {
-  if (!document.body.classList.contains("modal-open")) {
+  if (!document.body.classList.contains("modalOpen")) {
     isFirst.value = true;
-    document.body.classList.add("modal-open");
+    document.body.classList.add("modalOpen");
   }
 
   isBraced.value = true;
 });
 onUnmounted(() => {
   if (isFirst.value) {
-    document.body.classList.remove("modal-open");
+    document.body.classList.remove("modalOpen");
   }
 });
 </script>
 
 <style>
-body.modal-open {
+body.modalOpen {
   overflow: hidden;
 }
 </style>
@@ -108,10 +104,6 @@ body.modal-open {
   place-items: center;
   z-index: 60;
 }
-
-/* .modalFrame.overlay {
-  z-index: v-bind(stack + 10);
-} */
 
 .backdrop {
   background: rgba(0, 0, 0, 0.56);

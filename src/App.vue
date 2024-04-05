@@ -34,7 +34,7 @@ import MessagesContainer from "./components/Messages/MessagesContainer.vue";
 
 <style>
 @media (min-width: 768px) {
-  :root {
+  html {
     scrollbar-gutter: stable;
   }
 }

@@ -1,11 +1,13 @@
 <template>
   <div
-    class="z-[1] fixed bottom-0 right-0 mr-5 bg-orange-400 h-[500px] w-[450px] transition-transform duration-300"
+    class="z-[1] fixed bottom-0 bg-orange-400 h-[500px] w-[450px] transition-transform duration-300"
     :class="isExtended ? 'translate-y-0' : 'translate-y-full'"
+    id="container"
   >
     <div
-      class="z-[2] h-14 absolute -top-14 w-full px-4 flex bg-amber-300 text-4xl hover:cursor-pointer"
+      class="z-[2] absolute -top-14 w-full px-4 flex bg-amber-300 text-4xl hover:cursor-pointer"
       @click="messageStore.toggle"
+      id="tab"
     >
       <div v-if="isEnterChat">
         <button class="btn" @click.stop="leaveChat">Back</button>
@@ -19,6 +21,15 @@
         <div class="text-[13px] leading-4">@{{ currentContact.username }}</div>
       </div>
 
+      <div v-if="!isEnterChat" class="flex items-center">
+        <div
+          class="flex items-center justify-center h-10 aspect-square rounded-full cursor-pointer hover:bg-white/35 transition-colors"
+          @click.stop="messageStore.toggleSearch(true)"
+        >
+          <FontAwesomeIcon :icon="faCommentMedical" class="fa-2xs scale-110" />
+        </div>
+      </div>
+
       <div class="w-14 text-center">{{ isExtended ? "ˇ" : "^" }}</div>
       <!-- <div class="w-14">a</div> -->
     </div>
@@ -29,12 +40,23 @@
       </template>
     </Transition>
   </div>
+
+  <SearchPeople
+    v-if="messageStore.isShowSearch"
+    @close="messageStore.toggleSearch(false)"
+  />
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faCommentMedical } from "@fortawesome/free-solid-svg-icons";
+
 import Chat from "./Chat.vue";
+import SearchPeople from "./SearchPeople.vue";
 
 import { ref, shallowRef, computed, onMounted } from "vue";
+
+const heightTab = ref("3.5rem");
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
@@ -56,6 +78,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
+#container {
+  left: calc(100dvw - 450px - 32px);
+}
+
+#tab {
+  height: v-bind(heightTab);
+}
+
 /* Remove the contents after slide down */
 .slide-leave-active {
   /* transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
