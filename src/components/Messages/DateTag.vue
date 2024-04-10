@@ -1,8 +1,10 @@
 <template>
   <!-- <div class="flex justify-center mb-2"> -->
   <div v-if="!isSameAsPrev" class="flex justify-center mb-2">
-    <div class="rounded-full bg-orange-300 w-fit px-3 text-base">
-      {{ displayDate() }}
+    <div
+      class="rounded-full bg-yellow-300 w-fit h-6 px-3 flex justify-center items-center"
+    >
+      <p class="leading-5">{{ displayDate() }}</p>
     </div>
   </div>
 </template>

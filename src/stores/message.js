@@ -262,7 +262,9 @@ export const useMessageStore = defineStore("message", () => {
   const areThereNews = computed(() => {
     if (!contactsList.value) return;
 
-    return contactsList.value.map((contact) => {
+    const obj = {};
+
+    contactsList.value.forEach((contact) => {
       // if (lastMessagesAt.value[contact.chatId] && contact.lastSeeAt.me) {
       //   return {
       //     [contact.chatId]:
@@ -276,16 +278,16 @@ export const useMessageStore = defineStore("message", () => {
       //   };
       // }
 
-      return {
-        [contact.chatId]:
-          !contact.lastSeeAt.me ||
-          (lastMessagesAt.value[contact.chatId] &&
-            contact.lastSeeAt.me &&
-            contact.lastMessage.from !== userStore.user.uid &&
-            lastMessagesAt.value[contact.chatId].at.seconds >
-              contact.lastSeeAt.me.seconds),
-      };
+      obj[contact.chatId] =
+        !contact.lastSeeAt.me ||
+        (lastMessagesAt.value[contact.chatId] &&
+          contact.lastSeeAt.me &&
+          contact.lastMessage.from !== userStore.user.uid &&
+          lastMessagesAt.value[contact.chatId].at.seconds >
+            contact.lastSeeAt.me.seconds);
     });
+
+    return obj;
   });
 
   // For new messages indicator line
@@ -534,6 +536,14 @@ export const useMessageStore = defineStore("message", () => {
     }
   };
 
+  // Width of the scrollbar
+
+  const scrollbarWidth = ref(0);
+
+  const setScrollbarWidth = (width) => {
+    scrollbarWidth.value = width;
+  };
+
   return {
     isExtended,
     toggle,
@@ -582,5 +592,8 @@ export const useMessageStore = defineStore("message", () => {
     closeImageViewer,
     isShowSearch,
     toggleSearch,
+    scrollbarWidth,
+    setScrollbarWidth,
+    lastMessagesAt,
   };
 });

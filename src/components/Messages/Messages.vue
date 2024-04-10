@@ -2,8 +2,12 @@
   <MessageDragAndDrop v-slot="slotProps">
     <div class="w-full h-full grid" id="chatRoom">
       <div class="relative overflow-hidden" id="messagesViewport">
-        <div class="h-full overflow-auto">
-          <div ref="messagesFlow" class="relative bg-zinc-200 min-h-full px-3">
+        <div class="h-full overflow-auto" ref="scrollStrip">
+          <div
+            ref="messagesFlow"
+            class="relative min-h-full px-4"
+            id="messagesFlow"
+          >
             <template v-for="(message, index) in list" :key="message.id">
               <DateTag
                 v-if="message.at"
@@ -22,6 +26,8 @@
                 :message="message"
                 :isFromMe="message.from === me"
                 :isLast="index + 1 === list.length"
+                :nextMessage="index + 1 < list.length ? list[index + 1] : null"
+                :isBottom="isBottom"
                 @last-mounted.once="scrollDrivedByMessage"
               />
             </template>
@@ -121,11 +127,27 @@ const scrollDrivedByDateTag = ([isSameAsPrev, isFromMe]) => {
   }
 };
 
+// Width of the scrollbar
+
+const scrollStrip = ref(null);
+
+const observerScrollbar = new ResizeObserver((entries) => {
+  const element = entries[0].target;
+  const scrollbarWidth = element.offsetWidth - element.clientWidth;
+
+  messageStore.setScrollbarWidth(scrollbarWidth);
+});
+
 onMounted(() => {
   observerBottom.observe(bottomBeacon.value);
+
+  observerScrollbar.observe(scrollStrip.value);
 });
 
 onUnmounted(() => {
+  observerBottom.disconnect();
+  observerScrollbar.disconnect();
+
   if (messageStore.isEnterChat === false) {
     messageStore.cleanChat();
   }
@@ -134,7 +156,6 @@ onUnmounted(() => {
 
 <style scoped>
 #chatRoom {
-  /* grid-template-rows: 1fr 300px; */
-  grid-template-rows: 1fr v-bind(heightInput + "px");
+  grid-template-rows: 1fr max-content;
 }
 </style>

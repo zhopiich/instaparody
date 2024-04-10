@@ -2,11 +2,11 @@
   <div
     id="tooltip"
     ref="tooltip"
-    class="h-fit w-fit z-50"
+    class="h-fit w-fit"
     :class="[
       isFixed ? 'fixed' : 'absolute',
       bottom < heightTooltip ? 'down' : 'up',
-      right < widthTooltip ? 'right-4' : 'left',
+      right < widthTooltip ? 'right-0' : 'left',
     ]"
   >
     <slot></slot>
@@ -16,22 +16,41 @@
 <script setup>
 import { ref, onMounted, computed, onBeforeMount, onBeforeUnmount } from "vue";
 
-const props = defineProps(["bottom", "right", "dimensions", "isFixed"]);
+const props = defineProps({
+  bottom: { type: Number },
+  right: { type: Number },
+  dimensions: { type: Object },
+  isFixed: { type: Boolean, default: false },
+  isOverlay: { type: Boolean, default: false },
+  zIndex: { type: Number, default: 50 },
+});
 
 const tooltip = ref(null);
 
 const heightTooltip = ref(0);
 const widthTooltip = ref(0);
 
-const topDistance = computed(
-  () => props.dimensions.targetFromTop + props.dimensions.targetHeight + "px"
-);
+const topDistance = computed(() => {
+  if (!props.isFixed) return;
 
-const downDistance = computed(
-  () => props.dimensions.viewportHeight - props.dimensions.targetFromTop + "px"
-);
+  return props.dimensions.targetFromTop + props.dimensions.targetHeight + "px";
+});
 
-const leftDistance = computed(() => props.dimensions.targetFromLeft + "px");
+const downDistance = computed(() => {
+  if (!props.isFixed) return;
+
+  return (
+    props.dimensions.viewportHeight - props.dimensions.targetFromTop + "px"
+  );
+});
+
+const leftDistance = computed(() => {
+  if (!props.isFixed) return;
+
+  return props.dimensions.targetFromLeft + "px";
+});
+
+const leanOnOverlay = computed(() => (props.isOverlay ? "0" : "100%"));
 
 onMounted(() => {
   heightTooltip.value = tooltip.value.offsetHeight;
@@ -40,6 +59,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+#tooltip {
+  z-index: v-bind("props.zIndex");
+}
+
 .fixed.up {
   top: v-bind(topDistance);
 }
@@ -53,11 +76,11 @@ onMounted(() => {
 }
 
 .absolute.up {
-  top: 100%;
+  top: v-bind(leanOnOverlay);
 }
 
 .absolute.down {
-  bottom: 100%;
+  bottom: v-bind(leanOnOverlay);
 }
 
 .absolute.left {

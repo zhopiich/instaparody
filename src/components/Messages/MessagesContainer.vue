@@ -1,44 +1,28 @@
 <template>
   <div
-    class="z-[1] fixed bottom-0 bg-orange-400 h-[500px] w-[450px] transition-transform duration-300"
-    :class="isExtended ? 'translate-y-0' : 'translate-y-full'"
+    class="z-[1] fixed bottom-0 rounded-t-2xl overflow-hidden bg-white h-[530px] w-[400px] transition-transform duration-300"
+    :class="[
+      isExtended ? 'translate-y-0' : 'translate-folded',
+      { 'flex flex-col': !isEnterChat },
+    ]"
     id="container"
   >
+    <ContainerTab
+      :isEnterChat="isEnterChat"
+      :isExtended="isExtended"
+      :heightTab="heightTab"
+    />
+
     <div
-      class="z-[2] absolute -top-14 w-full px-4 flex bg-amber-300 text-4xl hover:cursor-pointer"
-      @click="messageStore.toggle"
-      id="tab"
+      class=""
+      :class="isEnterChat ? 'absolute top-0 w-full h-full' : 'relative grow'"
     >
-      <div v-if="isEnterChat">
-        <button class="btn" @click.stop="leaveChat">Back</button>
-      </div>
-
-      <div v-if="!isEnterChat" class="grow font-bold">Messages</div>
-      <div v-else class="grow flex flex-col justify-center">
-        <div class="font-bold text-[20px] leading-6">
-          {{ currentContact.displayName }}
-        </div>
-        <div class="text-[13px] leading-4">@{{ currentContact.username }}</div>
-      </div>
-
-      <div v-if="!isEnterChat" class="flex items-center">
-        <div
-          class="flex items-center justify-center h-10 aspect-square rounded-full cursor-pointer hover:bg-white/35 transition-colors"
-          @click.stop="messageStore.toggleSearch(true)"
-        >
-          <FontAwesomeIcon :icon="faCommentMedical" class="fa-2xs scale-110" />
-        </div>
-      </div>
-
-      <div class="w-14 text-center">{{ isExtended ? "ˇ" : "^" }}</div>
-      <!-- <div class="w-14">a</div> -->
+      <Transition name="slide">
+        <template v-if="isExtended">
+          <Chat />
+        </template>
+      </Transition>
     </div>
-
-    <Transition name="slide">
-      <template v-if="isExtended">
-        <Chat />
-      </template>
-    </Transition>
   </div>
 
   <SearchPeople
@@ -48,29 +32,20 @@
 </template>
 
 <script setup>
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faCommentMedical } from "@fortawesome/free-solid-svg-icons";
-
 import Chat from "./Chat.vue";
 import SearchPeople from "./SearchPeople.vue";
+import ContainerTab from "./ContainerTab.vue";
 
 import { ref, shallowRef, computed, onMounted } from "vue";
 
-const heightTab = ref("3.5rem");
+const heightTab = ref("53px");
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-const currentContact = computed(() => messageStore.currentContact);
 const isEnterChat = computed(() => messageStore.isEnterChat);
 
 const isExtended = computed(() => messageStore.isExtended);
-
-const leaveChat = () => {
-  messageStore.enterChat(false);
-  messageStore.triggerUnSubMessages();
-  messageStore.resetNewMessages();
-};
 
 onMounted(() => {
   messageStore.contactsListener();
@@ -79,11 +54,17 @@ onMounted(() => {
 
 <style scoped>
 #container {
-  left: calc(100dvw - 450px - 32px);
+  left: calc(100dvw - 400px - 32px);
+  box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px,
+    rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
 }
 
-#tab {
-  height: v-bind(heightTab);
+#container:deep #messagesFlow {
+  padding-top: v-bind(heightTab);
+}
+
+.translate-folded {
+  transform: translateY(calc(100% - v-bind(heightTab)));
 }
 
 /* Remove the contents after slide down */

@@ -52,14 +52,10 @@
         v-if="isShowIndicators"
         class="flex absolute bottom-4 w-full justify-center pointer-events-none"
       >
-        <template v-for="(n, index) in images.length" :key="index">
+        <template v-for="n in images.length" :key="n">
           <div
-            v-if="index === movement"
-            class="w-[6px] aspect-square rounded-full mr-1 last:mr-0 bg-sky-400"
-          ></div>
-          <div
-            v-else
-            class="w-[6px] aspect-square rounded-full mr-1 last:mr-0 bg-white"
+            class="w-[6px] aspect-square rounded-full mr-1 last:mr-0 transition-colors duration-500"
+            :class="n - 1 === movement ? 'bg-blue-400' : 'bg-white/80'"
           ></div>
         </template>
       </div>

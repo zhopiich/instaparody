@@ -1,49 +1,93 @@
 <template>
   <div
-    class="chat pt-0 pb-6"
-    :class="[isFromMe ? 'chat-end' : 'chat-start', { lastMessage: isLast }]"
+    class="flex flex-col mt-0"
+    :class="[
+      isFromMe ? '*:self-end' : '*:self-start',
+      // { lastMessage: isLast },
+      isChained ? (isFromMe ? 'pb-0' : 'pb-1.5') : 'pb-6',
+    ]"
+    @mouseenter="isShowMore = true"
+    @mouseleave="isShowMore = false"
   >
-    <div
-      class="chat-bubble leading-7"
-      :class="{ 'chat-bubble-warning': isFromMe }"
-      :id="message.id"
-    >
+    <div class="flex">
       <div
-        v-if="
-          (!message.at && messageStore.isImageSending) ||
-          (message.at && message.image)
-        "
-        class="w-[280px] aspect-square flex justify-center items-center"
+        class="chatBubble overflow-hidden shadow-x"
+        :class="[
+          isChained ? 'chained' : isFromMe ? 'fromMe  ' : 'fromOther  ',
+          isFromMe ? 'bg-blue-300/90' : 'bg-gray-200',
+        ]"
+        :id="message.id"
       >
-        <img
-          :src="message.image"
-          class="max-h-full max-w-full"
-          @click="messageStore.openImageViewer(message.image)"
-        />
-      </div>
+        <!-- img -->
+        <div
+          v-if="
+            (!message.at && messageStore.isImageSending) ||
+            (message.at && message.image)
+          "
+          class="cursor-pointer"
+        >
+          <img
+            :src="message.image"
+            class="h-full w-full"
+            @click="messageStore.openImageViewer(message.image)"
+          />
+        </div>
 
-      <p class="text-lg">{{ message.content }}</p>
+        <!-- content -->
+        <div v-if="message.content" class="py-3 px-4">
+          <p class="leading-5">
+            {{ message.content }}
+          </p>
+        </div>
 
-      <!-- <div
+        <!-- <div
         class="absolute h-0 top-1/2 pointer-events-none"
         id="seenBeacon"
       ></div> -->
-      <DeleteButton v-if="isFromMe" :id="message.id" :isLast="isLast" />
-    </div>
-    <div class="chat-footer opacity-50">
-      <time v-if="message.at">{{ time.hour + ":" + time.minute }}</time>
-
-      <div v-if="isFromMe && message.at" class="inline-block">
-        {{ " · " }}
-        {{ isSeen ? "Seen" : "Sent" }}
       </div>
+
+      <div class="self-center" :class="isFromMe ? 'pr-1 -order-1' : 'pl-1'">
+        <div class="relative" ref="more">
+          <MoreButton
+            @click="isShowMoreMenu = true"
+            class="transition-opacity"
+            :class="[
+              { 'pointer-events-none': isShowMoreMenu },
+              isShowMore ? 'opacity-100' : 'opacity-0',
+            ]"
+          />
+          <Transition name="menu">
+            <MoreMenu
+              v-if="isShowMoreMenu"
+              :more="more"
+              :isFromMe="isFromMe"
+              @close="isShowMoreMenu = false"
+              @delete="handleDelete"
+              @copy="handleCopy"
+            />
+          </Transition>
+        </div>
+      </div>
+    </div>
+    <div class="chat-footer opacity-50 flex min-h-0">
+      <p>
+        <time v-if="message.at && !isChained">
+          {{ time.hour + ":" + time.minute }}
+          <span>{{ " · " }}</span>
+        </time>
+        <template v-if="isFromMe && message.at">
+          {{ isSeen ? "Seen" : "Sent" }}
+        </template>
+      </p>
+
       <div v-if="isFromMe && !message.at">Sending...</div>
     </div>
   </div>
 </template>
 
 <script setup>
-import DeleteButton from "./DeleteButton.vue";
+import MoreButton from "./MoreButton.vue";
+import MoreMenu from "./MoreMenu.vue";
 
 import {
   ref,
@@ -56,11 +100,15 @@ import {
   toRef,
 } from "vue";
 
+const more = ref(null);
+
 const props = defineProps([
   "message",
   "isFromMe",
   "isLast",
   "messagesViewport",
+  "nextMessage",
+  "isBottom",
 ]);
 const messageId = props.message.id;
 
@@ -68,6 +116,22 @@ const emit = defineEmits(["lastMounted"]);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
+
+const handleDelete = () => {
+  messageStore.deleteMessage(props.message.id, props.isLast);
+};
+
+const handleCopy = () => {
+  const copied = [props.message.image, props.message.content]
+    .filter((i) => i)
+    .join(" ");
+
+  navigator.clipboard.writeText(copied).then(() => {
+    //
+    console.log("Copied!");
+    isShowMoreMenu.value = false;
+  });
+};
 
 const isSeen = computed(() => {
   const byWho = !props.isFromMe ? "me" : "other";
@@ -131,6 +195,41 @@ const setObserver = (el) => {
   observer.observe(el);
 };
 
+const isShowMore = ref(false);
+const isShowMoreMenu = ref(false);
+
+const getDate = (dateStr) => new Date(dateStr * 1000);
+
+// Group together the bubbles from the same user within the same minute
+const isChained = ref(false);
+const setIsChained = (nextMessage) => {
+  if (!nextMessage) {
+    isChained.value = false;
+    return;
+  }
+
+  if (nextMessage.from !== props.message.from) {
+    isChained.value = false;
+    return;
+  }
+
+  if (nextMessage.at) {
+    isChained.value =
+      messageStore.firstNewMessageId !== nextMessage.id &&
+      nextMessage.at.seconds - props.message.at.seconds < 60000 &&
+      getDate(props.message.at.seconds).getMinutes() ===
+        getDate(nextMessage.at.seconds).getMinutes();
+  } else {
+    isChained.value = false;
+  }
+};
+
+watch(
+  () => props.nextMessage,
+  (newVal) => setIsChained(newVal),
+  { immediate: true }
+);
+
 onMounted(() => {
   if (!props.isFromMe) {
     // window[messageId] = document.getElementById(messageId);
@@ -139,10 +238,13 @@ onMounted(() => {
     if (!isSeen.value) {
       // const seenBeacon = ref(null);
       // const seenBeacon = document.getElementById("seenBeacon");
-      messageStore.appendNewMessage({
-        id: messageId,
-        at: props.message.at,
-      });
+
+      if (!props.isBottom) {
+        messageStore.appendNewMessage({
+          id: messageId,
+          at: props.message.at,
+        });
+      }
 
       const bubble = document.getElementById(messageId);
       setObserver(bubble);
@@ -167,4 +269,38 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.chatBubble {
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+}
+
+.fromMe {
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.fromOther {
+  border-bottom-left-radius: 0.25rem;
+  border-bottom-right-radius: 1.5rem;
+}
+
+.chained {
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+}
+
+.menu-enter-active,
+.menu-leave-active {
+  transition: scale 0.15s ease;
+}
+
+.menu-enter-from,
+.menu-leave-to {
+  scale: 0;
+}
+
+.shadow-x {
+  box-shadow: rgb(229, 234, 236) 0px 2px 12px;
+}
+</style>

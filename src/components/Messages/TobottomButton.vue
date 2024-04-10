@@ -4,16 +4,22 @@
       v-if="!isBottom"
       class="absolute w-full bottom-0 mb-2 flex justify-center pointer-events-none *:pointer-events-auto"
     >
-      <button class="" @click="goToBottom">
-        <FontAwesomeIcon :icon="faCircleArrowDown" class="fa-lg scale-125" />
-      </button>
+      <div
+        class="h-9 w-fit px-5 border rounded-full flex items-center shadow-md bg-white cursor-pointer hover:bg-neutral-200 transition-colors"
+        @click="goToBottom"
+      >
+        <FontAwesomeIcon
+          :icon="faArrowDown"
+          class="fa-lg scale-95 text-blue-500"
+        />
+      </div>
     </div>
   </Transition>
 </template>
 
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faCircleArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 
 import { ref, toRef } from "vue";
 
