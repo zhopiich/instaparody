@@ -36,7 +36,7 @@ import Chat from "./Chat.vue";
 import SearchPeople from "./SearchPeople.vue";
 import ContainerTab from "./ContainerTab.vue";
 
-import { ref, shallowRef, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
 const heightTab = ref("53px");
 
@@ -48,7 +48,11 @@ const isEnterChat = computed(() => messageStore.isEnterChat);
 const isExtended = computed(() => messageStore.isExtended);
 
 onMounted(() => {
-  messageStore.contactsListener();
+  messageStore.loadContacts();
+});
+
+onBeforeUnmount(() => {
+  messageStore.triggerUnSubContacts();
 });
 </script>
 
@@ -59,7 +63,7 @@ onMounted(() => {
     rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
 }
 
-#container:deep #messagesFlow {
+#container:deep(#messagesFlow) {
   padding-top: v-bind(heightTab);
 }
 

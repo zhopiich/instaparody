@@ -160,7 +160,7 @@ const contact = async (username) => {
 
   emits("close");
 
-  messageStore.loadLastMessages(chatId);
+  messageStore.loadMessages(chatId);
   messageStore.setCurrentChat(chatId);
 
   messageStore.toggle(true);

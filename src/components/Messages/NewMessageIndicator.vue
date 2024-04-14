@@ -1,10 +1,10 @@
 <template>
-  <div class="flex items-center mb-3 px-4">
-    <div class="flex-grow bg bg-red-400/60 h-[1px]"></div>
-    <div class="flex-grow-0 mx-1.5 text-red-600/80">
-      {{ display }}
+  <div class="flex items-center pb-2 bg-slate-100">
+    <div class="flex-grow bg-neutral-300 h-[1px]"></div>
+    <div class="flex-grow-0 mx-1.5">
+      <p class="text-neutral-400">{{ display }}</p>
     </div>
-    <div class="flex-grow bg bg-red-400/60 h-[1px]"></div>
+    <div class="flex-grow bg-neutral-300 h-[1px]"></div>
   </div>
 </template>
 

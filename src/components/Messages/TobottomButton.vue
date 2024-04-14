@@ -5,7 +5,7 @@
       class="absolute w-full bottom-0 mb-2 flex justify-center pointer-events-none *:pointer-events-auto"
     >
       <div
-        class="h-9 w-fit px-5 border rounded-full flex items-center shadow-md bg-white cursor-pointer hover:bg-neutral-200 transition-colors"
+        class="h-9 w-fit px-5 border rounded-full flex items-center shadow-x bg-white cursor-pointer hover:bg-neutral-200 transition-colors"
         @click="goToBottom"
       >
         <FontAwesomeIcon
@@ -49,5 +49,10 @@ const goToBottom = () => {
 .v-enter-to,
 .v-leave-from {
   opacity: 1;
+}
+
+.shadow-x {
+  box-shadow: rgba(101, 119, 134, 0.15) 0px 0px 8px,
+    rgba(101, 119, 134, 0.1) 0px 1px 3px 1px;
 }
 </style>

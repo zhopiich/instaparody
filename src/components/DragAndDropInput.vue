@@ -9,7 +9,7 @@
     <input
       type="file"
       multiple
-      id="imageInput"
+      id="postImageInput"
       accept="image/*"
       class="hidden absolute pointer-events-none"
       ref="fileInput"
@@ -40,7 +40,7 @@
 
         <label
           class="select-none text-base text-center text-white font-bold rounded-lg px-4 py-2 mt-5 bg-sky-500 hover:bg-blue-500"
-          for="imageInput"
+          for="postImageInput"
         >
           Select among files
         </label>

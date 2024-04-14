@@ -102,7 +102,8 @@ async function logout() {
   postStore.resetIsActedByMe();
   // postStore.cleanPostsAll();
 
-  messageStore.enterChat(false);
+  //
+  messageStore.reset();
 
   await logOut();
   router.push("/login");

@@ -6,21 +6,24 @@
         class="p-4 cursor-pointer hover:bg-slate-100 transition-colors"
         @click="enterChat(contact.chatId)"
       >
-        <div class="w-full flex gap-2 items-center overflow-hidden">
+        <div class="w-full flex gap-2 overflow-hidden">
           <div class="avatar">
             <div class="w-12 rounded-full">
               <img :src="contact.avatar" />
             </div>
           </div>
 
-          <div class="grow w-0 flex flex-col">
+          <div class="grow w-0 flex flex-col justify-start">
             <div class="flex">
               <div class="grow flex justify-start">
                 <div class="flex gap-1">
                   <p class="font-bold">{{ contact.displayName }}</p>
                   <p class="text-neutral-500">@{{ contact.username }}</p>
                 </div>
-                <div class="flex *:text-neutral-500">
+                <div
+                  v-if="lastMessagesTime[contact.chatId]"
+                  class="flex *:text-neutral-500"
+                >
                   <div class="px-1"><span>·</span></div>
                   <div>
                     <time :datetime="lastMessagesTime[contact.chatId].datetime">
@@ -69,7 +72,7 @@ import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
 const enterChat = (chatId) => {
-  messageStore.loadLastMessages(chatId);
+  messageStore.loadMessages(chatId);
   messageStore.setCurrentChat(chatId);
   messageStore.enterChat(true);
 };

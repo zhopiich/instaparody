@@ -1,21 +1,43 @@
 <template>
   <Teleport to="body">
-    <div class="modalFrame" @click.self="$emit('close')">
+    <div
+      class="modalFrame flex justify-center items-center"
+      @click.self="$emit('close')"
+    >
       <Transition name="fade">
         <div v-if="isBraced" class="backdrop pointer-events-none"></div
       ></Transition>
-      <button
+      <div
         v-if="isShowCloseBtn"
-        class="text-center absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors"
-        @click="$emit('close')"
+        class="absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors cursor-pointer"
+        @click.stop="$emit('close')"
       >
-        <FontAwesomeIcon
+        <!-- <FontAwesomeIcon
           :icon="faXmark"
           class="text-white leading-none fa-lg cursor-pointer"
-        />
-      </button>
+        /> -->
+        <div class="text-white h-full w-full flex justify-center items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+      </div>
       <Transition name="zoom">
-        <div v-if="isBraced" class="modalContent">
+        <div
+          v-if="isBraced"
+          class="relative bg-white pointer-events-none *:pointer-events-auto"
+        >
           <slot></slot>
         </div>
       </Transition>
@@ -31,10 +53,10 @@ import { ref, onMounted, onUnmounted } from "vue";
 // import TheIcon from "./TheIcon.vue";
 
 const props = defineProps({
-  stack: {
-    type: Number,
-    default: 1,
-  },
+  // stack: {
+  //   type: Number,
+  //   default: 1,
+  // },
   isShowCloseBtn: {
     type: Boolean,
     default: true,
@@ -100,8 +122,8 @@ body.modalOpen {
   max-width: 100%;
   left: 0;
   top: 0;
-  display: grid;
-  place-items: center;
+  /* display: grid;
+  place-items: center; */
   z-index: 60;
 }
 
@@ -112,13 +134,6 @@ body.modalOpen {
   height: 100%;
   left: 0;
   top: 0;
-}
-
-.modalContent {
-  position: relative;
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
 }
 
 .modalContent::-webkit-scrollbar {

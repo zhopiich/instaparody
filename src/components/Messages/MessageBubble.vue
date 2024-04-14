@@ -1,22 +1,25 @@
 <template>
   <div
-    class="flex flex-col mt-0"
+    class="flex flex-col mt-0 px-4 *:flex"
     :class="[
-      isFromMe ? '*:self-end' : '*:self-start',
+      // isFromMe ? '*:self-end' : '*:self-start',
+      isFromMe ? '*:justify-end' : '*:justify-start',
       // { lastMessage: isLast },
       isChained ? (isFromMe ? 'pb-0' : 'pb-1.5') : 'pb-6',
+      { 'bg-slate-100': isNew },
     ]"
     @mouseenter="isShowMore = true"
     @mouseleave="isShowMore = false"
+    ref="messageBlock"
   >
-    <div class="flex">
+    <div class="">
       <div
         class="chatBubble overflow-hidden shadow-x"
         :class="[
           isChained ? 'chained' : isFromMe ? 'fromMe  ' : 'fromOther  ',
           isFromMe ? 'bg-blue-300/90' : 'bg-gray-200',
         ]"
-        :id="message.id"
+        :id="messageId"
       >
         <!-- img -->
         <div
@@ -25,6 +28,8 @@
             (message.at && message.image)
           "
           class="cursor-pointer"
+          ref="image"
+          :id="messageId + '-image'"
         >
           <img
             :src="message.image"
@@ -35,7 +40,7 @@
 
         <!-- content -->
         <div v-if="message.content" class="py-3 px-4">
-          <p class="leading-5">
+          <p class="message-content leading-5">
             {{ message.content }}
           </p>
         </div>
@@ -89,36 +94,33 @@
 import MoreButton from "./MoreButton.vue";
 import MoreMenu from "./MoreMenu.vue";
 
-import {
-  ref,
-  shallowRef,
-  computed,
-  onMounted,
-  onBeforeUnmount,
-  watch,
-  watchEffect,
-  toRef,
-} from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 
 const more = ref(null);
+const messageBlock = ref(null);
+const image = ref(null);
+
+const isShowMore = ref(false);
+const isShowMoreMenu = ref(false);
 
 const props = defineProps([
   "message",
   "isFromMe",
   "isLast",
   "messagesViewport",
+  "prevMessage",
   "nextMessage",
   "isBottom",
 ]);
 const messageId = props.message.id;
 
-const emit = defineEmits(["lastMounted"]);
+const emits = defineEmits(["lastMounted", "imageMounted"]);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
 const handleDelete = () => {
-  messageStore.deleteMessage(props.message.id, props.isLast);
+  messageStore.deleteMessage(messageId, props.isLast);
 };
 
 const handleCopy = () => {
@@ -195,39 +197,30 @@ const setObserver = (el) => {
   observer.observe(el);
 };
 
-const isShowMore = ref(false);
-const isShowMoreMenu = ref(false);
-
 const getDate = (dateStr) => new Date(dateStr * 1000);
 
 // Group together the bubbles from the same user within the same minute
-const isChained = ref(false);
+
 const setIsChained = (nextMessage) => {
-  if (!nextMessage) {
-    isChained.value = false;
-    return;
-  }
-
-  if (nextMessage.from !== props.message.from) {
-    isChained.value = false;
-    return;
-  }
-
-  if (nextMessage.at) {
-    isChained.value =
+  if (
+    nextMessage &&
+    nextMessage.from === props.message.from &&
+    nextMessage.at
+  ) {
+    return (
       messageStore.firstNewMessageId !== nextMessage.id &&
       nextMessage.at.seconds - props.message.at.seconds < 60000 &&
       getDate(props.message.at.seconds).getMinutes() ===
-        getDate(nextMessage.at.seconds).getMinutes();
-  } else {
-    isChained.value = false;
+        getDate(nextMessage.at.seconds).getMinutes()
+    );
   }
-};
 
-watch(
-  () => props.nextMessage,
-  (newVal) => setIsChained(newVal),
-  { immediate: true }
+  return false;
+};
+const isChained = computed(() => setIsChained(props.nextMessage));
+
+const isNew = computed(() =>
+  messageStore.newMessages.some((message) => message.id === messageId)
 );
 
 onMounted(() => {
@@ -240,6 +233,16 @@ onMounted(() => {
       // const seenBeacon = document.getElementById("seenBeacon");
 
       if (!props.isBottom) {
+        // When the previous message is not new to user
+        if (
+          messageStore.newMessages.length > 0 &&
+          !messageStore.newMessages.some(
+            (message) => message.id === props.prevMessage.id
+          )
+        ) {
+          messageStore.resetNewMessages();
+        }
+
         messageStore.appendNewMessage({
           id: messageId,
           at: props.message.at,
@@ -255,7 +258,8 @@ onMounted(() => {
     // const lastMessage = document.querySelector(".lastMessage");
     //   scrollToBottom(lastMessage);
     // console.log(lastMessage.innerText, "mounted");
-    emit("lastMounted", props.isFromMe);
+
+    emits("lastMounted", props.isFromMe);
   }
 });
 
@@ -266,6 +270,11 @@ onBeforeUnmount(() => {
   //   observer.disconnect();
   //   observer = null;
   // }
+
+  // When the contact delete his/her message which is new to the user
+  if (isNew.value && messageStore.isEnterChat) {
+    messageStore.removeNewMessage(messageId);
+  }
 });
 </script>
 
@@ -302,5 +311,9 @@ onBeforeUnmount(() => {
 
 .shadow-x {
   box-shadow: rgb(229, 234, 236) 0px 2px 12px;
+}
+
+.message-content {
+  overflow-wrap: break-word;
 }
 </style>

@@ -7,21 +7,26 @@
       },
       isExtended && isEnterChat
         ? 'bg-white/75 backdrop-blur left-for-scrollbar'
+        : !isExtended && isNotified
+        ? 'bg-blue-400'
         : 'bg-white',
-      {
-        'bg-blue-400': !isExtended && isNotified,
-      },
     ]"
     @click="messageStore.toggle"
     id="messageTab"
   >
     <div v-if="isExtended && isEnterChat">
       <div class="w-14 h-full flex justify-start items-center">
-        <div
-          class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-neutral-300/50 transition-colors"
-          @click.stop="leaveChat"
-        >
-          <FontAwesomeIcon :icon="faArrowLeft" class="fa-lg scale-90" />
+        <div class="h-9 aspect-square relative">
+          <div
+            class="w-full h-full flex items-center justify-center rounded-full cursor-pointer hover:bg-neutral-300/50 transition-colors"
+            @click.stop="leaveChat"
+          >
+            <FontAwesomeIcon :icon="faArrowLeft" class="fa-lg scale-90" />
+          </div>
+          <div
+            v-if="isThereNewFromOther"
+            class="absolute top-1 right-1 h-[9px] aspect-square bg-blue-400 rounded-full border border-white pointer-events-none"
+          ></div>
         </div>
       </div>
     </div>
@@ -32,9 +37,7 @@
         <div
           class="w-3 aspect-square rounded-full transition-colors duration-500"
           :class="
-            !isExtended && isThereAtLeastOneNew
-              ? 'bg-blue-400'
-              : 'bg-transparent'
+            !isExtended && isThereAnyNew ? 'bg-blue-400' : 'bg-transparent'
           "
         ></div>
       </div>
@@ -88,7 +91,7 @@ const currentContact = computed(() => messageStore.currentContact);
 
 const leaveChat = () => {
   messageStore.enterChat(false);
-  messageStore.triggerUnSubMessages();
+  // messageStore.triggerUnSubMessages();
   messageStore.resetNewMessages();
 };
 
@@ -96,24 +99,18 @@ const scrollbarWidth = computed(() => messageStore.scrollbarWidth + "px");
 
 //
 const areThereNews = computed(() => messageStore.areThereNews);
-const isThereAtLeastOneNew = ref(false);
+const isThereAnyNew = computed(() => {
+  // if (!areThereNews.value) return false;
 
-watch(
-  areThereNews,
-  (newVal) => {
-    if (!newVal) return;
-
-    isThereAtLeastOneNew.value = Object.values(newVal).some((bool) => bool);
-  },
-  {
-    deep: true,
-    immediate: true,
-  }
+  return Object.values(areThereNews.value).some((bool) => bool);
+});
+const isThereNewFromOther = computed(
+  () => isThereAnyNew.value && !areThereNews.value[currentContact.value.chatId]
 );
 
 const isNotified = ref(false);
 let countdown;
-watch(isThereAtLeastOneNew, (newVal) => {
+watch(isThereAnyNew, (newVal) => {
   if (props.isExtended) return;
 
   if (newVal) {

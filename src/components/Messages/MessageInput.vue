@@ -19,7 +19,7 @@
             class="text-blue-500 fa-lg scale-90"
           />
           <input
-            id="imageInput"
+            id="messageImageInput"
             type="file"
             accept="image/*"
             class="hidden"
