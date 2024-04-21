@@ -1,7 +1,7 @@
 <template>
   <TheModal @close="postStore.toggleShowPostUpload(false)">
     <!-- slot following -->
-    <div class="postUpload">
+    <div class="postUpload bg-white rounded-lg overflow-hidden">
       <div class="w=[640px] h-[640px] relative">
         <DragAndDropInput @edit-imagesFile="handleImagesPosted" />
       </div>

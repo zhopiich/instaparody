@@ -103,13 +103,18 @@ const intro = computed(() => postStore.infoUserCard.intro);
 const enterChat = async ({ ...userInfo }) => {
   const chatId = await messageStore.addContact({ ...userInfo });
 
-  // emit("close");
-  // if (postStore.isShowPostDetails) {
-  //   postStore.hidePostDetails();
-  // }
+  // Close modals if any
+  if (postStore.isShowPostDetails) {
+    postStore.hidePostDetails();
+  }
 
-  messageStore.loadLastMessages(chatId);
-  messageStore.setCurrentChat(chatId);
+  if (
+    !messageStore.currentContact ||
+    messageStore.currentContact.chatId !== chatId
+  ) {
+    messageStore.loadMessages(chatId);
+    messageStore.setCurrentChat(chatId);
+  }
 
   messageStore.toggle(true);
   messageStore.enterChat(true);

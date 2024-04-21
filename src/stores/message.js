@@ -336,8 +336,13 @@ export const useMessageStore = defineStore("message", () => {
     );
   };
 
-  let unSubMessages;
+  let unSubMessages = null;
   const loadMessages = (chatId) => {
+    if (unSubMessages !== null) {
+      unSubMessages();
+      unSubMessages = null;
+    }
+
     unSubMessages = messagesListener(chatId);
   };
 

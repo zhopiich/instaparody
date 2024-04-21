@@ -77,7 +77,7 @@
     <div class="chat-footer opacity-50 flex min-h-0">
       <p>
         <time v-if="message.at && !isChained">
-          {{ time.hour + ":" + time.minute }}
+          {{ time }}
           <span>{{ " · " }}</span>
         </time>
         <template v-if="isFromMe && message.at">

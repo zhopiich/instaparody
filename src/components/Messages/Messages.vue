@@ -206,6 +206,7 @@ onUnmounted(() => {
   if (messageStore.isEnterChat === false) {
     messageStore.triggerUnSubMessages();
     messageStore.cleanChat();
+    messageStore.setCurrentChat(null);
   }
 });
 </script>

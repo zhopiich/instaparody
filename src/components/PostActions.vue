@@ -1,5 +1,6 @@
 <template>
   <div class="postActions w-[80px]">
+    <!-- like -->
     <TheIcon
       icon="like"
       @click="postStore.toggleActions({ postId: post.id, post })"
@@ -11,6 +12,7 @@
       @click="showLikes(post.id)"
       >{{ post.likes }}</span
     >
+    <!-- comment -->
     <TheIcon
       icon="comment"
       @click="
@@ -19,6 +21,7 @@
       fill="none"
       stroke="#000000"
     /><span v-if="post.comments">{{ post.comments }}</span>
+    <!-- save -->
     <TheIcon
       icon="favorite"
       @click="postStore.toggleActions({ postId: post.id, post, type: 'saved' })"
@@ -34,9 +37,6 @@ import TheIcon from "./TheIcon.vue";
 import LikesList from "./LikesList.vue";
 
 import { ref, onMounted, computed, watchEffect, watch } from "vue";
-
-// import { db } from "../firebase/firebase.js";
-// import { collection, query, where, getDocs } from "firebase/firestore";
 
 const props = defineProps({
   post: {
@@ -68,7 +68,7 @@ const closeLikes = () => {
   postStore.cleanUsersLike();
 };
 
-onMounted(async () => {
+onMounted(() => {
   // if (postStore.isLikedByMe[props.post.id] === undefined) {
   if (!postStore.isLikedByMe[props.post.id]) {
     postStore.loadIsActedByMe({ postId: props.post.id, type: "liked" });

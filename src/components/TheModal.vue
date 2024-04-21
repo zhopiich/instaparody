@@ -1,21 +1,21 @@
 <template>
   <Teleport to="body">
     <div
-      class="modalFrame flex justify-center items-center"
+      class="fixed top-0 left-0 w-screen max-w-full h-dvh z-[60]"
+      :class="customClass.join(' ')"
       @click.self="$emit('close')"
     >
       <Transition name="fade">
-        <div v-if="isBraced" class="backdrop pointer-events-none"></div
+        <div
+          v-if="isBraced"
+          class="pointer-events-none bg-black/65 absolute w-full h-full top-0 left-0"
+        ></div
       ></Transition>
       <div
         v-if="isShowCloseBtn"
-        class="absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors cursor-pointer"
+        class="absolute left-0 top-0 m-3 bg-black/40 backdrop-blur-sm aspect-square h-9 rounded-full hover:bg-slate-600/75 transition-colors cursor-pointer z-[61]"
         @click.stop="$emit('close')"
       >
-        <!-- <FontAwesomeIcon
-          :icon="faXmark"
-          class="text-white leading-none fa-lg cursor-pointer"
-        /> -->
         <div class="text-white h-full w-full flex justify-center items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +36,8 @@
       <Transition name="zoom">
         <div
           v-if="isBraced"
-          class="relative bg-white pointer-events-none *:pointer-events-auto"
+          class="relative pointer-events-none"
+          :class="{ '*:pointer-events-auto': isPointerEventsAuto }"
         >
           <slot></slot>
         </div>
@@ -50,17 +51,17 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import { ref, onMounted, onUnmounted } from "vue";
-// import TheIcon from "./TheIcon.vue";
 
 const props = defineProps({
-  // stack: {
-  //   type: Number,
-  //   default: 1,
-  // },
   isShowCloseBtn: {
     type: Boolean,
     default: true,
   },
+  customClass: {
+    type: Array,
+    default: ["flex", "justify-center", "items-center"],
+  },
+  isPointerEventsAuto: { type: Boolean, default: true },
 });
 
 const emits = defineEmits(["close"]);
@@ -69,19 +70,19 @@ const isFirst = ref(false);
 
 const isBraced = ref(false);
 
-// div.classList.contains('secondary');
-
 onMounted(() => {
-  if (!document.body.classList.contains("modalOpen")) {
+  const body = document.body;
+  if (!body.classList.contains("modalOpen")) {
     isFirst.value = true;
-    document.body.classList.add("modalOpen");
+    body.classList.add("modalOpen");
   }
 
   isBraced.value = true;
 });
 onUnmounted(() => {
   if (isFirst.value) {
-    document.body.classList.remove("modalOpen");
+    const body = document.body;
+    body.classList.remove("modalOpen");
   }
 });
 </script>
@@ -112,44 +113,5 @@ body.modalOpen {
 }
 .fade-enter-to {
   opacity: 1;
-}
-
-/*  */
-.modalFrame {
-  position: fixed;
-  width: 100vw;
-  height: 100dvh;
-  max-width: 100%;
-  left: 0;
-  top: 0;
-  /* display: grid;
-  place-items: center; */
-  z-index: 60;
-}
-
-.backdrop {
-  background: rgba(0, 0, 0, 0.56);
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-}
-
-.modalContent::-webkit-scrollbar {
-  display: none;
-}
-
-.closeBtn {
-  position: absolute;
-  background: none;
-  border: none;
-  right: 10px;
-  top: 10px;
-}
-
-.closeBtn svg {
-  width: 32px;
-  height: 32px;
 }
 </style>

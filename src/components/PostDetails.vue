@@ -1,104 +1,96 @@
 <template>
-  <TheModal @close="postStore.hidePostDetails">
-    <!-- slot following -->
-    <div class="postDetails">
-      <div class="relative">
-        <img
-          v-if="post.image || post.images.length === 1"
-          class="postImage"
-          :src="post.image || post.images[0]"
-          alt=""
-        />
-        <ImageCarousel v-else :imagesUrl="postImages" />
-      </div>
-
-      <div class="postMeta">
-        <div class="p-4 border-b">
-          <UserPlate
-            :isCardFixed="true"
-            :user="{
-              username: post.createdBy.username,
-              avatar: post.createdBy.avatar,
-              displayName: post.createdBy.displayName,
-              userId: post.createdBy.userId,
-            }"
-            :widthAvatar="14"
-          />
-
-          <pre class="postDesc mt-2"
-            >{{ post.description }}
-        </pre
-          >
-        </div>
-
-        <div v-if="!userStore.isLoggedIn">
-          **Please log in to see comments**
-        </div>
-        <div v-else class="comments p-4">
-          <div class="comment" v-for="comment in comments">
-            <UserPlate
-              :isCardFixed="true"
-              :user="{
-                username: comment.createdBy.username,
-                avatar: comment.createdBy.avatar,
-                displayName: comment.createdBy.displayName,
-                userId: comment.createdBy.userId,
-              }"
-              :isUsernameShown="false"
-              :widthAvatar="10"
-            />
-
-            <span class="commentDate">{{
-              dateToRelative(comment.createdAt?.seconds, "short")
-            }}</span>
-            <p class="commentContent">{{ comment.content }}</p>
+  <TheModal
+    :customClass="['flex', 'flex-col', 'justify-center', 'items-stretch']"
+    :isPointerEventsAuto="false"
+    @close="postStore.hidePostDetails"
+  >
+    <div
+      class="flex justify-center items-start min-w-0 min-h-0 overflow-y-auto"
+    >
+      <div class="flex flex-col w-full h-full justify-center items-center my-0">
+        <div class="detailsContainer m-auto h-full">
+          <div class="flex flex-col h-full max-w-full">
             <div
-              v-if="comment.createdBy.userId === user.uid"
-              class="commentDelete"
-              role="button"
-              @click="deleteComment(comment.id)"
+              class="flex justify-center items-stretch relative *:pointer-events-auto"
             >
-              Delete
+              <div
+                class="imageFrame aspect-square grow shrink overflow-hidden rounded-l-md"
+              >
+                <div class="w-full h-full relative">
+                  <!-- <div class="flex flex-col shrink-0 items-stretch relative"> -->
+                  <img
+                    v-if="post.image || post.images.length === 1"
+                    class="w-full h-full object-cover"
+                    :src="post.image || post.images[0]"
+                    alt="Image posted"
+                  />
+                  <ImageCarousel v-else :imagesUrl="postImages" />
+                  <!-- </div> -->
+                </div>
+              </div>
+
+              <div
+                class="min-w-[405px] grow shrink-[2] relative rounded-r-md overflow-hidden"
+                :style="{ maxWidth: variableWidth, height: variableHeight }"
+              >
+                <div class="w-full h-full bg-white flex flex-col">
+                  <div class="grow-0 px-4 py-2.5 flex">
+                    <UserPlate
+                      :isCardFixed="true"
+                      :user="{
+                        username: post.createdBy.username,
+                        avatar: post.createdBy.avatar,
+                        displayName: post.createdBy.displayName,
+                        userId: post.createdBy.userId,
+                      }"
+                      :widthAvatar="12"
+                      :gap="2"
+                    />
+                  </div>
+                  <div
+                    class="flex-auto border-t overflow-auto scrollbar-hidden"
+                  >
+                    <div class="px-4">
+                      <div class="py-4">
+                        <pre class="break-words whitespace-pre-wrap">{{
+                          post.description
+                        }}</pre>
+                      </div>
+                      <CommentsList :postId="postId" />
+                    </div>
+                  </div>
+
+                  <div v-if="!isLikedOrSaved" class="shrink-0 border-t">
+                    <div class="px-4 py-2 flex justify-start">
+                      <div class="-ml-2">
+                        <LikeButton :post="post" />
+                      </div>
+                      <div class="">
+                        <CommentButton
+                          :post="post"
+                          @focusInput="commentInput.focus()"
+                        />
+                      </div>
+                      <div class="-mr-2.5 ml-auto">
+                        <SaveButton :post="post" />
+                      </div>
+                    </div>
+
+                    <div class="px-4 pb-1">
+                      <LikesCountBanner :post="post" />
+                    </div>
+
+                    <div class="px-4 pb-4 text-sm leading-3">
+                      <time class="text-gray-400">{{ dateDisplay }}</time>
+                    </div>
+                  </div>
+
+                  <div class="shrink-0 border-t border-gray-300">
+                    <CommentInput :postId="postId" @setInputRef="setInputRef" />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <!--  -->
-        <!-- <div role="button" @click="show2ndModal = true">2nd Modal</div>
-        <LikesList
-          v-if="show2ndModal"
-          @close="show2ndModal = false"
-        ></LikesList> -->
-        <!--  -->
-        <div class="actions p-4">
-          <PostActions v-if="!isLikedOrSaved" :post="post" />
-          <span class="postPubDate">
-            {{ dateToRelative(post.createdAt?.seconds) }}
-          </span>
-          <input
-            type="text"
-            v-model="contentCommentInput"
-            name="comment"
-            id=""
-            class="commentInput"
-            placeholder="Add a comment..."
-          />
-          <div
-            v-if="contentCommentInput"
-            @click="publishComment"
-            class="commentPubBtn"
-            role="button"
-            tabindex="0"
-          >
-            Post
-          </div>
-          <div
-            v-else
-            class="commentPubBtn disabled"
-            role="button"
-            aria-disabled="true"
-            tabindex="-1"
-          >
-            Post
           </div>
         </div>
       </div>
@@ -107,26 +99,26 @@
 </template>
 
 <script setup>
+import { dateToRelative } from "../utils/date";
+
 const getUUID = () => window.crypto.randomUUID();
 
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRoute, onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
 
-import TheIcon from "./TheIcon.vue";
-import TheAvatar from "./TheAvatar.vue";
-import PostActions from "./PostActions.vue";
 import TheModal from "./TheModal.vue";
 import ImageCarousel from "./ImageCarousel.vue";
 import UserPlate from "./UserPlate.vue";
-
-//
-// import LikesList from "./LikesList.vue";
+import CommentsList from "./CommentsList.vue";
+import CommentInput from "./CommentInput.vue";
+import LikeButton from "./PostButtons/LikeButton.vue";
+import CommentButton from "./PostButtons/CommentButton.vue";
+import SaveButton from "./PostButtons/SaveButton.vue";
+import LikesCountBanner from "./PostButtons/LikesCountBanner.vue";
 
 import { usePostStore } from "../stores/post";
-import { useCommentStore } from "../stores/comment";
-import { useUserStore } from "../stores/user";
 
-import { dateToRelative } from "../utils/date";
+const postStore = usePostStore();
 
 const props = defineProps({
   post: {
@@ -137,6 +129,15 @@ const props = defineProps({
     type: Boolean,
   },
 });
+
+const dateDisplay = computed(() =>
+  dateToRelative(props.post.createdAt.seconds, { interval: "week" })
+);
+
+const commentInput = ref(null);
+const setInputRef = (val) => {
+  commentInput.value = val;
+};
 
 const postImages = ref([]);
 if (props.post.images && props.post.images.length > 1) {
@@ -154,172 +155,76 @@ const postId = computed(() => {
   }
 });
 
-// Required even if access in template
-const userStore = useUserStore();
-const user = computed(() => userStore.user);
-const userDoc = computed(() => userStore.userDoc);
+// Rein in the size of the right part
 
-const postStore = usePostStore();
-// const post = computed(() => postStore.postDetails);
+const widthViewport = ref(0);
+const heightViewport = ref(0);
 
-const commentStore = useCommentStore();
-const comments = computed(() => commentStore.list);
-const contentCommentInput = ref("");
-async function publishComment() {
-  await commentStore.uploadComment({
-    content: contentCommentInput.value,
-    postId: postId.value,
-  });
+const resizeObserver = new ResizeObserver((entries) => {
+  const entry = entries[0];
+  const { width, height } = entry.contentRect;
+  widthViewport.value = width;
+  heightViewport.value = height;
+});
 
-  contentCommentInput.value = "";
-}
+const remainedY = computed(() => heightViewport.value - 48);
+const remainedX = computed(() => widthViewport.value - 64 * 2);
 
-async function deleteComment(commentId) {
-  await commentStore.deleteComment({
-    commentId,
-    postId: postId.value,
-  });
-}
+const variableWidth = computed(() => {
+  const squareImageWidth = remainedY.value;
+  const remainedWidth = remainedX.value - squareImageWidth;
+
+  return (
+    (remainedWidth <= 405 ? 405 : remainedWidth <= 500 ? remainedWidth : 500) +
+    "px"
+  );
+});
+const variableHeight = computed(() => {
+  const squareImageWidth = remainedX.value - 405;
+  const squareImageHeight = remainedY.value;
+
+  return (
+    (squareImageWidth <= 450 || squareImageHeight <= 450
+      ? 450
+      : squareImageWidth <= squareImageHeight
+      ? squareImageWidth
+      : squareImageHeight) + "px"
+  );
+});
 
 onBeforeRouteUpdate(() => {
-  console.log("RouteUpdate in postDetails");
-  postStore.toggleShowPostDetails(false);
+  postStore.hidePostDetails();
 });
 
 onBeforeRouteLeave(() => {
-  console.log("RouteLeave in postDetails");
-  postStore.toggleShowPostDetails(false);
+  postStore.hidePostDetails();
+});
+
+onMounted(() => {
+  resizeObserver.observe(document.body);
+});
+
+onBeforeUnmount(() => {
+  resizeObserver.disconnect();
 });
 </script>
 
 <style scoped>
-.postDetails {
-  display: grid;
-  grid-template-columns: 1fr minmax(auto, 300px);
-  grid-template-rows: minmax(0, 1fr);
-  width: 80vw;
-  height: 80vh;
-}
-
-.postImage {
+.detailsContainer {
+  max-height: calc(100dvh - 40px);
+  max-width: calc(100% - calc(2 * 64px));
   width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
-.postMeta {
-  /* padding: 24px; */
-  /* padding-top: 36px; */
-  display: grid;
-  align-items: start;
-  grid-template-rows: max-content 1fr max-content;
-  max-height: 100%;
-  height: 100%;
+.imageFrame {
+  --variable: calc(100dvh - 48px);
+  max-height: var(--variable);
+  max-width: var(--variable);
+  flex-basis: var(--variable);
+  min-height: 450px;
 }
 
-.author {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.postDesc {
-  width: 100%;
-  white-space: pre-wrap;
-  /* margin-top: 24px; */
-}
-
-.comments {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-auto-rows: max-content;
-  grid-gap: 14px;
-  align-items: start;
-  overflow-y: auto;
-  height: 100%;
-}
-
-.comments::-webkit-scrollbar {
+.scrollbar-hidden::-webkit-scrollbar {
   display: none;
-}
-
-.comment {
-  display: grid;
-  grid-template-areas:
-    "avatar name date"
-    "comment comment delete";
-  grid-template-columns: 34px 1fr 1fr;
-  align-items: center;
-  column-gap: 10px;
-  row-gap: 4px;
-}
-
-.commentDate {
-  grid-area: date;
-  justify-self: end;
-  color: #a7a7a7;
-}
-
-.commentContent {
-  grid-area: comment;
-}
-
-.commentDelete {
-  grid-area: delete;
-  color: #ff431db0;
-  /* font-weight: bold; */
-  border: none;
-  background: none;
-  justify-self: end;
-  font-size: 14px;
-  /* margin-left: 25px; */
-}
-
-.actions {
-  border-top: 1px solid #eaeaea;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  align-items: center;
-  /* margin: 20px -24px 0px -24px; */
-  /* padding: 20px 24px 0 24px; */
-  row-gap: 12px;
-}
-
-.postActions > :deep(svg) {
-  transform: scale(0.8125);
-}
-
-.postPubDate {
-  color: #9f9f9f;
-  grid-column: 2 / 6;
-  justify-self: end;
-  font-size: 14px;
-}
-
-.commentInput {
-  background: #f7f7f7;
-  border-radius: 16px;
-  border: none;
-  grid-column: 1 / 4;
-}
-
-.commentInput::placeholder {
-  color: #b9b9b9;
-  border: none;
-}
-
-.commentPubBtn {
-  color: #1da0ff;
-  font-weight: bold;
-  border: none;
-  background: none;
-  font-size: 16px;
-  margin-left: 25px;
-  grid-column: 4 / 6;
-}
-
-.commentPubBtn.disabled {
-  color: #68c0ff;
-  font-weight: normal;
 }
 </style>

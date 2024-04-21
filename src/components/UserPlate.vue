@@ -1,7 +1,8 @@
 <template>
   <div
     ref="target"
-    class="flex items-center w-full gap-3 relative"
+    class="flex items-center gap-2 relative"
+    :class="`gap-${gap}`"
     @mouseenter="isShowCard ? mouseenter() : null"
     @mouseleave="isShowCard ? mouseleave() : null"
   >
@@ -52,6 +53,8 @@
 </template>
 
 <script setup>
+import { getPosition } from "../modules/position.js";
+
 import UserCard from "./UserCard.vue";
 
 defineProps({
@@ -63,6 +66,7 @@ defineProps({
     type: Number,
     default: 14,
   },
+  gap: { type: Number, default: 3 },
   isLink: { type: Boolean, default: true },
 });
 
@@ -70,8 +74,7 @@ defineEmits(["linkClicked"]);
 
 const profilePageURL = (username) => "/" + username;
 
-//
-import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
 const target = ref(null);
 
@@ -79,38 +82,19 @@ const bottom = ref(0);
 const right = ref(0);
 const dimensions = ref({});
 
-const heightTooltip = ref(0);
-const widthTooltip = ref(0);
-
 const isShowTooltip = ref(false);
-
-const getPosition = () => {
-  const viewportHeight = window.innerHeight;
-  const viewportWidth = window.innerWidth;
-
-  const targetHeight = target.value.offsetHeight;
-  const targetFromTop = target.value.getBoundingClientRect().top;
-
-  const targetFromLeft = target.value.getBoundingClientRect().left;
-
-  bottom.value = viewportHeight - targetFromTop - targetHeight;
-  right.value = viewportWidth - targetFromLeft;
-  dimensions.value = {
-    viewportHeight,
-    viewportWidth,
-    targetHeight,
-    targetFromTop,
-    targetFromLeft,
-  };
-};
 
 let delay;
 
 const mouseenter = () => {
   delay = setTimeout(function () {
-    delay = null;
-    getPosition();
+    const position = getPosition(target.value);
+    bottom.value = position.bottom;
+    right.value = position.right;
+    dimensions.value = position.dimensions;
+
     isShowTooltip.value = true;
+    delay = null;
   }, 350);
 };
 const mouseleave = () => {

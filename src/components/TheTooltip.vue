@@ -5,8 +5,8 @@
     class="h-fit w-fit"
     :class="[
       isFixed ? 'fixed' : 'absolute',
-      bottom < heightTooltip ? 'down' : 'up',
-      right < widthTooltip ? 'right-0' : 'left',
+      !bottom || bottom < heightTooltip ? 'down' : 'up',
+      !right || right > widthTooltip ? 'left' : 'right-0',
     ]"
   >
     <slot></slot>
@@ -17,8 +17,8 @@
 import { ref, onMounted, computed, onBeforeMount, onBeforeUnmount } from "vue";
 
 const props = defineProps({
-  bottom: { type: Number },
-  right: { type: Number },
+  bottom: { type: Number, default: NaN },
+  right: { type: Number, default: NaN },
   dimensions: { type: Object },
   isFixed: { type: Boolean, default: false },
   isOverlay: { type: Boolean, default: false },

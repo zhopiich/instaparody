@@ -54,8 +54,8 @@
       >
         <template v-for="n in images.length" :key="n">
           <div
-            class="w-[6px] aspect-square rounded-full mr-1 last:mr-0 transition-colors duration-500"
-            :class="n - 1 === movement ? 'bg-blue-400' : 'bg-white/80'"
+            class="w-[6px] aspect-square rounded-full mr-1 last:mr-0 bg-white transition-opacity duration-500"
+            :class="n - 1 === movement ? 'opacity-100' : 'opacity-40'"
           ></div>
         </template>
       </div>

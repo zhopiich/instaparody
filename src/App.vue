@@ -34,9 +34,14 @@ import MessagesContainer from "./components/Messages/MessagesContainer.vue";
 
 <style>
 @media (min-width: 768px) {
-  html {
+  body {
     scrollbar-gutter: stable;
   }
+}
+
+body {
+  height: 100dvh;
+  overflow: auto;
 }
 </style>
 <style scoped>

@@ -1,0 +1,96 @@
+<template>
+  <div v-if="!userStore.isLoggedIn">**Please log in to see comments**</div>
+
+  <div v-else class="flex flex-col items-stretch">
+    <div v-for="comment in comments" class="mb-4 flex items-start commentItem">
+      <div class="mr-4">
+        <AvatarLink
+          :isCardFixed="true"
+          :user="{
+            username: comment.createdBy.username,
+            avatar: comment.createdBy.avatar,
+            displayName: comment.createdBy.displayName,
+            userId: comment.createdBy.userId,
+          }"
+          :widthAvatar="10"
+        />
+      </div>
+
+      <div class="grow">
+        <div class="inline-flex items-baseline">
+          <span class="mr-1"
+            ><DisplayNameLink
+              :isCardFixed="true"
+              :user="{
+                username: comment.createdBy.username,
+                avatar: comment.createdBy.avatar,
+                displayName: comment.createdBy.displayName,
+                userId: comment.createdBy.userId,
+              }"
+          /></span>
+        </div>
+
+        <div class="inline">
+          <span class="inline">{{ comment.content }}</span>
+        </div>
+
+        <div class="mt-2 mb-1 w-full flex *:leading-4">
+          <div class="shrink-0">
+            <TimeBanner :timestamp="comment.createdAt?.seconds" />
+          </div>
+
+          <div
+            v-if="comment.createdBy.userId === user.uid"
+            class="ml-auto mr-1 hidden deleteBtn"
+          >
+            <div
+              class="text-red-500 hover:text-red-400 active:text-red-300 cursor-pointer"
+              @click="deleteComment(comment.id)"
+            >
+              <p class="font-bold select-none">Delete</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { dateToRelative } from "../utils/date";
+
+import UserPlate from "./UserPlate.vue";
+import UserCard from "./UserCard.vue";
+import TimeBanner from "./PostButtons/TimeBanner.vue";
+import AvatarLink from "./AvatarLink.vue";
+import DisplayNameLink from "./DisplayNameLink.vue";
+
+import { ref, computed, onMounted } from "vue";
+
+const hoveredAvatarId = ref(null);
+const hoveredDisplayNameId = ref(null);
+
+const props = defineProps(["postId"]);
+
+import { useCommentStore } from "../stores/comment";
+import { useUserStore } from "../stores/user";
+
+const userStore = useUserStore();
+const user = computed(() => userStore.user);
+
+const commentStore = useCommentStore();
+const comments = computed(() => commentStore.list);
+
+async function deleteComment(commentId) {
+  await commentStore.deleteComment({
+    commentId,
+    postId: props.postId,
+  });
+}
+</script>
+
+<style scoped>
+.commentItem:hover .deleteBtn {
+  display: block;
+}
+</style>

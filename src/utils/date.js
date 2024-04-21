@@ -1,4 +1,7 @@
-export function dateToRelative(dateStr = null, short = null) {
+export function dateToRelative(
+  dateStr = null,
+  { short = false, interval = null } = {}
+) {
   if (!dateStr) return "";
 
   const date = new Date(dateStr * 1000);
@@ -9,28 +12,30 @@ export function dateToRelative(dateStr = null, short = null) {
   if (diff < 1000 * 60) {
     const seconds = Math.floor(diff / 1000);
     if (seconds < 10) return "now";
-    if (short === "short") return `${seconds}s`;
+    if (short) return `${seconds}s`;
     return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
   }
-
   if (diff < 1000 * 60 * 60) {
     const minutes = Math.floor(diff / (1000 * 60));
-    if (short === "short") return `${minutes}m`;
+    if (short) return `${minutes}m`;
     return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
   }
-
   if (diff < 1000 * 60 * 60 * 24) {
     const hours = Math.floor(diff / (1000 * 60 * 60));
-    if (short === "short") return `${hours}h`;
+    if (short) return `${hours}h`;
     return `${hours} hour${hours > 1 ? "s" : ""} ago`;
   }
 
-  // return `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(-2)}-${(
-  //   "0" +
-  //   (date.getDate() + 1)
-  // ).slice(-2)}`;
+  switch (interval) {
+    case "week":
+      const week = Math.floor(diff / (604800 * 1000));
+      if (week >= 1) return week + "w";
+    case "day":
+      const day = Math.floor(diff / (86400 * 1000));
+      return day + "d";
+  }
 
-  return date.toLocaleString("zh-TW", {
+  return date.toLocaleString("en-us", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -42,17 +47,8 @@ export function getTime(dateStr = null) {
 
   const date = new Date(dateStr * 1000);
 
-  const getDigits = (method) => {
-    let digits = method;
-    if (digits.toString().length === 1) {
-      digits = "0" + digits;
-    }
-
-    return digits;
-  };
-
-  return {
-    hour: getDigits(date.getHours()),
-    minute: getDigits(date.getMinutes()),
-  };
+  return date.toLocaleString("it-it", {
+    hour: "numeric",
+    minute: "numeric",
+  });
 }
