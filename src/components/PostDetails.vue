@@ -16,8 +16,7 @@
               <div
                 class="imageFrame aspect-square grow shrink overflow-hidden rounded-l-md"
               >
-                <div class="w-full h-full relative">
-                  <!-- <div class="flex flex-col shrink-0 items-stretch relative"> -->
+                <div class="w-full h-full relative bg-black">
                   <img
                     v-if="post.image || post.images.length === 1"
                     class="w-full h-full object-cover"
@@ -25,12 +24,11 @@
                     alt="Image posted"
                   />
                   <ImageCarousel v-else :imagesUrl="postImages" />
-                  <!-- </div> -->
                 </div>
               </div>
 
               <div
-                class="min-w-[405px] grow shrink-[2] relative rounded-r-md overflow-hidden"
+                class="min-w-[405px] grow shrink-[2] relative rounded-r-md overflow-hidden border-l"
                 :style="{ maxWidth: variableWidth, height: variableHeight }"
               >
                 <div class="w-full h-full bg-white flex flex-col">
@@ -80,13 +78,17 @@
                       <LikesCountBanner :post="post" />
                     </div>
 
-                    <div class="px-4 pb-4 text-sm leading-3">
-                      <time class="text-gray-400">{{ dateDisplay }}</time>
+                    <div class="px-4 pb-4">
+                      <TimeBanner :timestamp="post.createdAt?.seconds" />
                     </div>
                   </div>
 
                   <div class="shrink-0 border-t border-gray-300">
-                    <CommentInput :postId="postId" @setInputRef="setInputRef" />
+                    <CommentInput
+                      :postId="postId"
+                      @setInputRef="setInputRef"
+                      @focus="commentInput.focus()"
+                    />
                   </div>
                 </div>
               </div>
@@ -103,9 +105,6 @@ import { dateToRelative } from "../utils/date";
 
 const getUUID = () => window.crypto.randomUUID();
 
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { useRoute, onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
-
 import TheModal from "./TheModal.vue";
 import ImageCarousel from "./ImageCarousel.vue";
 import UserPlate from "./UserPlate.vue";
@@ -115,6 +114,10 @@ import LikeButton from "./PostButtons/LikeButton.vue";
 import CommentButton from "./PostButtons/CommentButton.vue";
 import SaveButton from "./PostButtons/SaveButton.vue";
 import LikesCountBanner from "./PostButtons/LikesCountBanner.vue";
+import TimeBanner from "./PostButtons/TimeBanner.vue";
+
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
 
 import { usePostStore } from "../stores/post";
 

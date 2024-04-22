@@ -117,6 +117,11 @@ export const useCommentStore = defineStore("comment", () => {
     ]);
   }
 
+  const isFocusOnMounted = ref(false);
+  const setIsFocus = (bool) => {
+    isFocusOnMounted.value = bool;
+  };
+
   return {
     list,
     loadComments,
@@ -124,5 +129,7 @@ export const useCommentStore = defineStore("comment", () => {
     triggerUnSub,
     uploadComment,
     deleteComment,
+    isFocusOnMounted,
+    setIsFocus,
   };
 });

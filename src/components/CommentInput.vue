@@ -33,20 +33,20 @@
 </template>
 
 <script setup>
-import PostActions from "./PostActions.vue";
-
 import { ref, computed, onMounted } from "vue";
 import { useRoute, onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
 
 import { useCommentStore } from "../stores/comment";
+import { usePostStore } from "../stores/post";
+
+const commentStore = useCommentStore();
+const postStore = usePostStore();
 
 const contentEditor = ref(null);
 
 const props = defineProps(["postId"]);
 
-const emits = defineEmits(["setInputRef"]);
-
-const commentStore = useCommentStore();
+const emits = defineEmits(["setInputRef", "focus"]);
 
 const commentContent = ref("");
 const trimmedContent = computed(() => commentContent.value.trim());
@@ -77,6 +77,12 @@ const postComment = async () => {
 
 onMounted(() => {
   emits("setInputRef", contentEditor.value);
+
+  if (commentStore.isFocusOnMounted) {
+    emits("focus");
+
+    commentStore.setIsFocus(false);
+  }
 });
 </script>
 

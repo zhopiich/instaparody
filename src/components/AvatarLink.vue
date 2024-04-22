@@ -1,10 +1,18 @@
 <template>
-  <div class="avatar p-2 -m-2" @mouseleave="mouseleave">
-    <div ref="target" class="rounded-full w-10" @mouseenter="mouseenter">
-      <router-link :to="'/' + user.username">
-        <img :src="user.avatar" class="cursor-pointer" />
-      </router-link>
-
+  <div class="p-2 -m-2" @mouseleave="mouseleave">
+    <div ref="target" :class="{ relative: !isCardFixed }">
+      <div
+        class="aspect-square rounded-full overflow-hidden"
+        :class="`w-${widthAvatar}`"
+        @mouseenter="mouseenter"
+      >
+        <router-link :to="'/' + user.username">
+          <img
+            :src="user.avatar"
+            class="cursor-pointer w-full h-full object-cover"
+          />
+        </router-link>
+      </div>
       <Transition>
         <UserCard
           v-if="isShowTooltip"

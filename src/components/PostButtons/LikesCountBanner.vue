@@ -4,7 +4,7 @@
       <p class="leading-5">
         Be the first to
         <span
-          class="font-bold hover:text-neutral-400 select-none"
+          class="font-bold hover:text-neutral-500 active:text-neutral-400 select-none cursor-pointer"
           @click="postStore.toggleActions({ postId: post.id, post })"
           >like this</span
         >
@@ -12,7 +12,7 @@
     </div>
     <div v-else>
       <p
-        class="cursor-pointer font-bold hover:text-neutral-500 leading-5 select-none"
+        class="cursor-pointer font-bold hover:text-neutral-500 active:text-neutral-400 leading-5 select-none"
         @click="showLikes(post.id)"
       >
         {{ post.likes + " like" + `${post.likes > 1 ? "s" : ""}` }}

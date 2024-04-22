@@ -1,6 +1,7 @@
 <template>
   <time
-    class="text-sm leading-3 text-gray-500 py-2 px-3 -my-2 -mx-3"
+    class="text-gray-500 py-2 px-3 -my-2 -mx-3"
+    :class="`text-${fontSize} leading-${lineHeight}`"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
     >{{ timeDisplay }}</time
@@ -12,7 +13,11 @@ import { dateToRelative } from "../../utils/date";
 
 import { ref, computed, onMounted } from "vue";
 
-const props = defineProps(["timestamp"]);
+const props = defineProps({
+  timestamp: { type: Number },
+  "font-size": { type: String, default: "sm" },
+  "line-height": { type: Number, default: 3 },
+});
 
 const isHovered = ref(false);
 

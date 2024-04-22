@@ -1,8 +1,15 @@
 <template>
   <div class="p-2 -m-2" @mouseleave="mouseleave">
-    <div ref="target" @mouseenter="mouseenter">
+    <div
+      ref="target"
+      :class="{ relative: !isCardFixed }"
+      @mouseenter="mouseenter"
+    >
       <router-link :to="'/' + user.username">
-        <p class="font-bold cursor-pointer select-none hover:text-zinc-400">
+        <p
+          class="font-bold cursor-pointer select-none"
+          :class="{ 'hover:text-zinc-400': isHoverHighlight }"
+        >
           {{ user.displayName }}
         </p>
       </router-link>
@@ -29,6 +36,7 @@ import UserCard from "./UserCard.vue";
 defineProps({
   isCardFixed: { type: Boolean, default: false },
   user: { type: Object },
+  isHoverHighlight: { type: Boolean, default: true },
 });
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";

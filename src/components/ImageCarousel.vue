@@ -34,7 +34,10 @@
         class="left-0 absolute h-full w-fit flex items-center ml-4"
         :class="{ 'pointer-events-auto': !isDraggingOver }"
       >
-        <button @click="prev" class="btn btn-circle btn-sm cursor-pointer">
+        <button
+          @click="prev"
+          class="btn btn-circle btn-sm cursor-pointer drop-shadow-md"
+        >
           <FontAwesomeIcon :icon="faAngleLeft" class="" />
         </button>
       </div>
@@ -43,7 +46,10 @@
         class="right-0 absolute h-full w-fit flex items-center mr-4"
         :class="{ 'pointer-events-auto': !isDraggingOver }"
       >
-        <button @click="next" class="btn btn-circle btn-sm cursor-pointer">
+        <button
+          @click="next"
+          class="btn btn-circle btn-sm cursor-pointer drop-shadow-md"
+        >
           <FontAwesomeIcon :icon="faAngleRight" class="" />
         </button>
       </div>

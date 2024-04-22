@@ -2,7 +2,11 @@
   <div class="h-10 aspect-square cursor-pointer">
     <div
       class="w-full h-full flex justify-center items-center hover:text-neutral-500 active:text-neutral-400"
-      @click="emits('focusInput')"
+      @click="
+        !postStore.isShowPostDetails
+          ? postStore.showPostDetails(post.id)
+          : emits('focusInput')
+      "
       ref="commentButton"
     >
       <FontAwesomeIcon :icon="faComment" class="fa-xl transition-transform" />

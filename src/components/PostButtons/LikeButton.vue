@@ -61,7 +61,7 @@ onMounted(() => {
 <style scoped>
 .liked,
 .mouseleft {
-  animation: bounce 0.4s cubic-bezier(0.47, 1.64, 0.41, 0.8);
+  animation: bounce 0.45s cubic-bezier(0.47, 1.64, 0.41, 0.8);
   transform: translate3d(0, 0, 0);
 }
 
@@ -71,12 +71,12 @@ onMounted(() => {
     transform: scale(1);
   }
 
-  40% {
-    transform: scale(1.2);
+  35% {
+    transform: scale(1.17);
   }
 
-  75% {
-    transform: scale(0.9);
+  70% {
+    transform: scale(0.92);
   }
 }
 </style>
