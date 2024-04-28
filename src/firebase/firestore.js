@@ -28,27 +28,26 @@ export const addUserDoc = async ({ uid, username }) => {
 
   await setDoc(docRef, {
     username,
-    displayName: "",
+    displayName: username,
     intro: "",
-    mobilePhone: "",
-    gender: "",
+    // mobilePhone: "",
+    gender: "N",
     website: "",
+    avatar: "",
   });
 };
 
 export const updateUserDoc = async (uid, data) => {
   const docRef = doc(db, "users", uid);
-  await updateDoc(docRef, data);
 
-  const { displayName, avatar } = data;
-  const profileData = {};
-  if (displayName) {
-    profileData.displayName = displayName;
+  try {
+    return await Promise.all([
+      updateDoc(docRef, data),
+      updateUserProfile(data),
+    ]);
+  } catch (error) {
+    console.log(error);
   }
-  if (avatar) {
-    profileData.photoURL = avatar;
-  }
-  await updateUserProfile(profileData);
 };
 
 // post

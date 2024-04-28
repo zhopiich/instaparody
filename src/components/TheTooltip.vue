@@ -6,7 +6,11 @@
     :class="[
       isFixed ? 'fixed' : 'absolute',
       !bottom || bottom < heightTooltip ? 'down' : 'up',
-      !right || right > widthTooltip ? 'left' : 'right-0',
+      isLeanOnRight
+        ? 'right-0'
+        : !right || right > widthTooltip
+        ? 'left'
+        : 'right-0',
     ]"
   >
     <slot></slot>
@@ -23,6 +27,7 @@ const props = defineProps({
   isFixed: { type: Boolean, default: false },
   isOverlay: { type: Boolean, default: false },
   zIndex: { type: Number, default: 50 },
+  isLeanOnRight: { type: Boolean, default: false },
 });
 
 const tooltip = ref(null);

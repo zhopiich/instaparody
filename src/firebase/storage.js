@@ -1,5 +1,10 @@
 import { ref as refVue } from "vue";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { storage } from "../firebase/firebase";
 
 export const progress = refVue(0);
@@ -44,4 +49,16 @@ export const uploadFile = async (file, path = "images/") => {
   await uploadAndGetUrl();
 
   return url;
+};
+
+export const deleteFile = async (fileURL) => {
+  if (!fileURL) return;
+
+  const fileRef = ref(storage, fileURL);
+
+  try {
+    return await deleteObject(fileRef);
+  } catch (error) {
+    console.log(error);
+  }
 };

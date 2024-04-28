@@ -63,13 +63,12 @@ body {
 
 footer {
   text-align: center;
-  /* align-self: flex-end; */
-  /* margin-top: auto; */
+  margin-top: 24px;
   padding-bottom: 8px;
   color: #828282;
   width: 100%;
-  position: absolute;
-  bottom: 0;
+  /* position: absolute; */
+  /* bottom: 0; */
   /* pointer-events: initial; */
   z-index: 0;
 }

@@ -1,7 +1,12 @@
 <template>
   <!-- <button class="button" :class="{ primary: color === 'primary', reverse }"> -->
-  <button class="button" :class="color">
-    <slot></slot>
+  <button
+    class="button"
+    :class="[isDisable ? 'disable' : color, { 'custom-width': width }]"
+  >
+    <div class="size-full flex justify-center items-center">
+      <p class="buttonText select-none"><slot></slot></p>
+    </div>
   </button>
 </template>
 
@@ -15,7 +20,11 @@ const props = defineProps({
     type: String,
     default: "primary",
   },
-  // reverse: Boolean,
+  px: { type: Number, default: 16 },
+  py: { type: Number, default: 0 },
+  height: { type: Number, default: 32 },
+  width: { type: Number, default: NaN },
+  isDisable: { type: Boolean, default: false },
 });
 
 // const customTextColor = (defaultColor) => {
@@ -26,25 +35,55 @@ const props = defineProps({
 <style scoped>
 .button {
   border-radius: 8px;
-  padding: 10px 32px;
+  padding: v-bind(py + "px" +" " + px + "px");
+  height: v-bind(height + "px");
   border: none;
+
   color: white;
-  font-size: 16px;
+}
+
+.custom-width {
+  width: v-bind(width + "px");
+}
+
+.buttonText {
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
 }
 
 .button.primary {
   background: #1da0ff;
+
+  &:hover {
+    background: #188de0;
+  }
+
+  &:active {
+    background: #42aefb;
+  }
+}
+
+.button.disable {
+  background: #8bcfff;
+  pointer-events: none;
 }
 
 .button.reverse {
   background: none;
   border: 1px solid #e8e8e8;
   color: initial;
+
+  &:hover {
+    background-color: rgb(239 239 239);
+  }
+  &:active {
+    background-color: rgb(229 229 229);
+  }
 }
 
 .button.immerse {
   background: rgba(0, 0, 0, 0);
   color: #1da0ff;
-  padding: 10px;
 }
 </style>

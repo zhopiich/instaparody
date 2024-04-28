@@ -37,7 +37,6 @@ import { faImages } from "@fortawesome/free-solid-svg-icons";
 import { ref, computed, onMounted } from "vue";
 
 import TheAvatar from "../components/TheAvatar.vue";
-import PostActions from "../components/PostActions.vue";
 import PostDetails from "./PostDetails.vue";
 
 import { dateToRelative } from "../utils/date";

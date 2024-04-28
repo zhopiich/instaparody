@@ -71,13 +71,20 @@ export const logOut = async () => {
 };
 
 export const updateUserProfile = async (profileData) => {
-  updateProfile(auth.currentUser, { ...profileData })
+  const updatedProfile = {};
+
+  if (typeof profileData.displayName === "string") {
+    updatedProfile.displayName = profileData.displayName;
+  }
+  if (typeof profileData.avatar === "string") {
+    updatedProfile.photoURL = profileData.avatar;
+  }
+
+  updateProfile(auth.currentUser, updatedProfile)
     .then(() => {
-      // Profile updated!
-      // ...
+      console.log("auth: Profile updated!");
     })
     .catch((error) => {
-      // An error occurred
-      // ...
+      console.log("auth: ", error);
     });
 };

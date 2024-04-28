@@ -22,7 +22,6 @@
           <TheAvatar
             :src="user?.photoURL"
             :width="42"
-            :height="42"
             style="cursor: pointer"
             @click="isShowDropdown = !isShowDropdown"
           />

@@ -1,50 +1,52 @@
 <template>
-  <div class="profileContainer">
-    <TheAvatar :width="186" :height="186" :src="user?.avatar" />
-    <div class="profile">
-      <p class="name">
-        <span>{{ user?.displayName || user?.username }}</span>
-        <router-link v-if="isMe" to="/profile/edit">Edit Profile</router-link>
-      </p>
-      <p class="handle">@{{ user?.username }}</p>
-      <div class="description">
-        <pre>{{ user?.intro }}</pre>
+  <div class="py-16">
+    <div class="profileContainer">
+      <TheAvatar :width="186" :height="186" :src="user?.avatar" />
+      <div class="profile">
+        <p class="name">
+          <span>{{ user?.displayName || user?.username }}</span>
+          <router-link v-if="isMe" to="/profile/edit">Edit Profile</router-link>
+        </p>
+        <p class="handle">@{{ user?.username }}</p>
+        <div class="description">
+          <pre>{{ user?.intro }}</pre>
+        </div>
+        <p class="website">{{ user?.website }}</p>
       </div>
-      <p class="website">{{ user?.website }}</p>
     </div>
-  </div>
 
-  <div class="tabs">
-    <div
-      v-for="tab in tabs"
-      class="tabPosts"
-      :class="{ active: tab.type === currentTab }"
-      :key="tab.type"
-      @click="switchTab(tab)"
-    >
-      <TheIcon :icon="tab.icon" />
-      <p>{{ tab.label }}</p>
+    <div class="tabs">
+      <div
+        v-for="tab in tabs"
+        class="tabPosts"
+        :class="{ active: tab.type === currentTab }"
+        :key="tab.type"
+        @click="switchTab(tab)"
+      >
+        <TheIcon :icon="tab.icon" />
+        <p>{{ tab.label }}</p>
+      </div>
     </div>
-  </div>
 
-  <div class="tabContent relative">
-    <p
-      class="absolute top-0 w-fit whitespace-nowrap -translate-y-full pb-6 text-gray-500"
-      v-if="currentTab === 'saved' && postsStatus !== 'loading'"
-    >
-      Only you can see what you've saved
-    </p>
-    <!-- <PostList :isPostsEmpty="posts.length === 0"> -->
-    <PostList :postsStatus="postsStatus">
-      <PostImageItem
-        v-for="post in posts"
-        :post="post"
-        :key="post.id"
-        :isLikedOrSaved="currentTab !== 'created'"
-      />
-    </PostList>
-    <!-- <PostDetails v-if="isShowPostDetails" /> -->
-    <PostUpload v-if="isShowPostUpload" />
+    <div class="tabContent relative">
+      <p
+        class="absolute top-0 w-fit whitespace-nowrap -translate-y-full pb-6 text-gray-500"
+        v-if="currentTab === 'saved' && postsStatus !== 'loading'"
+      >
+        Only you can see what you've saved
+      </p>
+      <!-- <PostList :isPostsEmpty="posts.length === 0"> -->
+      <PostList :postsStatus="postsStatus">
+        <PostImageItem
+          v-for="post in posts"
+          :post="post"
+          :key="post.id"
+          :isLikedOrSaved="currentTab !== 'created'"
+        />
+      </PostList>
+      <!-- <PostDetails v-if="isShowPostDetails" /> -->
+      <PostUpload v-if="isShowPostUpload" />
+    </div>
   </div>
 </template>
 

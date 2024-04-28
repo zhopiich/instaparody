@@ -1,12 +1,6 @@
-// import HomePage from "./pages/HomePage.vue";
-// import LoginPage from "./pages/LoginPage.vue";
-// import ProfilePage from "./pages/ProfilePage.vue";
-// import ProfileEdittingPage from "./pages/ProfileEdittingPage.vue";
-// import SearchPage from "./pages/SearchPage.vue";
-
 import { createRouter, createWebHistory } from "vue-router";
 // import { getJwtToken } from "./apis/auth";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useUserStore } from "./stores/user.js";
 import { usePostStore } from "./stores/post";
 
@@ -23,24 +17,43 @@ const routes = [
       postStore.loadPostsAll();
     },
   },
-  {
-    path: "/search",
-    name: "search_result",
-    component: () => import("./pages/SearchPage.vue"),
-    beforeEnter: (to) => {
-      if (!to.query.q) return { name: "home" };
-    },
-    props: (route) => ({ query: route.query.q }),
-  },
+  // {
+  //   path: "/search",
+  //   name: "search_result",
+  //   component: () => import("./pages/SearchPage.vue"),
+  //   beforeEnter: (to) => {
+  //     if (!to.query.q) return { name: "home" };
+  //   },
+  //   props: (route) => ({ query: route.query.q }),
+  // },
   // {
   //   path: "/profile",
-  //   name: "profile",
-  //   component: () => import("./pages/ProfilePage.vue"),
-  //   // beforeEnter: (to, from) => {
-  //   //   const postStore = usePostStore();
-  //   //   // postStore.loadPostsAll();
-  //   //   postStore.loadPostsFiltered("created");
-  //   // },
+  //   beforeEnter: async (to) => {
+  //     const userStore = useUserStore();
+  //     const userDoc = computed(() => userStore.userDoc);
+
+  //     const waitForUserDoc = (userDoc) => {
+  //       return new Promise((resolve) => {
+  //         watch(
+  //           userDoc,
+  //           () => {
+  //             console.log("** watch userDoc in router ** ");
+  //             // unwatch();
+  //             resolve();
+  //           },
+  //           { once: true }
+  //         );
+  //       });
+  //     };
+
+  //     if (!userDoc.value) {
+  //       await waitForUserDoc(userDoc);
+  //     }
+  //     console.log(userDoc.value.username);
+
+  //     // return { path: "/" + userDoc.value.username };
+  //     return { path: "/mika" };
+  //   },
   // },
   {
     path: "/:username",
@@ -59,7 +72,16 @@ const routes = [
   {
     path: "/profile/edit",
     name: "profileEdit",
-    component: () => import("./pages/ProfileEdittingPage.vue"),
+    component: () => import("./pages/ProfileEditingPage.vue"),
+    beforeEnter: (to, from) => {
+      //
+      const userStore = useUserStore();
+      const user = computed(() => userStore.user);
+
+      if (user.value === "guest") {
+        return { name: "login" };
+      }
+    },
   },
   {
     path: "/login",

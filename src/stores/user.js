@@ -50,21 +50,19 @@ export const useUserStore = defineStore("user", () => {
         };
       })();
 
-      onAuthStateChanged(auth, async (newUser) => {
+      onAuthStateChanged(auth, (newUser) => {
         console.log("** Auth Listener Triggered! ** (unique everytime)");
 
         if (newUser) {
           user.value = newUser;
           console.log("Current user is: ", newUser.email, newUser.uid);
-
-          // await getUserDoc();
-          // console.log("userDoc waited?", userDoc.value);
         } else {
           user.value = "guest";
           userDoc.value = null;
 
           console.log("***User is logged out");
         }
+
         resolveOnce();
       });
     });

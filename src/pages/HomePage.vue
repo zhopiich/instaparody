@@ -1,12 +1,12 @@
 <template>
-  <!-- <div> -->
-  <!-- <PostList :isError="!posts" :isPostsEmpty="posts?.length === 0"> -->
-  <PostList :postsStatus="postsStatus">
-    <PostItem v-for="post in posts" :post="post" :key="post.id" />
-  </PostList>
-  <!-- <PostDetails v-if="isShowPostDetails" /> -->
-  <PostUpload v-if="isShowPostUpload" />
-  <!-- </div> -->
+  <div class="py-16">
+    <!-- <PostList :isError="!posts" :isPostsEmpty="posts?.length === 0"> -->
+    <PostList :postsStatus="postsStatus">
+      <PostItem v-for="post in posts" :post="post" :key="post.id" />
+    </PostList>
+    <!-- <PostDetails v-if="isShowPostDetails" /> -->
+    <PostUpload v-if="isShowPostUpload" />
+  </div>
 </template>
 
 <script setup>
