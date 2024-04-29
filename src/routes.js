@@ -10,75 +10,22 @@ const routes = [
   {
     path: "/",
     name: "home",
-    // component: HomePage,
     component: () => import("./pages/HomePage.vue"),
     beforeEnter: (to, from) => {
       const postStore = usePostStore();
       postStore.loadPostsAll();
+      console.log("before Enter Home");
     },
   },
-  // {
-  //   path: "/search",
-  //   name: "search_result",
-  //   component: () => import("./pages/SearchPage.vue"),
-  //   beforeEnter: (to) => {
-  //     if (!to.query.q) return { name: "home" };
-  //   },
-  //   props: (route) => ({ query: route.query.q }),
-  // },
-  // {
-  //   path: "/profile",
-  //   beforeEnter: async (to) => {
-  //     const userStore = useUserStore();
-  //     const userDoc = computed(() => userStore.userDoc);
 
-  //     const waitForUserDoc = (userDoc) => {
-  //       return new Promise((resolve) => {
-  //         watch(
-  //           userDoc,
-  //           () => {
-  //             console.log("** watch userDoc in router ** ");
-  //             // unwatch();
-  //             resolve();
-  //           },
-  //           { once: true }
-  //         );
-  //       });
-  //     };
-
-  //     if (!userDoc.value) {
-  //       await waitForUserDoc(userDoc);
-  //     }
-  //     console.log(userDoc.value.username);
-
-  //     // return { path: "/" + userDoc.value.username };
-  //     return { path: "/mika" };
-  //   },
-  // },
-  {
-    path: "/:username",
-    name: "profile",
-    component: () => import("./pages/ProfilePage.vue"),
-    beforeEnter: (to, from) => {
-      //   const userStore = useUserStore();
-      //   if (
-      //     !userStore.userDoc ||
-      //     userStore.userDoc.username !== to.params.username
-      //   ) {
-      //     userStore.getOtherUserDoc(to.params.username);
-      //   }
-    },
-  },
   {
     path: "/profile/edit",
     name: "profileEdit",
     component: () => import("./pages/ProfileEditingPage.vue"),
     beforeEnter: (to, from) => {
-      //
       const userStore = useUserStore();
-      const user = computed(() => userStore.user);
 
-      if (user.value === "guest") {
+      if (!userStore.isLoggedIn) {
         return { name: "login" };
       }
     },
@@ -88,17 +35,22 @@ const routes = [
     name: "login",
     component: () => import("./pages/LoginPage.vue"),
     beforeEnter: (to, from) => {
-      //
       const userStore = useUserStore();
-      const user = computed(() => userStore.user);
 
-      // if (to.name !== "login" && !user.value) {
-      //   return { name: "login" };
-      // }
-      if (user.value && user.value !== "guest") {
+      if (userStore.isLoggedIn) {
         return { name: "home" };
       }
     },
+  },
+  {
+    path: "/:username",
+    name: "profile",
+    component: () => import("./pages/ProfilePage.vue"),
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotAvailable",
+    component: () => import("./pages/NotAvailablePage.vue"),
   },
 ];
 
@@ -114,18 +66,13 @@ const router = createRouter({
   },
 });
 
-// redirect unloggedin/loggedin user
-// to the login/home page
-// router.beforeEach(async (to, from) => {
-//   const userStore = useUserStore();
-//   const user = computed(() => userStore.user);
-
-//   // if (to.name !== "login" && !user.value) {
-//   //   return { name: "login" };
-//   // }
-//   if (to.name === "login" && user.value) {
-//     return { name: "home" };
-//   }
-// });
+router.beforeEach(async (to, from) => {
+  if (to.name === "profile" && to.params.username === "profile") {
+    return {
+      name: "NotAvailable",
+      params: { pathMatch: to.path.substring(1).split("/") },
+    };
+  }
+});
 
 export { router };

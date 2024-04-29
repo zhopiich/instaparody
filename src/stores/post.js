@@ -127,9 +127,13 @@ export const usePostStore = defineStore("post", () => {
   }
 
   const triggerUnSub = () => {
-    unsubscribe();
-    unsubscribe = null;
-    console.log("unsub! All");
+    if (unsubscribe) {
+      unsubscribe();
+      unsubscribe = null;
+      console.log("unsub! All");
+    } else {
+      console.log("No postsListener");
+    }
   };
 
   function cleanPostsAll() {
@@ -175,6 +179,7 @@ export const usePostStore = defineStore("post", () => {
     for (const type in unsubFiltered) {
       unsubFiltered[type]();
       delete unsubFiltered[type];
+      console.log("unsub", type);
     }
   };
 

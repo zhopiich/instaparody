@@ -99,7 +99,6 @@ const userStore = useUserStore();
 // });
 
 onBeforeRouteLeave(() => {
-  // console.log(postStore.unsubscribe);
   postStore.triggerUnSub();
 });
 </script>

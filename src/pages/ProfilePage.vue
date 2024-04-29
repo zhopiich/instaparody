@@ -4,7 +4,7 @@
       <TheAvatar :width="186" :height="186" :src="user?.avatar" />
       <div class="profile">
         <p class="name">
-          <span>{{ user?.displayName || user?.username }}</span>
+          <span>{{ user?.displayName }}</span>
           <router-link v-if="isMe" to="/profile/edit">Edit Profile</router-link>
         </p>
         <p class="handle">@{{ user?.username }}</p>
@@ -52,7 +52,12 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onBeforeMount } from "vue";
-import { useRoute, onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
+import {
+  useRoute,
+  useRouter,
+  onBeforeRouteUpdate,
+  onBeforeRouteLeave,
+} from "vue-router";
 
 import PostList from "../components/PostList.vue";
 import PostImageItem from "../components/PostImageItem.vue";
@@ -64,6 +69,7 @@ import { usePostStore } from "../stores/post";
 import { useUserStore } from "../stores/user";
 
 const route = useRoute();
+const router = useRouter();
 
 const postStore = usePostStore();
 const isShowPostUpload = computed(() => postStore.isShowPostUpload);
@@ -111,14 +117,7 @@ const tabs = computed(() =>
 );
 
 const currentTab = ref("created");
-// watch(
-//   currentTab,
-//   async () => {
-//     postStore.loadPostsFiltered(currentTab.value);
-//     // posts.value = postsFiltered.value[currentTab.value];
-//   }
-//   // { immediate: true }
-// );
+
 const switchTab = (tab) => {
   currentTab.value = tab.type;
   postStore.loadPostsFiltered(
@@ -136,98 +135,59 @@ const switchTab = (tab) => {
 
 const userStore = useUserStore();
 
-let user;
-let isMe = ref(null);
+const isMe = ref(null);
 
-const waitForUserDoc = (userDoc) => {
-  return new Promise((resolve) => {
-    const unwatch = watch(userDoc, () => {
-      console.log("** watch userDoc **(once) ");
-      unwatch();
-      resolve();
-    });
-  });
-};
-
-onBeforeMount(async () => {
-  if (userStore.isLoggedIn) {
-    const userDocOfMine = computed(() => userStore.userDoc);
-    if (!userDocOfMine.value) {
-      await waitForUserDoc(userDocOfMine);
-    }
-
-    isMe.value = userDocOfMine.value.username === route.params.username;
-  }
+const user = computed(() => {
+  if (isMe.value === null) return;
 
   if (isMe.value) {
-    user = computed(() => userStore.userDoc);
+    return userStore.userDoc;
   } else {
-    userStore.getOtherUserDoc(route.params.username);
-    user = computed(() => userStore.otherUserDoc);
+    return userStore.otherUserDoc;
   }
-
-  postStore.loadPostsFiltered(currentTab.value, {
-    username: route.params.username,
-  });
 });
 
-// real-time listenser only accessible in template
-// const isMe = ref(null);
-// const user = computed(() => {
-//   if (isMe.value === null) return;
-
-//   if (isMe.value) {
-//     return userStore.userDoc;
-//   } else {
-//     return userStore.otherUserDoc;
-//   }
-// });
-
-// onMounted(async () => {
-//   console.log("current userdoc", userDocOfMine.value);
-//   if (!userDocOfMine.value) {
-//     const waitForUserDoc = () => {
-//       return new Promise((resolve) => {
-//         const unwatch = watch(userDocOfMine, () => {
-//           console.log("** watch userDoc **(once) ");
-//           unwatch();
-//           resolve();
-//         });
-//       });
-//     };
-
-//     await waitForUserDoc();
-//   }
-//   console.log("current userdoc_after", userDocOfMine.value);
-
-//   postStore.loadPostsFiltered(currentTab.value, user.value.username);
-// });
-
-onBeforeRouteUpdate((to) => {
-  //
-  console.log("route updated!!");
-  currentTab.value = "created";
-  user = null;
-  isMe.value = null;
-  postStore.cleanPostsFiltered();
-  postStore.triggerUnSubFiltered();
-  console.log("report: ", user, isMe.value, postsFiltered);
+onBeforeMount(async () => {
+  postStore.loadPostsFiltered("created", {
+    username: route.params.username,
+  });
 
   if (userStore.isLoggedIn) {
-    isMe.value = userStore.userDoc.username === to.params.username;
-  }
-  console.log("isMe:", isMe.value);
+    const userDocOfMine = computed(() => userStore.userDoc);
 
-  if (isMe.value) {
-    user = computed(() => userStore.userDoc);
+    if (!userDocOfMine.value) {
+      watch(
+        userDocOfMine,
+        (newVal) => {
+          isMe.value = newVal.username === route.params.username;
+          if (!isMe.value) userStore.getOtherUserDoc(route.params.username);
+        },
+        { once: true }
+      );
+    } else {
+      isMe.value = userDocOfMine.value.username === route.params.username;
+      if (!isMe.value) userStore.getOtherUserDoc(route.params.username);
+    }
   } else {
-    userStore.getOtherUserDoc(to.params.username);
-    user = computed(() => userStore.otherUserDoc);
+    userStore.getOtherUserDoc(route.params.username);
   }
+});
 
-  postStore.loadPostsFiltered(currentTab.value, {
+onBeforeRouteUpdate((to) => {
+  postStore.cleanPostsFiltered();
+  postStore.triggerUnSubFiltered();
+
+  currentTab.value = "created";
+  postStore.loadPostsFiltered("created", {
     username: to.params.username,
   });
+
+  isMe.value =
+    userStore.isLoggedIn && userStore.userDoc.username === to.params.username;
+
+  if (!isMe.value) {
+    userStore.getOtherUserDoc(to.params.username);
+  }
 });
 
 onBeforeRouteLeave((to, from) => {
