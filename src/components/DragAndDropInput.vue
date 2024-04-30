@@ -85,6 +85,8 @@ import { ref, computed, onMounted, watch } from "vue";
 // const props = defineProps(["imagesCount"]);
 const emit = defineEmits(["editImagesFile"]);
 
+const maxAllowed = 10;
+
 const imageFiles = ref([]);
 const imagesObjUrl = ref([]);
 
@@ -94,21 +96,44 @@ const isDraggingOver = ref(false);
 
 const addImages = () => {
   const newImagesFile = fileInput.value.files;
-
   // newImages is an Object including a property "length"
-  if (newImagesFile.length > 0) {
-    let imagesArray = [];
-    imagesArray.push(...newImagesFile);
-    if (!imagesArray.every((file) => file.type.startsWith("image/"))) return;
+  if (newImagesFile.length === 0) return;
 
-    imageFiles.value.push(...imagesArray);
+  let imagesArray = [];
+  imagesArray.push(...newImagesFile);
 
-    const newObjectURL = imagesArray.map((imageFile) => ({
-      url: URL.createObjectURL(imageFile),
-      id: getUUID(),
-    }));
-    imagesObjUrl.value.push(...newObjectURL);
+  const notImage = imagesArray.find((file) => !file.type.startsWith("image/"));
+  if (notImage) {
+    // Throw(
+    //   `There's a file not supported. ${notImage.name} could not be uploaded.`
+    // );
+    return;
   }
+
+  const remaining = maxAllowed - imageFiles.value.length;
+  if (remaining === 0) {
+    // Throw(
+    //   "Up to 10 photos could be uploaded. Please remove at least one to select another."
+    // );
+    return;
+  }
+  if (remaining < imagesArray.length) {
+    // Throw(
+    //   "Up to 10 photos could be uploaded. Any more than that were discarded."
+    // );
+
+    imagesArray = imagesArray.slice(0, remaining);
+  }
+
+  // Appended to the array to be uploaded
+  imageFiles.value.push(...imagesArray);
+
+  const newObjectURL = imagesArray.map((imageFile) => ({
+    url: URL.createObjectURL(imageFile),
+    id: getUUID(),
+  }));
+  // To be previewed
+  imagesObjUrl.value.push(...newObjectURL);
 };
 
 watch(
