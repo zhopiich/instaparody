@@ -1,5 +1,5 @@
 <template>
-  <TheModal @close="postStore.toggleShowPostUpload(false)">
+  <TheModal @close="handleClose">
     <!-- slot following -->
     <div class="postUpload bg-white rounded-lg overflow-hidden">
       <div class="w=[640px] h-[640px] relative">
@@ -19,6 +19,8 @@
       </div>
     </div>
   </TheModal>
+
+  <ConfirmDiscardPost v-if="isShowConfirm" @close="isShowConfirm = false" />
 </template>
 
 <script setup>
@@ -28,6 +30,7 @@ import TheModal from "./TheModal.vue";
 import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
 import DragAndDropInput from "./DragAndDropInput.vue";
+import ConfirmDiscardPost from "./ConfirmDiscardPost.vue";
 
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
@@ -51,6 +54,16 @@ function publishPost() {
     // route.name
   );
 }
+
+const isShowConfirm = ref(false);
+const handleClose = () => {
+  if (imagesPosted.value.length > 0 || descriptionPost.value.length > 0) {
+    isShowConfirm.value = true;
+    return;
+  }
+
+  postStore.toggleShowPostUpload(false);
+};
 </script>
 
 <style scoped>
