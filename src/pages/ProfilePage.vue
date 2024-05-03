@@ -1,57 +1,147 @@
 <template>
-  <div class="py-16">
-    <div class="profileContainer">
-      <TheAvatar :width="186" :height="186" :src="user?.avatar" />
-      <div class="profile">
-        <p class="name">
-          <span>{{ user?.displayName }}</span>
-          <router-link v-if="isMe" to="/profile/edit">Edit Profile</router-link>
-        </p>
-        <p class="handle">@{{ user?.username }}</p>
-        <div class="description">
-          <pre>{{ user?.intro }}</pre>
+  <div class="py-12 md:py-14 md:px-5 w-screen max-w-[975px]">
+    <header
+      class="mx-4 md:mx-0 mb-4 md:mb-8 flex flex-col md:flex-row items-stretch"
+    >
+      <div
+        class="avatar-row shrink-0 md:grow md:basis-0 flex md:flex-col md:justify-center"
+      >
+        <div class="shrink-0 mr-7 flex justify-center">
+          <TheAvatar :responsiveWidth="[80, 150]" :src="user?.avatar" />
         </div>
-        <p class="website">{{ user?.website }}</p>
       </div>
-    </div>
 
-    <div class="tabs">
+      <section
+        class="shrink grow basis-0 md:grow-[2] md:basis-[30px] flex flex-col items-stretch"
+      >
+        <Teleport
+          to="header > .avatar-row"
+          v-if="isMounted"
+          :disabled="isBeyondPoint"
+        >
+          <div class="flex flex-col md:flex-row">
+            <div class="mr-5 min-w-12 flex flex-col items-start">
+              <h2 class="text-xl leading-6 break-words whitespace-pre-line">
+                {{ user?.displayName }}
+              </h2>
+              <div class="flex">
+                <span class="text-[15px] leading-[20px] text-[rgb(83_100_113)]"
+                  >@{{ user?.username }}</span
+                >
+              </div>
+            </div>
+
+            <div class="mt-1 md:mt-0 shrink-0 flex items-center">
+              <router-link
+                v-if="isMe"
+                to="/profile/edit"
+                class="flex items-center rounded-lg px-4 h-8 font-semibold text-sm leading-[18px] bg-gray-100 hover:bg-neutral-200 active:bg-neutral-100 active:text-gray-400"
+                >Edit profile</router-link
+              >
+
+              <div
+                v-else
+                class="flex items-center rounded-lg px-4 h-8 font-semibold text-sm leading-[18px] bg-blue-500 hover:bg-blue-600 active:bg-blue-400 cursor-pointer"
+                @click="
+                  enterChat({
+                    username: user.username,
+                    userId: user.userId,
+                    avatar: user.avatar,
+                    displayName: user.displayName,
+                  })
+                "
+              >
+                <span class="text-white">Message</span>
+              </div>
+            </div>
+          </div>
+        </Teleport>
+
+        <div class="h-0 mb-6 md:mb-5"></div>
+
+        <div class="mb-0 leading-6">
+          <pre class="whitespace-pre-wrap">{{ user?.intro }}</pre>
+        </div>
+
+        <div class="flex" v-if="user?.website">
+          <span class="mr-2"
+            ><FontAwesomeIcon :icon="faLink" class="text-sm text-neutral-500"
+          /></span>
+          <a :href="user?.website" class="">
+            <span class="font-semibold text-[rgb(0_55_107)]">{{
+              urlDisplay
+            }}</span></a
+          >
+        </div>
+
+        <div class="mt-4 flex items-center">
+          <p class="text-base leading-[18px]">
+            <span class="font-semibold">{{ postsByUserCount }}</span
+            >{{ " post" + `${postsByUserCount !== 1 ? "s" : ""}` }}
+          </p>
+        </div>
+      </section>
+    </header>
+
+    <div
+      class="border-t border-b md:border-b-0 flex justify-center items-center md:gap-14"
+    >
       <div
         v-for="tab in tabs"
-        class="tabPosts"
-        :class="{ active: tab.type === currentTab }"
+        class="grow md:grow-0 h-11 md:h-[52px] flex justify-center items-center cursor-pointer"
+        :class="
+          tab.type === currentTab
+            ? ' border-t border-black -mt-[1px] *:text-blue-500 *:md:text-black'
+            : '*:hover:text-neutral-400 *:active:text-neutral-300'
+        "
         :key="tab.type"
         @click="switchTab(tab)"
       >
-        <TheIcon :icon="tab.icon" />
-        <p>{{ tab.label }}</p>
+        <div class="flex items-center text-neutral-500">
+          <FontAwesomeIcon :icon="tab.icon" class="text-2xl md:text-base" />
+          <span class="ml-1.5 text-sm font-semibold hidden md:block">{{
+            tab.label
+          }}</span>
+        </div>
       </div>
     </div>
 
-    <div class="tabContent relative">
-      <p
-        class="absolute top-0 w-fit whitespace-nowrap -translate-y-full pb-6 text-gray-500"
-        v-if="currentTab === 'saved' && postsStatus !== 'loading'"
-      >
-        Only you can see what you've saved
-      </p>
-      <!-- <PostList :isPostsEmpty="posts.length === 0"> -->
-      <PostList :postsStatus="postsStatus">
-        <PostImageItem
-          v-for="post in posts"
-          :post="post"
-          :key="post.id"
-          :isLikedOrSaved="currentTab !== 'created'"
-        />
-      </PostList>
-      <!-- <PostDetails v-if="isShowPostDetails" /> -->
-      <PostUpload v-if="isShowPostUpload" />
+    <div
+      v-if="currentTab === 'saved' && postsStatus !== 'loading'"
+      class="h-16 flex"
+    >
+      <div class="mt-8 mb-4 flex">
+        <span class="whitespace-nowrap text-xs text-gray-500">
+          Only you can see what you've saved
+        </span>
+      </div>
     </div>
+    <PostImageList :postsStatus="postsStatus">
+      <PostImageItem
+        v-for="post in posts"
+        :post="post"
+        :key="post.id"
+        :isLikedOrSaved="currentTab !== 'created'"
+      />
+    </PostImageList>
+    <PostUpload v-if="isShowPostUpload" />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, onBeforeMount } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faLink, faTableCells } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faBookmark } from "@fortawesome/free-regular-svg-icons";
+
+import {
+  ref,
+  reactive,
+  computed,
+  watch,
+  onMounted,
+  onUnmounted,
+  onBeforeMount,
+} from "vue";
 import {
   useRoute,
   useRouter,
@@ -59,10 +149,29 @@ import {
   onBeforeRouteLeave,
 } from "vue-router";
 
-import PostList from "../components/PostList.vue";
+// For <Teleport />
+
+const mql = window.matchMedia("(min-width: 768px)");
+const isMounted = ref(false);
+const isBeyondPoint = ref(mql.matches);
+
+const handleChange = () => {
+  isBeyondPoint.value = mql.matches;
+};
+
+onMounted(() => {
+  isMounted.value = true;
+
+  mql.addEventListener("change", handleChange);
+});
+
+onUnmounted(() => {
+  mql.removeEventListener("change", handleChange);
+});
+
+import PostImageList from "../components/PostImageList.vue";
 import PostImageItem from "../components/PostImageItem.vue";
 import PostUpload from "../components/PostUpload.vue";
-import TheIcon from "../components/TheIcon.vue";
 import TheAvatar from "../components/TheAvatar.vue";
 
 import { usePostStore } from "../stores/post";
@@ -74,20 +183,21 @@ const router = useRouter();
 const postStore = usePostStore();
 const isShowPostUpload = computed(() => postStore.isShowPostUpload);
 
-const types = ["created", "liked", "saved"];
-
 const postsFiltered = (() => {
   const obj = {};
 
-  for (const type of types) {
+  for (const type of ["created", "liked", "saved"]) {
     obj[type] = computed(() => postStore.postsFiltered[type]);
   }
 
   return obj;
 })();
 
-const posts = computed(() => {
-  return postsFiltered[currentTab.value].value;
+const posts = computed(() => postsFiltered[currentTab.value].value);
+
+const postsByUserCount = computed(() => {
+  if (!postsFiltered.created.value) return;
+  return postsFiltered.created.value.length;
 });
 
 const postsStatus = computed(() => {
@@ -100,17 +210,17 @@ const tabs = computed(() =>
   [
     {
       label: "POSTS",
-      icon: "posts",
+      icon: faTableCells,
       type: "created",
     },
     {
       label: "LIKED",
-      icon: "like",
+      icon: faHeart,
       type: "liked",
     },
     {
       label: "SAVED",
-      icon: "favorite",
+      icon: faBookmark,
       type: "saved",
     },
   ].filter((tab) => !(tab.type === "saved" && !isMe.value))
@@ -131,7 +241,7 @@ const switchTab = (tab) => {
   );
 };
 
-// user
+// User info
 
 const userStore = useUserStore();
 
@@ -145,6 +255,42 @@ const user = computed(() => {
   } else {
     return userStore.otherUserDoc;
   }
+});
+
+import { useMessageStore } from "../stores/message";
+const messageStore = useMessageStore();
+
+const enterChat = async ({ ...userInfo }) => {
+  const chatId = await messageStore.addContact({ ...userInfo });
+
+  if (
+    !messageStore.currentContact ||
+    messageStore.currentContact.chatId !== chatId
+  ) {
+    messageStore.loadMessages(chatId);
+    messageStore.setCurrentChat(chatId);
+  }
+
+  messageStore.toggle(true);
+  messageStore.enterChat(true);
+};
+
+const urlDisplay = computed(() => {
+  if (!user.value) return;
+
+  const url = user.value.website;
+  let trimmed;
+
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    const { host, pathname } = new URL(url);
+    trimmed = host + pathname;
+  } else {
+    trimmed = url;
+  }
+
+  if (trimmed.endsWith("/")) trimmed = trimmed.slice(0, -1);
+
+  return trimmed;
 });
 
 onBeforeMount(async () => {
@@ -190,109 +336,10 @@ onBeforeRouteUpdate((to) => {
   }
 });
 
-onBeforeRouteLeave((to, from) => {
+onBeforeRouteLeave(() => {
   postStore.cleanPostsFiltered();
   postStore.triggerUnSubFiltered();
 });
 </script>
 
-<style scoped>
-.profileContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 10vw;
-}
-
-.avatar {
-  justify-self: end;
-}
-
-.profile .name {
-  display: flex;
-  align-items: center;
-}
-
-.profile .name > span {
-  font-size: 26px;
-}
-
-.profile .name > a {
-  color: #1da0ff;
-  text-decoration: none;
-  margin-left: 26px;
-}
-
-.profile .handle {
-  margin-top: 4px;
-  color: #848484;
-}
-
-.profile .description {
-  margin-top: 26px;
-  margin-bottom: 22px;
-}
-
-.tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 88px);
-  column-gap: 4vw;
-  justify-content: center;
-
-  margin-top: 7vmin;
-  margin-bottom: 20px;
-}
-
-.tabPosts {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: center;
-  padding: 12px 0 8px 0;
-  cursor: pointer;
-
-  & > svg {
-    margin: 0 auto;
-    width: 32px;
-    height: 32px;
-    stroke: #8a9194;
-    fill: #8a9194;
-  }
-}
-
-.tabPosts.active {
-  background: #eff4f8;
-  border-radius: 18px;
-
-  & > svg {
-    stroke: #1787d9;
-    fill: #1787d9;
-  }
-
-  & > p {
-    color: #1787d9;
-  }
-}
-
-.tabContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 60px auto 0 auto;
-  /* text-align: center;
-  font-weight: 600;
-  margin-bottom: 32px; */
-}
-
-.posts {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 40px;
-}
-
-.postImage {
-  width: 100%;
-  height: 321px;
-  background: #eee;
-  object-fit: cover;
-}
-</style>
+<style scoped></style>

@@ -91,11 +91,6 @@ export const useUserStore = defineStore("user", () => {
   };
 
   const getOtherUserDoc = async (_username) => {
-    // if (!user.value) {
-    //   console.log("userDoc: not logged in");
-    //   return;
-    // }
-
     const q = query(
       collection(db, "users"),
       where("username", "==", _username)
@@ -106,7 +101,10 @@ export const useUserStore = defineStore("user", () => {
     if (querySnap.docs.length === 0) {
       console.log("No Such User");
     } else {
-      otherUserDoc.value = querySnap.docs[0].data();
+      otherUserDoc.value = {
+        ...querySnap.docs[0].data(),
+        userId: querySnap.docs[0].id,
+      };
     }
   };
 
