@@ -1,6 +1,6 @@
 <template>
   <time
-    class="text-gray-500 py-2 px-3 -my-2 -mx-3"
+    class="text-gray-500 py-2 pr-3 -my-2 -mr-3"
     :class="`text-${fontSize} leading-${lineHeight}`"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"

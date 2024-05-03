@@ -1,5 +1,5 @@
 <template>
-  <div class="p-2 -m-2" @mouseleave="mouseleave">
+  <div class="py-2 pr-3 -my-2 -mr-3" @mouseleave="mouseleave">
     <div
       ref="target"
       :class="{ relative: !isCardFixed }"

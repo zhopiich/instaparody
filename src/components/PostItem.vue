@@ -40,9 +40,13 @@
           />
         </div>
 
-        <div>
-          <div class="mx-1.5 inline text-gray-500">{{ "•" }}</div>
-          <TimeBanner :timestamp="post.createdAt?.seconds" :fontSize="'base'" />
+        <div class="pointer-events-none">
+          <span class="mx-1.5 inline text-gray-500">{{ "•" }}</span>
+          <span class="pointer-events-auto"
+            ><TimeBanner
+              :timestamp="post.createdAt?.seconds"
+              :fontSize="'base'"
+          /></span>
         </div>
       </div>
 
