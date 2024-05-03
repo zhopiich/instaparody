@@ -172,7 +172,14 @@ const isDisplayNameValid = computed(() => {
 });
 const isWebsiteValid = computed(() => {
   if (profileData === {} || !profileData.website) return true;
-  return profileData.website.length <= 50;
+
+  const url = profileData.website.trim();
+  return (
+    url.length === 0 ||
+    (profileData.website.length <= 50 &&
+      (url.startsWith("https://") || url.startsWith("http://")) &&
+      !url.includes(" "))
+  );
 });
 
 const isProfileValid = computed(
