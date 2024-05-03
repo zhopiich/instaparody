@@ -1,5 +1,5 @@
 <template>
-  <div class="py-12 md:py-14 md:px-5 w-screen max-w-[975px]">
+  <div class="py-12 md:py-14 md:px-5 w-full max-w-[975px]">
     <header
       class="mx-4 md:mx-0 mb-4 md:mb-8 flex flex-col md:flex-row items-stretch"
     >
@@ -12,6 +12,7 @@
       </div>
 
       <section
+        v-if="user && user !== 'noSuchUser'"
         class="shrink grow basis-0 md:grow-[2] md:basis-[30px] flex flex-col items-stretch"
       >
         <Teleport
@@ -59,7 +60,7 @@
 
         <div class="h-0 mb-6 md:mb-5"></div>
 
-        <div class="mb-0 leading-6">
+        <div class="leading-6">
           <pre class="whitespace-pre-wrap">{{ user?.intro }}</pre>
         </div>
 
@@ -81,27 +82,68 @@
           </p>
         </div>
       </section>
+
+      <section
+        v-if="user === 'noSuchUser'"
+        class="shrink grow basis-0 md:grow-[2] md:basis-[30px] flex flex-col items-stretch"
+      >
+        <Teleport
+          to="header > .avatar-row"
+          v-if="isMounted"
+          :disabled="isBeyondPoint"
+        >
+          <div class="flex items-center">
+            <div class="flex flex-col items-start">
+              <h2
+                class="text-xl leading-6 break-words whitespace-pre-line font-bold"
+              >
+                @{{ route.params.username }}
+              </h2>
+            </div>
+          </div>
+        </Teleport>
+
+        <div class="h-0 mb-6 md:mb-5"></div>
+
+        <div class="mb-2">
+          <span
+            class="text-[31px] leading-9 break-words whitespace-pre-line font-extrabold"
+          >
+            This account doesn’t exist
+          </span>
+        </div>
+        <div class=" ">
+          <span
+            class="text-base leading-5 break-words whitespace-pre-line text-neutral-500"
+          >
+            Try searching for another.
+          </span>
+        </div>
+      </section>
     </header>
 
-    <div
-      class="border-t border-b md:border-b-0 flex justify-center items-center md:gap-14"
-    >
+    <div class="border-t">
       <div
-        v-for="tab in tabs"
-        class="grow md:grow-0 h-11 md:h-[52px] flex justify-center items-center cursor-pointer"
-        :class="
-          tab.type === currentTab
-            ? ' border-t border-black -mt-[1px] *:text-blue-500 *:md:text-black'
-            : '*:hover:text-neutral-400 *:active:text-neutral-300'
-        "
-        :key="tab.type"
-        @click="switchTab(tab)"
+        v-if="user !== 'noSuchUser'"
+        class="border-b md:border-b-0 flex justify-center items-center md:gap-14"
       >
-        <div class="flex items-center text-neutral-500">
-          <FontAwesomeIcon :icon="tab.icon" class="text-2xl md:text-base" />
-          <span class="ml-1.5 text-sm font-semibold hidden md:block">{{
-            tab.label
-          }}</span>
+        <div
+          v-for="tab in tabs"
+          class="grow md:grow-0 h-11 md:h-[52px] flex justify-center items-center cursor-pointer"
+          :class="
+            tab.type === currentTab
+              ? ' border-t border-black -mt-[1px] *:text-blue-500 *:md:text-black'
+              : '*:hover:text-neutral-400 *:active:text-neutral-300'
+          "
+          :key="tab.type"
+          @click="switchTab(tab)"
+        >
+          <div class="flex items-center text-neutral-500">
+            <FontAwesomeIcon :icon="tab.icon" class="text-2xl md:text-base" />
+            <span class="ml-1.5 text-sm font-semibold hidden md:block">{{
+              tab.label
+            }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -116,7 +158,11 @@
         </span>
       </div>
     </div>
-    <PostImageList :postsStatus="postsStatus">
+    <PostImageList
+      v-if="user !== 'noSuchUser'"
+      :postsStatus="postsStatus"
+      :userStatus="user"
+    >
       <PostImageItem
         v-for="post in posts"
         :post="post"
@@ -124,8 +170,9 @@
         :isLikedOrSaved="currentTab !== 'created'"
       />
     </PostImageList>
-    <PostUpload v-if="isShowPostUpload" />
   </div>
+
+  <PostUpload v-if="isShowPostUpload" />
 </template>
 
 <script setup>

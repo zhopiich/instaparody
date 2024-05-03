@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="postsStatus === 'loading'"
+    v-if="postsStatus === 'loading' || !userStatus"
     class="loading loading-dots loading-md"
   ></div>
   <div
@@ -21,9 +21,7 @@
 </template>
 
 <script setup>
-defineProps({
-  postsStatus: { type: String },
-});
+defineProps(["postsStatus", "userStatus"]);
 </script>
 
 <style scoped></style>

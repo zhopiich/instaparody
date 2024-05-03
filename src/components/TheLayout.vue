@@ -9,7 +9,7 @@
 <style scoped>
 .content {
   flex-grow: 1;
-  /* width: 80vw; */
+  width: 100%;
   /* max-width: 1124px; */
   display: flex;
   flex-direction: column;

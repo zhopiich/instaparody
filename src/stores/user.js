@@ -99,7 +99,8 @@ export const useUserStore = defineStore("user", () => {
     const querySnap = await getDocs(q);
 
     if (querySnap.docs.length === 0) {
-      console.log("No Such User");
+      // console.log("No Such User");
+      otherUserDoc.value = "noSuchUser";
     } else {
       otherUserDoc.value = {
         ...querySnap.docs[0].data(),
