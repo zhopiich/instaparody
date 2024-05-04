@@ -18,7 +18,7 @@
         <Teleport
           to="header > .avatar-row"
           v-if="isMounted"
-          :disabled="isBeyondPoint"
+          :disabled="!isMobile"
         >
           <div class="flex flex-col md:flex-row">
             <div class="mr-5 min-w-12 flex flex-col items-start">
@@ -90,7 +90,7 @@
         <Teleport
           to="header > .avatar-row"
           v-if="isMounted"
-          :disabled="isBeyondPoint"
+          :disabled="!isMobile"
         >
           <div class="flex items-center">
             <div class="flex flex-col items-start">
@@ -198,22 +198,25 @@ import {
 
 // For <Teleport />
 
-const mql = window.matchMedia("(min-width: 768px)");
+// const mql = window.matchMedia("(min-width: 768px)");
 const isMounted = ref(false);
-const isBeyondPoint = ref(mql.matches);
+// const isBeyondPoint = ref(mql.matches);
 
-const handleChange = () => {
-  isBeyondPoint.value = mql.matches;
-};
+// const handleChange = () => {
+//   isBeyondPoint.value = mql.matches;
+// };
+import { useMediaQueryStore } from "../stores/mediaQuery";
+const mediaQueryStore = useMediaQueryStore();
+const isMobile = computed(() => mediaQueryStore.isMobile);
 
 onMounted(() => {
   isMounted.value = true;
 
-  mql.addEventListener("change", handleChange);
+  // mql.addEventListener("change", handleChange);
 });
 
 onUnmounted(() => {
-  mql.removeEventListener("change", handleChange);
+  // mql.removeEventListener("change", handleChange);
 });
 
 import PostImageList from "../components/PostImageList.vue";

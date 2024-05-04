@@ -1,9 +1,16 @@
 <template>
-  <NavBarSliding @turn="changeDirection" @scroll="changePosition">
+  <NavBarMobile
+    v-if="isMobile"
+    :avatar="user?.photoURL"
+    :profilePageURL="profilePageURL"
+  />
+
+  <NavBarSliding v-else @turn="changeDirection" @scroll="changePosition">
     <nav class="navbar z-10" :class="{ showSearch: isShowSearch }">
       <router-link class="logo" :class="{ hiddenSearch: isShowSearch }" to="/"
         ><img src="../assets/logo.svg"
       /></router-link>
+
       <Search
         :isShowSearch="isShowSearch"
         :direction="direction"
@@ -18,6 +25,7 @@
         >
           <TheIcon icon="publish" />
         </button>
+
         <div class="profileDropDown">
           <TheAvatar
             :src="user?.photoURL"
@@ -42,9 +50,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
 import { logOut } from "../firebase/auth";
 
+import NavBarMobile from "./NavBarMobile.vue";
 import TheAvatar from "./TheAvatar.vue";
 import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
@@ -52,6 +60,10 @@ import NavBarSliding from "./NavBarSliding.vue";
 import Search from "./Search.vue";
 
 // import { userListener, getUser, updateUser } from "../firebase/firestore.js";
+
+const props = defineProps(["isMobile"]);
+
+import { ref, computed, onMounted } from "vue";
 
 const isShowDropdown = ref(false);
 

@@ -3,7 +3,7 @@
     <!-- <div class="upperContent"> -->
     <template v-if="$route.name !== 'login'">
       <!-- <header class="header"> -->
-      <NavBar />
+      <NavBar :isMobile="isMobile" />
       <!-- </header> -->
       <TheLayout>
         <router-view></router-view>
@@ -17,7 +17,7 @@
     </template>
     <!-- </div> -->
 
-    <footer :class="{ inside: $route.name === 'login' }">
+    <footer class="mb-12 md:mb-0" :class="{ inside: $route.name === 'login' }">
       <!-- <footer class="footer"> -->
       &copy; 2023INSTAGRAM FROM MEGA
     </footer>
@@ -28,8 +28,17 @@
 import "./assets/base.css";
 import NavBar from "./components/NavBar.vue";
 import TheLayout from "./components/TheLayout.vue";
-// import TheIcon from "./components/TheIcon.vue";
 import MessagesContainer from "./components/Messages/MessagesContainer.vue";
+
+import { ref, computed, watch, onMounted } from "vue";
+
+import { useMediaQueryStore } from "./stores/mediaQuery";
+const mediaQueryStore = useMediaQueryStore();
+const isMobile = computed(() => mediaQueryStore.isMobile);
+
+onMounted(() => {
+  mediaQueryStore.setListener();
+});
 </script>
 
 <style>
