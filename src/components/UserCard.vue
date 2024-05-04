@@ -8,7 +8,7 @@
     <div
       class="w-[370px] bg-white flex flex-col rounded-lg overflow-hidden shadow-xl border border-neutral-200"
     >
-      <div class="flex gap-4 px-4 pt-4">
+      <div class="flex gap-4 px-4 py-4">
         <div class="avatar">
           <div class="w-16 rounded-full">
             <router-link :to="'/' + user.username">
@@ -24,16 +24,17 @@
             <p class="text-slate-500">@{{ user.username }}</p>
           </router-link>
         </div>
-        <div class="flex flex-col justify-center items-center px-4">
-          <p class="font-bold text-lg">{{ countPosts }}</p>
-          <p class="text-slate-600">
-            {{ "post" + `${countPosts !== 1 ? "s" : ""}` }}
-          </p>
-        </div>
       </div>
 
-      <div class="px-4 min-h-6 flex w-full items-center">
-        <p class="py-6">{{ intro }}</p>
+      <div class="px-4 pb-2 min-h-6 flex w-full items-center">
+        <pre class="whitespace-pre-wrap leading-5">{{ intro }}</pre>
+      </div>
+
+      <div class="flex items-center px-4 pb-4">
+        <p class="">
+          <span class="font-bold">{{ countPosts }}</span
+          >{{ " post" + `${countPosts !== 1 ? "s" : ""}` }}
+        </p>
       </div>
 
       <!-- <div class="flex gap-1"> -->
