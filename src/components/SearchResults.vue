@@ -1,6 +1,10 @@
 <template>
   <div
-    class="absolute top-full w-full max-h-[360px] mt-1 rounded-xl overflow-hidden border shadow-lg flex flex-col"
+    class="flex flex-col"
+    :class="[
+      { 'max-h-[inherit]': maxHeight === 'inherit' },
+      { 'max-h-full': maxHeight === 'full' },
+    ]"
   >
     <div class="grow h-full overflow-auto bg-white *:min-h-[88px] *:w-full">
       <div v-if="!results" class="flex flex-col justify-center items-center">
@@ -49,6 +53,7 @@ import { computed } from "vue";
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 
+defineProps(["maxHeight"]);
 defineEmits(["resultClicked"]);
 
 const results = computed(() => userStore.results);

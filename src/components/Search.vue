@@ -1,7 +1,8 @@
 <template>
-  <div class="searchInput relative" :class="{ hiddenSearch: !isShowSearch }">
+  <div class="w-[360px] relative">
     <input
       type="text"
+      class="h-11 pl-10 pr-9 rounded-xl bg-[#f1f1f1]"
       v-model="searchTerm"
       placeholder="Search"
       ref="input"
@@ -22,30 +23,18 @@
         @click="cleanSearchTerm"
       />
     </div>
-    <!-- <TheButton
-      v-else
-      class="cancelSearchBtn"
-      color="immerse"
-      @click="$emit('toggle', false)"
-    >
-      Cancel
-    </TheButton> -->
-    <SearchResults
+
+    <div
       v-if="
         searchTerm.trim().length > 0 &&
         (!direction || navbarPosition === 'expanded') &&
         navbarPosition !== 'folded'
       "
-      @resultClicked="cleanSearchTerm"
-    />
+      class="absolute top-full w-full mt-1 rounded-xl overflow-hidden border shadow-lg max-h-[360px]"
+    >
+      <SearchResults :maxHeight="'inherit'" @resultClicked="cleanSearchTerm" />
+    </div>
   </div>
-  <button
-    class="searchBtn"
-    :class="{ hiddenSearch: isShowSearch }"
-    @click="$emit('toggle', true)"
-  >
-    <TheIcon icon="search" />
-  </button>
 </template>
 
 <script setup>
@@ -59,43 +48,41 @@ import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
 import SearchResults from "./SearchResults.vue";
 
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 
-defineProps(["isShowSearch", "direction", "navbarPosition"]);
-defineEmits(["toggle"]);
+defineProps(["direction", "navbarPosition"]);
 
 const input = ref(null);
 
-const searchTerm = ref("");
+const searchTerm = ref(userStore.searchTerm);
 const cleanSearchTerm = () => {
   searchTerm.value = "";
 };
 
 let delay;
-let lastTrimmedTerm;
+let lastTrimmedTerm = "";
 const handleSearch = () => {
   if (delay) {
     clearTimeout(delay);
     delay = null;
   }
 
-  if (!searchTerm.value) {
-    lastTrimmedTerm = null;
+  const newTrimmedTerm = searchTerm.value.trim();
+  if (lastTrimmedTerm === newTrimmedTerm) return;
+
+  if (!newTrimmedTerm) {
+    lastTrimmedTerm = "";
     userStore.cleanResults();
     return;
   }
 
-  const newTrimmedTerm = searchTerm.value.trim();
-  if (lastTrimmedTerm === newTrimmedTerm) return;
-  if (!newTrimmedTerm) return;
+  lastTrimmedTerm = newTrimmedTerm;
 
   delay = setTimeout(() => {
     userStore.search(newTrimmedTerm);
-
-    lastTrimmedTerm = newTrimmedTerm;
   }, 500);
 };
 
@@ -109,59 +96,10 @@ const handleEscKey = () => {
 
   input.value.blur();
 };
+
+onBeforeUnmount(() => {
+  userStore.saveSearchTerm(searchTerm.value);
+});
 </script>
 
-<style scoped>
-@screen max-md {
-  .searchBtn.hiddenSearch {
-    @apply hidden;
-  }
-}
-
-@screen max-sm {
-  /* .navbar.showSearch {
-    grid-template-columns: 1fr auto;
-  } */
-
-  .hiddenSearch {
-    @apply hidden;
-  }
-}
-
-.searchInput {
-  position: relative;
-  justify-self: center;
-  margin: 0;
-  @apply max-lg:max-w-[351px] lg:w-[360px];
-}
-
-.searchInput input {
-  height: 40px;
-  padding: 0 12px 0 40px;
-  background: #f1f1f1;
-  border-radius: 12px;
-}
-
-.cancelSearchBtn {
-  position: absolute;
-  background: none;
-  border: none;
-  right: 6px;
-  top: 0;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.cancelSearchBtn {
-  @apply sm:hidden;
-}
-
-.searchBtn {
-  justify-self: end;
-  margin-right: 18px;
-  @apply h-10 w-10 rounded-xl border border-solid border-neutral-500 sm:hidden;
-}
-</style>
+<style scoped></style>

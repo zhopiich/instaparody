@@ -6,17 +6,12 @@
   />
 
   <NavBarSliding v-else @turn="changeDirection" @scroll="changePosition">
-    <nav class="navbar z-10" :class="{ showSearch: isShowSearch }">
-      <router-link class="logo" :class="{ hiddenSearch: isShowSearch }" to="/"
+    <nav class="navbar z-10">
+      <router-link class="logo" to="/"
         ><img src="../assets/logo.svg"
       /></router-link>
 
-      <Search
-        :isShowSearch="isShowSearch"
-        :direction="direction"
-        :navbarPosition="navbarPosition"
-        @toggle="toggleShowSearch"
-      />
+      <Search :direction="direction" :navbarPosition="navbarPosition" />
 
       <div class="navItems">
         <button
@@ -75,11 +70,6 @@ const postStore = usePostStore();
 
 function publishPost() {
   postStore.toggleShowPostUpload(true);
-}
-
-const isShowSearch = ref(false);
-function toggleShowSearch(bool) {
-  isShowSearch.value = bool;
 }
 
 import { useUserStore } from "../stores/user";
@@ -148,20 +138,6 @@ const changePosition = (position) => {
 @screen max-md {
   .navbar {
     grid-template-columns: auto 1fr auto;
-  }
-
-  /* .searchBtn.hiddenSearch {
-    @apply hidden;
-  } */
-}
-
-@screen max-sm {
-  .navbar.showSearch {
-    grid-template-columns: 1fr auto;
-  }
-
-  .hiddenSearch {
-    @apply hidden;
   }
 }
 

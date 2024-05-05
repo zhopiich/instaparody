@@ -153,6 +153,12 @@ export const useUserStore = defineStore("user", () => {
     }));
   };
 
+  const searchTerm = ref("");
+
+  const saveSearchTerm = (_searchTerm) => {
+    searchTerm.value = _searchTerm;
+  };
+
   return {
     user,
     userDoc,
@@ -165,5 +171,7 @@ export const useUserStore = defineStore("user", () => {
     results,
     cleanResults,
     search,
+    searchTerm,
+    saveSearchTerm,
   };
 });
