@@ -43,16 +43,18 @@ const heightTab = ref("53px");
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
+messageStore.enterChat(false);
+
 const isEnterChat = computed(() => messageStore.isEnterChat);
 
 const isExtended = computed(() => messageStore.isExtended);
 
 onMounted(() => {
-  messageStore.loadContacts();
+  // messageStore.loadContacts();
 });
 
 onBeforeUnmount(() => {
-  messageStore.triggerUnSubContacts();
+  // messageStore.triggerUnSubContacts();
 });
 </script>
 

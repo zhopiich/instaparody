@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 // import { getJwtToken } from "./apis/auth";
 import { ref, computed, watch } from "vue";
 import { useUserStore } from "./stores/user.js";
-import { usePostStore } from "./stores/post";
+import { usePostStore } from "./stores/post.js";
+import { useMessageStore } from "./stores/message.js";
 
 import { auth } from "./firebase/firebase.js";
 
@@ -17,7 +18,29 @@ const routes = [
       console.log("before Enter Home");
     },
   },
+  {
+    path: "/messages/:chatId?",
+    name: "messages",
+    component: () => import("./pages/MessagesPage.vue"),
+    beforeEnter: (to, from) => {
+      if (from.name !== undefined) {
+        const messageStore = useMessageStore();
+        messageStore.triggerUnSubMessages();
+        messageStore.cleanChat();
+        messageStore.resetNewMessages();
 
+        // messageStore.enterChat(false);
+      }
+
+      if (to.params.chatId) {
+        const messageStore = useMessageStore();
+        messageStore.setCurrentChat(to.params.chatId);
+        messageStore.loadMessages(to.params.chatId);
+
+        // messageStore.enterChat(true);
+      }
+    },
+  },
   {
     path: "/profile/edit",
     name: "profileEdit",

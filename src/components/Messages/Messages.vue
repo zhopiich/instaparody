@@ -30,7 +30,7 @@
               />
             </template>
 
-            <div class="h-2 absolute bottom-0" ref="bottomBeacon"></div>
+            <div class="w-full h-2 absolute bottom-0" ref="bottomBeacon"></div>
           </div>
         </div>
         <ToBottomButton :isBottom="isBottom" :messagesFlow="messagesFlow" />
@@ -51,7 +51,23 @@ import ToBottomButton from "./TobottomButton.vue";
 import ImageViewer from "./ImageViewer.vue";
 import MessageDragAndDrop from "./MessageDragAndDrop.vue";
 
-import { ref, shallowRef, computed, onMounted, onUnmounted, watch } from "vue";
+// const props = defineProps(["chatId"]);
+
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
+
+// Width of the scrollbar
+const scrollStrip = ref(null);
+
+const observerScrollbar = new ResizeObserver((entries) => {
+  const element = entries[0].target;
+  const scrollbarWidth = element.offsetWidth - element.clientWidth;
+
+  messageStore.setScrollbarWidth(scrollbarWidth);
+});
 
 const messagesFlow = ref(null);
 
@@ -59,16 +75,13 @@ import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 const list = computed(() => messageStore.messagesList);
 
-const isThereNew = computed(
-  () => messageStore.areThereNews[messageStore.currentContact.chatId]
-);
+const isThereNew = computed(() => messageStore.isThereNew);
 
 import { useUserStore } from "../../stores/user.js";
 const userStore = useUserStore();
 const me = userStore.user.uid;
 
-// Observe if it at bottom
-
+// Observe whether messagesFlow is at bottom
 const bottomBeacon = ref(null);
 const isBottom = ref(false);
 
@@ -81,7 +94,65 @@ const observerBottom = new IntersectionObserver(
   }
 );
 
-// Scrolling to bottom
+// Determine whether messagesFlow will be scrolled.
+let isBottomExceptFirstTime,
+  isSameAsPrevExceptFirstTime,
+  firstElement,
+  firstPosition;
+const setConditions = () => {
+  isBottomExceptFirstTime = (() => {
+    let executed = false;
+    return (isFromMe, firstBool = true) => {
+      if (!executed) {
+        executed = true;
+        return firstBool;
+      }
+
+      return isBottom.value || isFromMe;
+    };
+  })();
+
+  isSameAsPrevExceptFirstTime = (() => {
+    let executed = false;
+    return (isFromMe, isSameAsPrev) => {
+      if (!executed) {
+        executed = true;
+        return false;
+      }
+
+      return isFromMe && !isSameAsPrev;
+    };
+  })();
+
+  firstElement = (() => {
+    let executed = false;
+    return () => {
+      if (!executed) {
+        executed = true;
+
+        return isThereNew.value
+          ? document.getElementById(messageStore.firstNewMessageId)
+          : null;
+      }
+
+      return null;
+    };
+  })();
+
+  firstPosition = (() => {
+    let executed = false;
+    return () => {
+      if (!executed) {
+        executed = true;
+        return isThereNew.value ? { block: "start" } : { block: "end" };
+      }
+
+      return { block: "end" };
+    };
+  })();
+};
+
+setConditions();
 
 const scrollToBottom = (
   _el = null,
@@ -96,118 +167,68 @@ const scrollToBottom = (
   });
 };
 
-const isBottomExceptFirstTime = (() => {
-  let executed = false;
-  return (isFromMe, firstBool = true) => {
-    if (!executed) {
-      executed = true;
-      return firstBool;
-    }
-
-    return isBottom.value || isFromMe;
-  };
-})();
-
-const isSameAsPrevExceptFirstTime = (() => {
-  let executed = false;
-  return (isFromMe, isSameAsPrev) => {
-    if (!executed) {
-      executed = true;
-      return false;
-    }
-
-    return isFromMe && !isSameAsPrev;
-  };
-})();
-
 const scrollDrivedByDateTag = ([isSameAsPrev, isFromMe]) => {
   if (isSameAsPrevExceptFirstTime(isFromMe, isSameAsPrev)) {
     scrollToBottom();
   }
 };
-
 const scrollDrivedByMessage = (isFromMe) => {
-  // Scroll to bottom anyway when messages flow loaded
+  // Scroll to bottom anyway once messagesFlow's loaded
   if (isBottomExceptFirstTime(isFromMe)) {
-    const firstElement = (() => {
-      let executed = false;
-      return () => {
-        if (!executed) {
-          executed = true;
-          return isThereNew.value
-            ? document.getElementById(messageStore.firstNewMessageId)
-            : null;
-        }
-
-        return null;
-      };
-    })();
-
-    const firstPosition = (() => {
-      let executed = false;
-      return () => {
-        if (!executed) {
-          executed = true;
-          return isThereNew.value ? { block: "start" } : { block: "end" };
-        }
-
-        return { block: "end" };
-      };
-    })();
-
     scrollToBottom(firstElement(), firstPosition());
   }
 };
-
 const scrollDrivedByIndicator = () => {
   if (isBottom.value) scrollToBottom();
 };
 
-// Width of the scrollbar
+const setBottomObserver = () => {
+  const newMessages = computed(() => messageStore.newMessages);
 
-const scrollStrip = ref(null);
-
-const observerScrollbar = new ResizeObserver((entries) => {
-  const element = entries[0].target;
-  const scrollbarWidth = element.offsetWidth - element.clientWidth;
-
-  messageStore.setScrollbarWidth(scrollbarWidth);
-});
-
-onMounted(() => {
-  observerScrollbar.observe(scrollStrip.value);
-
-  if (isThereNew.value) {
-    // Hold the isBottom observer until the first new message is appended to newMessages
-    // so that there always be a new message indicator line if new messages are sent when
-    // the user doesn't enter chat
-    const newMessages = computed(() => messageStore.newMessages);
+  if (isThereNew.value && newMessages.value.length === 0) {
+    // Hold the observerBottom so that isBottom.value remains false
+    // until the first new message is appended to newMessages
     let unwatch = watch(
-      newMessages,
+      () => newMessages.value.length,
       (newVal) => {
-        if (newVal.length > 0) {
+        if (newVal > 0) {
           observerBottom.observe(bottomBeacon.value);
 
           unwatch();
           unwatch = null;
         }
-      },
-      { deep: true }
+      }
     );
   } else {
     observerBottom.observe(bottomBeacon.value);
   }
+};
+
+// Reset observerBottom and the conditions every time the route changes
+if (route.name === "messages") {
+  watch(
+    () => route.params.chatId,
+    (newVal) => {
+      observerBottom.disconnect();
+      //  Remains false
+      isBottom.value = false;
+
+      setConditions();
+      setBottomObserver();
+    }
+  );
+}
+
+onMounted(() => {
+  observerScrollbar.observe(scrollStrip.value);
+
+  setBottomObserver();
 });
 
-onUnmounted(() => {
-  observerBottom.disconnect();
+onBeforeUnmount(() => {
   observerScrollbar.disconnect();
 
-  if (messageStore.isEnterChat === false) {
-    messageStore.triggerUnSubMessages();
-    messageStore.cleanChat();
-    messageStore.setCurrentChat(null);
-  }
+  observerBottom.disconnect();
 });
 </script>
 

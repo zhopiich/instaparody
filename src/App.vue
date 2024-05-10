@@ -1,6 +1,5 @@
 <template>
-  <div class="globalFlex" :class="{ inside: $route.name === 'login' }">
-    <!-- <div class="upperContent"> -->
+  <div class="globalFlex">
     <template v-if="$route.name !== 'login'">
       <!-- <header class="header"> -->
       <NavBar :isMobile="isMobile" />
@@ -9,16 +8,14 @@
         <router-view></router-view>
       </TheLayout>
 
-      <MessagesContainer />
+      <MessagesContainer v-if="$route.name !== 'messages'" />
     </template>
 
     <template v-else>
       <router-view></router-view>
     </template>
-    <!-- </div> -->
 
-    <footer class="mb-12 md:mb-0" :class="{ inside: $route.name === 'login' }">
-      <!-- <footer class="footer"> -->
+    <footer v-if="$route.name !== 'messages'" class="mb-12 md:mb-0">
       &copy; 2023INSTAGRAM FROM MEGA
     </footer>
   </div>
@@ -30,14 +27,19 @@ import NavBar from "./components/NavBar.vue";
 import TheLayout from "./components/TheLayout.vue";
 import MessagesContainer from "./components/Messages/MessagesContainer.vue";
 
-import { ref, computed, watch, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 
 import { useMediaQueryStore } from "./stores/mediaQuery";
 const mediaQueryStore = useMediaQueryStore();
 const isMobile = computed(() => mediaQueryStore.isMobile);
 
+import { useMessageStore } from "./stores/message";
+const messageStore = useMessageStore();
+
 onMounted(() => {
   mediaQueryStore.setListener();
+
+  messageStore.loadContacts();
 });
 </script>
 

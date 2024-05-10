@@ -4,6 +4,10 @@
       <div
         v-for="(contact, index) in contacts"
         class="p-4 cursor-pointer hover:bg-slate-100 transition-colors"
+        :class="{
+          'border-r-2 border-yellow-300 bg-neutral-100':
+            contact.chatId === route.params.chatId,
+        }"
         @click="enterChat(contact.chatId)"
       >
         <div class="w-full flex gap-2 overflow-hidden">
@@ -67,13 +71,27 @@
 import { dateToRelative } from "../../utils/date.js";
 
 import { ref, computed, onMounted } from "vue";
+import {
+  useRoute,
+  useRouter,
+  onBeforeRouteUpdate,
+  onBeforeRouteLeave,
+} from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
 const enterChat = (chatId) => {
-  messageStore.loadMessages(chatId);
+  if (route.name === "messages") {
+    router.push("/messages/" + chatId);
+    return;
+  }
+
   messageStore.setCurrentChat(chatId);
+  messageStore.loadMessages(chatId);
   messageStore.enterChat(true);
 };
 

@@ -42,6 +42,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../stores/user";
+import { useMessageStore } from "../stores/message";
 
 import { signIn, signUp } from "../firebase/auth";
 
@@ -55,6 +56,7 @@ const agreementChecked = ref(false);
 const router = useRouter();
 
 const userStore = useUserStore();
+const messageStore = useMessageStore();
 
 async function register() {
   if (!agreementChecked.value) {
@@ -69,7 +71,10 @@ async function register() {
   });
 
   if (!isErr) {
+    messageStore.loadContacts();
+
     await userStore.getUserDoc();
+
     // router.push("/");
     router.replace("/");
   } else {
@@ -81,7 +86,10 @@ async function login() {
   const { isErr, msg } = await signIn(email.value, password.value);
 
   if (!isErr) {
+    messageStore.loadContacts();
+
     await userStore.getUserDoc();
+
     // router.push("/");
     router.replace("/");
   } else {

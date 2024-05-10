@@ -256,17 +256,24 @@ export const useMessageStore = defineStore("message", () => {
 
   let unSubContacts;
   const loadContacts = () => {
+    if (userStore.user === "guest") return;
+
     unSubContacts = contactsListener();
   };
 
   const triggerUnSubContacts = () => {
-    unSubContacts();
-    unSubContacts = null;
-    console.log("**Contacts unsubbed");
+    if (unSubContacts) {
+      unSubContacts();
+      unSubContacts = null;
+      console.log("**Contacts unsubbed");
+    }
   };
 
   const areThereNews = computed(() => {
     if (!contactsList.value) return {};
+    for (const contact of contactsList.value) {
+      if (!lastMessagesAt.value[contact.chatId]) return {};
+    }
 
     const obj = {};
 
@@ -275,7 +282,7 @@ export const useMessageStore = defineStore("message", () => {
         contact.lastMessage !== null &&
         contact.lastMessage.from !== userStore.user.uid &&
         ((contact.lastSeeAt.me &&
-          lastMessagesAt.value[contact.chatId] &&
+          // lastMessagesAt.value[contact.chatId] &&
           lastMessagesAt.value[contact.chatId].at.seconds >
             contact.lastSeeAt.me.seconds) ||
           !contact.lastSeeAt.me);
@@ -283,6 +290,11 @@ export const useMessageStore = defineStore("message", () => {
 
     return obj;
   });
+
+  // const isThereNew = computed(
+  //   () => areThereNews.value[currentContact.value.chatId]
+  // );
+  const isThereNew = computed(() => areThereNews.value[currentChatId.value]);
 
   // For new messages indicator line
 
@@ -312,6 +324,13 @@ export const useMessageStore = defineStore("message", () => {
       : null
   );
 
+  const isChatExists = async (chatId) => {
+    const chatRef = doc(db, "messages", chatId);
+    const chatSnap = await getDoc(chatRef);
+
+    return chatSnap.exists();
+  };
+
   const messagesListener = (chatId) => {
     const messagesRef = collection(db, "messages");
     const chatRef = collection(messagesRef, chatId, "chat");
@@ -321,6 +340,7 @@ export const useMessageStore = defineStore("message", () => {
       q,
       (snapshot) => {
         console.log("messages listener triggered! ");
+
         const results = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
@@ -337,19 +357,25 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   let unSubMessages = null;
-  const loadMessages = (chatId) => {
+  const triggerUnSubMessages = () => {
     if (unSubMessages !== null) {
       unSubMessages();
       unSubMessages = null;
+      console.log("**messages unsubbed");
+    }
+  };
+
+  const loadMessages = async (chatId) => {
+    if (unSubMessages !== null) {
+      triggerUnSubMessages();
+    }
+
+    if (!(await isChatExists(chatId))) {
+      messagesList.value = "noSuchChat";
+      return;
     }
 
     unSubMessages = messagesListener(chatId);
-  };
-
-  const triggerUnSubMessages = () => {
-    unSubMessages();
-    unSubMessages = null;
-    console.log("**messages unsubbed");
   };
 
   const sendMessage = async (content, image = null) => {
@@ -546,8 +572,10 @@ export const useMessageStore = defineStore("message", () => {
     scrollbarWidth.value = width;
   };
 
-  // Reset the state when log out
+  // Reset all states when log out
   const reset = () => {
+    triggerUnSubContacts();
+
     isExtended.value = false;
     contactsList.value = null;
     messagesList.value = null;
@@ -572,6 +600,7 @@ export const useMessageStore = defineStore("message", () => {
     contactsList,
     messagesList,
     isEnterChat,
+    currentChatId,
     currentContact,
     cleanChat,
     setCurrentChat,
@@ -603,6 +632,7 @@ export const useMessageStore = defineStore("message", () => {
     isKept,
     readMessage,
     areThereNews,
+    isThereNew,
     imagePreview,
     isImageSending,
     setImagePreview,

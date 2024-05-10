@@ -2,7 +2,7 @@
   <div class="fixed bottom-0 left-0 right-0 w-screen z-10">
     <div class="bg-white">
       <div
-        v-if="isShowSearch"
+        v-if="currentTab === 'search'"
         class="full-platform absolute bottom-full w-full"
       >
         <SearchMobile @resultClicked="isShowSearch = false" />
@@ -21,7 +21,7 @@
           <!-- search -->
           <div
             class="h-full aspect-square flex justify-center items-center"
-            @click="isShowSearch = !isShowSearch"
+            @click="currentTab = 'search'"
           >
             <FontAwesomeIcon :icon="faMagnifyingGlass" class="text-2xl" />
           </div>
@@ -35,7 +35,10 @@
           </div>
 
           <!-- message -->
-          <div class="h-full aspect-square flex justify-center items-center">
+          <div
+            class="h-full aspect-square flex justify-center items-center"
+            @click="currentTab = 'message'"
+          >
             <FontAwesomeIcon :icon="faPaperPlane" class="text-2xl" />
           </div>
 
@@ -83,7 +86,8 @@ import { ref, computed, onMounted } from "vue";
 
 const navbarHeight = ref(48);
 
-const isShowSearch = ref(false);
+// const isShowSearch = ref(false);
+const currentTab = ref(null);
 </script>
 
 <style scoped>

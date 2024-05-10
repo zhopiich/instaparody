@@ -6,7 +6,10 @@
   />
 
   <NavBarSliding v-else @turn="changeDirection" @scroll="changePosition">
-    <nav class="navbar z-10">
+    <nav
+      class="navbar px-4 lg:px-[10dvw] z-10"
+      :class="{ '!shadow-none border-b': $route.name === 'messages' }"
+    >
       <router-link class="logo" to="/"
         ><img src="../assets/logo.svg"
       /></router-link>
@@ -35,6 +38,7 @@
           >
             <ul class="profileMenu">
               <li><router-link :to="profilePageURL">My Page</router-link></li>
+              <li><router-link to="/messages">Messages</router-link></li>
               <li @click="logout">Log Out</li>
             </ul>
           </div>
@@ -61,6 +65,8 @@ const props = defineProps(["isMobile"]);
 import { ref, computed, onMounted } from "vue";
 
 const isShowDropdown = ref(false);
+
+const navbarHeight = ref(80);
 
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -132,7 +138,7 @@ const changePosition = (position) => {
   grid-template-columns: 1fr 375px 1fr;
   align-items: center;
   box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.08);
-  @apply h-16 md:h-20 max-sm:px-2 px-4 lg:px-[10dvw];
+  height: v-bind(navbarHeight + "px");
 }
 
 @screen max-md {

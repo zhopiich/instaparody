@@ -3,7 +3,7 @@
     class="px-4 flex hover:cursor-pointer transition-colors duration-500"
     :class="[
       {
-        'sticky top-0 z-[2]   ': isEnterChat,
+        'sticky top-0 z-[2]': isEnterChat,
       },
       isExtended && isEnterChat
         ? 'bg-white/75 backdrop-blur left-for-scrollbar'
@@ -43,8 +43,20 @@
       </div>
     </div>
     <div v-else class="grow flex flex-col justify-center">
-      <div class="font-bold text-[20px] leading-6">
-        {{ currentContact.displayName }}
+      <div class="flex">
+        <div class="font-bold text-[20px] leading-6">
+          {{ currentContact.displayName }}
+        </div>
+        <div class="ml-1.5 flex items-center pointer-events-none">
+          <div
+            class="w-3 aspect-square rounded-full transition-colors duration-500"
+            :class="
+              !isExtended && isThereNewCurrent
+                ? 'bg-blue-400'
+                : 'bg-transparent'
+            "
+          ></div>
+        </div>
       </div>
       <div class="text-[13px] leading-4">@{{ currentContact.username }}</div>
     </div>
@@ -91,8 +103,12 @@ const currentContact = computed(() => messageStore.currentContact);
 
 const leaveChat = () => {
   messageStore.enterChat(false);
-  // messageStore.triggerUnSubMessages();
   messageStore.resetNewMessages();
+
+  //
+  messageStore.triggerUnSubMessages();
+  messageStore.cleanChat();
+  messageStore.setCurrentChat(null);
 };
 
 const scrollbarWidth = computed(() => messageStore.scrollbarWidth + "px");
@@ -106,6 +122,9 @@ const isThereAnyNew = computed(() => {
 });
 const isThereNewFromOther = computed(
   () => isThereAnyNew.value && !areThereNews.value[currentContact.value.chatId]
+);
+const isThereNewCurrent = computed(
+  () => areThereNews.value[currentContact.value.chatId]
 );
 
 const isNotified = ref(false);
