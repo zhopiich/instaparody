@@ -5,7 +5,7 @@
       isExtended ? 'translate-y-0' : 'translate-folded',
       { 'flex flex-col': !isEnterChat },
     ]"
-    id="container"
+    id="messagesContainer"
   >
     <ContainerTab
       :isEnterChat="isEnterChat"
@@ -59,13 +59,13 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-#container {
+#messagesContainer {
   left: calc(100dvw - 400px - 32px);
   box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px,
     rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
 }
 
-#container:deep(#messagesFlow) {
+#messagesContainer:deep(#messagesFlow) {
   padding-top: v-bind(heightTab);
 }
 

@@ -1,9 +1,9 @@
 <template>
   <div
-    class="px-4 flex hover:cursor-pointer transition-colors duration-500"
+    class="px-4 flex cursor-pointer transition-colors duration-500 relative"
     :class="[
       {
-        'sticky top-0 z-[2]': isEnterChat,
+        'z-10': isEnterChat,
       },
       isExtended && isEnterChat
         ? 'bg-white/75 backdrop-blur left-for-scrollbar'
