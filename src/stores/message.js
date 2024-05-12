@@ -58,9 +58,12 @@ export const useMessageStore = defineStore("message", () => {
   //   selectedContactIndex.value = index;
   // };
 
-  const currentContact = computed(() =>
-    contactsList.value.find((contact) => contact.chatId === currentChatId.value)
-  );
+  const currentContact = computed(() => {
+    if (!contactsList.value) return {};
+    return contactsList.value.find(
+      (contact) => contact.chatId === currentChatId.value
+    );
+  });
   // const currentContact = computed(
   //   () => contactsList.value[selectedContactIndex.value]
   // );

@@ -26,7 +26,7 @@
 
     <template v-if="route.name === 'messages' && isDraggingOver">
       <div
-        class="absolute top-0 border-2 rounded-lg border-dashed border-sky-400 pointer-events-none m-2"
+        class="absolute top-0 border-2 rounded-lg border-dashed border-sky-400 pointer-events-none m-2 z-[2]"
         id="dropzoneMarking"
       ></div>
     </template>
@@ -84,16 +84,16 @@ const drop = (e) => {
   messageStore.setImageToBeSent(imagesFile[0]);
 };
 
-if (route.name !== "messages") {
-  watch(isDraggingOver, (newVal) => {
-    const tab = document.getElementById("messageTab");
-    if (newVal) {
-      tab.classList.add("draggingOver");
-    } else {
-      tab.classList.remove("draggingOver");
-    }
-  });
-}
+// if (route.name !== "messages") {
+watch(isDraggingOver, (newVal) => {
+  const tab = document.getElementById("messageTab");
+  if (newVal) {
+    tab.classList.add("draggingOver");
+  } else {
+    tab.classList.remove("draggingOver");
+  }
+});
+// }
 </script>
 
 <style scoped>

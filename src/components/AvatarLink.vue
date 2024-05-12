@@ -15,7 +15,7 @@
       </div>
       <Transition>
         <UserCard
-          v-if="isShowTooltip"
+          v-if="isShowTooltip && isShowCard"
           :isFixed="isCardFixed"
           :bottom="bottom"
           :right="right"
@@ -32,7 +32,8 @@ import { getPosition } from "../modules/position.js";
 
 import UserCard from "./UserCard.vue";
 
-defineProps({
+const props = defineProps({
+  isShowCard: { type: Boolean, default: true },
   isCardFixed: { type: Boolean, default: false },
   user: { type: Object },
   widthAvatar: {
@@ -54,6 +55,8 @@ const isShowTooltip = ref(false);
 let delay;
 
 const mouseenter = () => {
+  if (!props.isShowCard) return;
+
   delay = setTimeout(function () {
     const position = getPosition(target.value);
     bottom.value = position.bottom;
@@ -65,6 +68,8 @@ const mouseenter = () => {
   }, 350);
 };
 const mouseleave = () => {
+  if (!props.isShowCard) return;
+
   if (delay) {
     clearTimeout(delay);
     delay = null;
