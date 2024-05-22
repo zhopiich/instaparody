@@ -1,60 +1,112 @@
 <template>
-  <div class="w-full messagesHeight">
-    <div class="size-full flex justify-center">
-      <div v-if="!isMobile" class="border-l w-[400px] lg:w-[450px] shrink-0">
-        <div class="size-full flex flex-col">
-          <div class="w-full h-[53px] shrink-0">
-            <div class="h-full px-4 flex">
-              <div class="grow flex items-center justify-start">
-                <h1 class="font-bold text-xl">Messages</h1>
+  <div class="w-full messagesHeight" :class="{ mobile: isMobile }">
+    <div class="size-full" :class="{ 'flex justify-center': isMobile }">
+      <div
+        class="size-full"
+        :class="isMobile ? 'overflow-hidden relative' : 'block'"
+      >
+        <div
+          :class="[
+            isMobile
+              ? route.params.chatId
+                ? '-translate-x-1/2'
+                : 'translate-x-0'
+              : null,
+            isMobile
+              ? 'w-[200%] h-full absolute flex transition-transform duration-300'
+              : 'size-full flex justify-center',
+          ]"
+        >
+          <div
+            :class="
+              isMobile
+                ? 'w-1/2 h-full'
+                : 'border-l w-[400px] lg:w-[450px] shrink-0'
+            "
+          >
+            <div class="size-full flex flex-col">
+              <div class="w-full h-[53px] shrink-0">
+                <div class="h-full px-4 flex">
+                  <div class="grow flex items-center justify-start">
+                    <h1 class="font-bold text-xl">Messages</h1>
+                  </div>
+
+                  <div class="flex items-center">
+                    <div
+                      class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-neutral-300/50 transition-colors"
+                      @click.stop="messageStore.toggleSearch(true)"
+                    >
+                      <FontAwesomeIcon
+                        :icon="faCommentMedical"
+                        class="fa-xl scale-90"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div class="flex items-center">
-                <div
-                  class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-neutral-300/50 transition-colors"
-                  @click.stop="messageStore.toggleSearch(true)"
-                >
-                  <FontAwesomeIcon
-                    :icon="faCommentMedical"
-                    class="fa-xl scale-90"
-                  />
-                </div>
+              <div class="grow overflow-hidden">
+                <Contacts />
               </div>
             </div>
           </div>
 
-          <div class="grow">
-            <Contacts />
-          </div>
-        </div>
-      </div>
-
-      <div class="w-full border-x max-w-[600px] shrink">
-        <div v-if="isBraced && route.params.chatId" class="size-full relative">
-          <div class="absolute top-0 w-full h-[53px] z-[1]" id="messageTab">
+          <div
+            :class="
+              isMobile ? 'w-1/2 h-full' : 'w-full border-x max-w-[600px] shrink'
+            "
+          >
             <div
-              class="h-full px-4 bg-white/75 backdrop-blur left-for-scrollbar flex justify-center"
+              v-if="isBraced && route.params.chatId"
+              class="size-full relative"
             >
-              <div class="flex items-center mr-2">
-                <AvatarLink
-                  :isShowCard="false"
-                  :user="{
-                    username: currentContact.username,
-                    avatar: currentContact.avatar,
-                  }"
-                  :widthAvatar="10"
-                />
-              </div>
+              <div class="absolute top-0 w-full h-[53px] z-[1]" id="messageTab">
+                <div
+                  class="h-full px-4 bg-white/75 backdrop-blur left-for-scrollbar flex justify-center"
+                >
+                  <div
+                    v-if="isMobile"
+                    class="w-14 h-full flex justify-start items-center"
+                  >
+                    <div class="h-9 aspect-square relative">
+                      <div
+                        class="w-full h-full flex items-center justify-center rounded-full cursor-pointer hover:bg-neutral-300/50 transition-colors"
+                        @click.stop="router.push('/messages')"
+                      >
+                        <FontAwesomeIcon
+                          :icon="faArrowLeft"
+                          class="fa-lg scale-90"
+                        />
+                      </div>
+                      <div
+                        v-if="isThereNewFromOther"
+                        class="absolute top-1 right-1 h-[9px] aspect-square bg-blue-400 rounded-full border border-white pointer-events-none"
+                      ></div>
+                    </div>
+                  </div>
 
-              <div class="grow flex items-center">
-                <div class="font-bold text-[18px] leading-5">
-                  {{ currentContact.displayName }}
+                  <div class="flex items-center mr-2">
+                    <AvatarLink
+                      :isShowCard="false"
+                      :user="{
+                        username: currentContact.username,
+                        avatar: currentContact.avatar,
+                      }"
+                      :widthAvatar="12"
+                    />
+                  </div>
+
+                  <div class="grow flex items-center">
+                    <div class="font-bold text-[18px] leading-5">
+                      {{ currentContact.displayName }}
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              <Messages />
             </div>
           </div>
-
-          <Messages />
         </div>
       </div>
     </div>
@@ -68,7 +120,10 @@
 
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faCommentMedical } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCommentMedical,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
 
 import Contacts from "../components/Messages/Contacts.vue";
 import Messages from "../components/Messages/Messages.vue";
@@ -111,6 +166,14 @@ watch(messagesList, (newVal) => {
 });
 
 const areThereNews = computed(() => messageStore.areThereNews);
+const isThereAnyNew = computed(() => {
+  if (!areThereNews.value) return false;
+
+  return Object.values(areThereNews.value).some((bool) => bool);
+});
+const isThereNewFromOther = computed(
+  () => isThereAnyNew.value && !areThereNews.value[currentContact.value.chatId]
+);
 
 onBeforeRouteUpdate((to) => {
   messageStore.triggerUnSubMessages();
@@ -133,6 +196,10 @@ onBeforeRouteLeave(() => {
 <style scoped>
 .messagesHeight {
   height: calc(100dvh - 80px);
+}
+
+.messagesHeight.mobile {
+  height: calc(100dvh - 49px);
 }
 
 .left-for-scrollbar {

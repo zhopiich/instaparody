@@ -22,7 +22,8 @@ const navbarHeight = ref(0);
 const heightObserver = new ResizeObserver((entries) => {
   for (let entry of entries) {
     const { target } = entry;
-    navbarHeight.value = target.clientHeight;
+    navbarHeight.value = target.offsetHeight;
+    // navbarHeight.value = target.clientHeight;
   }
 });
 
