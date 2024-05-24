@@ -2,7 +2,7 @@
   <div class="fixed bottom-0 left-0 right-0 w-screen z-10">
     <div class="bg-white">
       <div
-        v-if="currentTab === 'search'"
+        v-if="isShowSearch"
         class="full-platform absolute bottom-full w-full"
       >
         <SearchMobile @resultClicked="isShowSearch = false" />
@@ -10,50 +10,61 @@
 
       <div class="border-t">
         <div class="h-navbar flex justify-evenly">
-          <!-- home -->
-          <div class="h-full aspect-square flex justify-center items-center">
-            <FontAwesomeIcon
-              :icon="faHouse"
-              class="text-2xl text-neutral-300"
-            />
-          </div>
-
-          <!-- search -->
           <div
-            class="h-full aspect-square flex justify-center items-center"
-            @click="currentTab = 'search'"
+            v-for="item in menuList"
+            class="h-full aspect-square flex justify-center items-center *:select-none"
           >
-            <FontAwesomeIcon :icon="faMagnifyingGlass" class="text-2xl" />
+            <div
+              class="h-9 aspect-square rounded-full overflow-hidden"
+              @click="item.name !== 'Search' && closeSearch()"
+            >
+              <router-link v-if="item.to" :to="item.to">
+                <div
+                  class="size-full flex justify-center items-center hover:bg-neutral-200 active:scale-90 transition-all cursor-pointer"
+                >
+                  <FontAwesomeIcon
+                    :icon="item.icon"
+                    class="text-lg"
+                    :class="item.isActive ? 'text-black' : 'text-neutral-400'"
+                  /></div
+              ></router-link>
+
+              <div
+                v-else
+                class="size-full flex justify-center items-center hover:bg-neutral-200 active:scale-90 transition-all cursor-pointer"
+                @click="item.clickHandler"
+              >
+                <FontAwesomeIcon
+                  :icon="item.icon"
+                  class="text-lg"
+                  :class="item.isActive ? 'text-black' : 'text-neutral-400'"
+                />
+              </div>
+            </div>
           </div>
 
-          <!-- upload -->
           <div
-            class="h-full aspect-square flex justify-center items-center"
-            @click="postStore.toggleShowPostUpload(true)"
+            class="h-full aspect-square flex justify-center items-center *:select-none"
           >
-            <FontAwesomeIcon :icon="faSquarePlus" class="text-2xl" />
-          </div>
-
-          <!-- message -->
-          <div
-            class="h-full aspect-square flex justify-center items-center"
-            @click="currentTab = 'message'"
-          >
-            <FontAwesomeIcon :icon="faPaperPlane" class="text-2xl" />
-          </div>
-
-          <!-- profile -->
-          <div class="h-full aspect-square flex justify-center items-center">
-            <router-link :to="profilePageURL">
-              <div class="rounded-full border-2 border-black flex">
-                <div class="w-6 aspect-square rounded-full">
-                  <TheAvatar
-                    :src="avatar"
-                    :width="24"
-                    style="cursor: pointer"
-                  />
-                </div></div
-            ></router-link>
+            <div class="flex rounded-full overflow-hidden" @click="closeSearch">
+              <router-link :to="profilePageURL">
+                <div
+                  class="rounded-full border-2 active:scale-90 transition-all flex"
+                  :class="
+                    route.params.username === profilePageURL.substring(1)
+                      ? 'border-black'
+                      : 'border-transparent hover:border-neutral-300'
+                  "
+                >
+                  <div class="w-8 aspect-square rounded-full">
+                    <TheAvatar
+                      :src="avatar"
+                      :width="32"
+                      style="cursor: pointer"
+                    />
+                  </div></div
+              ></router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -74,20 +85,60 @@ import SearchMobile from "./SearchMobile.vue";
 
 import { logOut } from "../firebase/auth";
 
-import { useRouter } from "vue-router";
-const router = useRouter();
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
 
 const props = defineProps(["avatar", "profilePageURL"]);
 
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 
 const navbarHeight = ref(48);
 
-// const isShowSearch = ref(false);
-const currentTab = ref(null);
+const isShowSearch = ref(false);
+
+const closeSearch = () => {
+  if (!isShowSearch.value) return;
+  isShowSearch.value = false;
+};
+
+const toggleSearch = () => {
+  isShowSearch.value = !isShowSearch.value;
+};
+
+const togglePost = () => {
+  postStore.toggleShowPostUpload(!postStore.isShowPostUpload);
+};
+
+const menuList = computed(() => [
+  {
+    icon: faHouse,
+    to: "/",
+    name: "Home",
+    isActive: route.name === "home",
+  },
+  {
+    icon: faMagnifyingGlass,
+    clickHandler: toggleSearch,
+    name: "Search",
+    isActive: isShowSearch.value,
+  },
+  {
+    icon: faSquarePlus,
+    clickHandler: togglePost,
+    name: "Post",
+    isActive: postStore.isShowPostUpload,
+  },
+  {
+    icon: faPaperPlane,
+    to: "/messages",
+    name: "Messages",
+    isActive: route.name === "messages",
+  },
+]);
 </script>
 
 <style scoped>

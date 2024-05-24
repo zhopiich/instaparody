@@ -172,7 +172,7 @@
     </PostImageList>
   </div>
 
-  <PostUpload v-if="isShowPostUpload" />
+  <!-- <PostUpload v-if="isShowPostUpload" /> -->
 </template>
 
 <script setup>
@@ -221,7 +221,7 @@ onUnmounted(() => {
 
 import PostImageList from "../components/PostImageList.vue";
 import PostImageItem from "../components/PostImageItem.vue";
-import PostUpload from "../components/PostUpload.vue";
+// import PostUpload from "../components/PostUpload.vue";
 import TheAvatar from "../components/TheAvatar.vue";
 
 import { usePostStore } from "../stores/post";
@@ -231,7 +231,7 @@ const route = useRoute();
 const router = useRouter();
 
 const postStore = usePostStore();
-const isShowPostUpload = computed(() => postStore.isShowPostUpload);
+// const isShowPostUpload = computed(() => postStore.isShowPostUpload);
 
 const postsFiltered = (() => {
   const obj = {};

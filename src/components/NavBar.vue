@@ -46,6 +46,8 @@
       </div>
     </nav>
   </NavBarSliding>
+
+  <PostUpload v-if="isShowPostUpload" />
 </template>
 
 <script setup>
@@ -57,6 +59,7 @@ import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
 import NavBarSliding from "./NavBarSliding.vue";
 import Search from "./Search.vue";
+import PostUpload from "../components/PostUpload.vue";
 
 // import { userListener, getUser, updateUser } from "../firebase/firestore.js";
 
@@ -73,6 +76,8 @@ const router = useRouter();
 
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
+
+const isShowPostUpload = computed(() => postStore.isShowPostUpload);
 
 function publishPost() {
   postStore.toggleShowPostUpload(true);

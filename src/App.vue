@@ -8,7 +8,7 @@
         <router-view></router-view>
       </TheLayout>
 
-      <MessagesContainer v-if="$route.name !== 'messages'" />
+      <MessagesContainer v-if="$route.name !== 'messages' && !isMobile" />
     </template>
 
     <template v-else>
