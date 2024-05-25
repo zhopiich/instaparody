@@ -2,8 +2,7 @@
   <div class="p-4 -m-4" @mouseleave="mouseleave">
     <div ref="target" :class="{ relative: !isCardFixed }">
       <div
-        class="aspect-square rounded-full overflow-hidden"
-        :class="`w-${widthAvatar}`"
+        class="aspect-square rounded-full overflow-hidden width-avatar"
         @mouseenter="mouseenter"
       >
         <router-link :to="'/' + user.username">
@@ -43,6 +42,8 @@ const props = defineProps({
 });
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+const widthAvatar = computed(() => props.widthAvatar * 4 + "px");
 
 const target = ref(null);
 
@@ -99,5 +100,9 @@ onBeforeUnmount(() => {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+.width-avatar {
+  width: v-bind(widthAvatar);
 }
 </style>
