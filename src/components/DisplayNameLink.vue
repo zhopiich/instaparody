@@ -7,7 +7,7 @@
     >
       <router-link :to="'/' + user.username">
         <p
-          class="font-bold cursor-pointer select-none"
+          class="font-bold cursor-pointer select-none text-pretty break-all"
           :class="{ 'hover:text-zinc-400': isHoverHighlight }"
         >
           {{ user.displayName }}
