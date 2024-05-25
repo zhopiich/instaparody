@@ -2,9 +2,9 @@
   <div
     class="h-full w-full absolute top-0"
     @dragover="dragover"
-    @dragenter="dragenter"
     @dragleave="dragleave"
     @drop="drop"
+    ref="dropzone"
   >
     <input
       type="file"
@@ -39,7 +39,7 @@
         <p class="text-xl">or</p>
 
         <label
-          class="select-none text-base text-center text-white font-bold rounded-lg px-4 py-2 mt-5 bg-sky-500 hover:bg-blue-500"
+          class="select-none text-base text-center text-white font-bold rounded-lg px-4 py-2 mt-5 bg-sky-500 hover:bg-blue-500 cursor-pointer"
           for="postImageInput"
         >
           Select among files
@@ -47,23 +47,26 @@
       </div>
     </div>
 
-    <ImageCarousel
+    <div
       v-if="imageFiles.length > 0"
-      :imagesUrl="imagesObjUrl"
-      :isDraggingOver="isDraggingOver"
-      :isDraggable="false"
-      :isFocusRequired="true"
-      @switch-focus="handleIndex"
-    />
-    <div v-if="imageFiles.length > 0" class="absolute top-0 right-0 m-4">
-      <button
-        class="btn btn-circle cursor-pointer"
-        :class="{ 'pointer-events-none': isDraggingOver }"
-        @click="remove"
-      >
-        <FontAwesomeIcon :icon="faTrashCan" class="fa-xl scale-125" />
-      </button>
+      class="size-full absolute top-0"
+      :class="{ 'pointer-events-none': isDraggingOver }"
+    >
+      <ImageCarousel
+        :imagesUrl="imagesObjUrl"
+        :isDraggingOver="isDraggingOver"
+        :isDraggable="false"
+        :isFocusRequired="true"
+        @switch-focus="handleIndex"
+      />
+
+      <div class="absolute top-0 right-0 m-4">
+        <button class="btn btn-circle cursor-pointer" @click="remove">
+          <FontAwesomeIcon :icon="faTrashCan" class="fa-xl scale-125" />
+        </button>
+      </div>
     </div>
+
     <div
       v-if="isDraggingOver"
       class="absolute top-0 border-2 rounded-xl border-dashed border-sky-400 pointer-events-none m-[10px]"
@@ -91,6 +94,7 @@ const imageFiles = ref([]);
 const imagesObjUrl = ref([]);
 
 const fileInput = ref(null);
+const dropzone = ref(null);
 
 const isDraggingOver = ref(false);
 
@@ -143,25 +147,30 @@ watch(
   }
 );
 
-// const dragenter = (e) => {
-//   e.preventDefault();
-//   isDraggingOver.value = true;
-// };
-
 const dragover = (e) => {
   e.preventDefault();
+
+  if (isDraggingOver.value) return;
+
   isDraggingOver.value = true;
 };
 
-const dragleave = () => {
+const dragleave = (e) => {
+  e.preventDefault();
+
+  if (!isDraggingOver.value) return;
+  if (e.target !== dropzone.value) return;
+
   isDraggingOver.value = false;
 };
 
 const drop = (e) => {
   e.preventDefault();
+
+  isDraggingOver.value = false;
+
   fileInput.value.files = e.dataTransfer.files;
   addImages();
-  isDraggingOver.value = false;
 };
 
 const indexFocus = ref(0);

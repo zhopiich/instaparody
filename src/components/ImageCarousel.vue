@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="w-full h-full absolute top-0 overflow-hidden"
-    ref="imageViewport"
-    id="imageViewport"
-  >
+  <div class="size-full overflow-hidden" ref="imageViewport" id="imageViewport">
     <div class="" id="images">
       <Transition>
         <div :class="[movement % 2 === 0 ? 'movementEven' : 'movementOdd']">
