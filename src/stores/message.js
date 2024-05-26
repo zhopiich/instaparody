@@ -226,7 +226,10 @@ export const useMessageStore = defineStore("message", () => {
 
         // Update lastMessagesAt if there's new
         contactsList.value.forEach(async (contact) => {
-          if (!contact.lastMessage) return;
+          if (!contact.lastMessage) {
+            lastMessagesAt.value[contact.chatId] = "noMessages";
+            return;
+          }
 
           // if (!lastMessagesAt.value[contact.chatId]) {
           //   lastMessagesAt.value[contact.chatId] = {
@@ -274,6 +277,7 @@ export const useMessageStore = defineStore("message", () => {
 
   const areThereNews = computed(() => {
     if (!contactsList.value) return {};
+
     for (const contact of contactsList.value) {
       if (!lastMessagesAt.value[contact.chatId]) return {};
     }
@@ -285,7 +289,7 @@ export const useMessageStore = defineStore("message", () => {
         contact.lastMessage !== null &&
         contact.lastMessage.from !== userStore.user.uid &&
         ((contact.lastSeeAt.me &&
-          // lastMessagesAt.value[contact.chatId] &&
+          lastMessagesAt.value[contact.chatId] !== "noMessages" &&
           lastMessagesAt.value[contact.chatId].at.seconds >
             contact.lastSeeAt.me.seconds) ||
           !contact.lastSeeAt.me);
