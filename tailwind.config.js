@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 export default {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
@@ -27,6 +30,9 @@ export default {
         "max-h-lg": { raw: "(max-height: 1023px)" },
 
         "h-lg": { raw: "(min-height: 1024px)" },
+      },
+      fontFamily: {
+        sans: ['"Open Sans"', ...defaultTheme.fontFamily.sans],
       },
     },
   },

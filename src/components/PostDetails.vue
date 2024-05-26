@@ -50,9 +50,10 @@
                   >
                     <div class="px-4">
                       <div class="py-4">
-                        <pre class="break-words whitespace-pre-wrap">{{
-                          post.description
-                        }}</pre>
+                        <pre
+                          class="font-sans break-words whitespace-pre-wrap"
+                          >{{ post.description }}</pre
+                        >
                       </div>
                       <CommentsList :postId="postId" />
                     </div>
