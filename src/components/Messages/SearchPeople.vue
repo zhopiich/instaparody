@@ -2,8 +2,8 @@
   <TheModal @close="$emit('close')">
     <div class="bg-white rounded-lg overflow-hidden">
       <div class="w-[400px] aspect-square flex flex-col">
-        <div class="h-14 px-8 flex justify-start items-center">
-          <h1 class="text-2xl font-bold">New message</h1>
+        <div class="h-14 px-4 flex justify-start items-center">
+          <h1 class="text-xl font-bold">New message</h1>
         </div>
 
         <div class="grow flex flex-col">
@@ -69,14 +69,20 @@
                 >
                   <div
                     class="h-9 w-24 rounded-md cursor-pointer bg-blue-400 hover:bg-blue-500 transition-colors flex justify-center *:flex *:items-center *:select-none *:text-white"
-                    @click.stop="contact(user.username)"
+                    @click.stop="
+                      contact({
+                        username: user.username,
+                        avatar: user.avatar,
+                        displayName: user.displayName,
+                        userId: user.userId,
+                      })
+                    "
                   >
                     <div v-if="addingSpin"><span class="loading"></span></div>
                     <div v-else class="gap-2">
                       <FontAwesomeIcon
                         :icon="faPaperPlane"
                         class="fa-lg pointer-events-none"
-                        @click=""
                       />
                       <p class="font-bold leading-9">Chat</p>
                     </div>
@@ -102,9 +108,13 @@ import TheModal from "../TheModal.vue";
 import UserPlate from "../UserPlate.vue";
 import UserSkeletonLoader from "../UserSkeletonLoader.vue";
 
-import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
-
 const emits = defineEmits(["close"]);
+
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
 
 import { useUserStore } from "../../stores/user";
 const userStore = useUserStore();
@@ -159,17 +169,21 @@ watch(searchTerm, handleSearch);
 
 const addingSpin = ref(false);
 
-const contact = async (username) => {
+const contact = async ({ ...userInfo }) => {
   addingSpin.value = true;
-  const chatId = await messageStore.addContact({ username });
+  const chatId = await messageStore.addContact({ ...userInfo });
+
+  if (route.name === "messages") {
+    router.push("/messages/" + chatId);
+  } else {
+    messageStore.loadMessages(chatId);
+    messageStore.setCurrentChat(chatId);
+
+    messageStore.toggle(true);
+    messageStore.enterChat(true);
+  }
 
   emits("close");
-
-  messageStore.loadMessages(chatId);
-  messageStore.setCurrentChat(chatId);
-
-  messageStore.toggle(true);
-  messageStore.enterChat(true);
 };
 
 // Can't get the element from slots inside <TheModal /> on mounted

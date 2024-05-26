@@ -313,16 +313,7 @@ const messageStore = useMessageStore();
 const enterChat = async ({ ...userInfo }) => {
   const chatId = await messageStore.addContact({ ...userInfo });
 
-  if (
-    !messageStore.currentContact ||
-    messageStore.currentContact.chatId !== chatId
-  ) {
-    messageStore.loadMessages(chatId);
-    messageStore.setCurrentChat(chatId);
-  }
-
-  messageStore.toggle(true);
-  messageStore.enterChat(true);
+  router.push("/messages/" + chatId);
 };
 
 const urlDisplay = computed(() => {

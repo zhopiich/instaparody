@@ -71,7 +71,7 @@
             })
           "
         >
-          <p class="text-white">Contact</p>
+          <p class="text-white">Message</p>
         </div>
       </div>
     </div>
@@ -82,6 +82,9 @@
 import TheTooltip from "./TheTooltip.vue";
 
 import { ref, computed, onMounted, toRefs, onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
@@ -104,21 +107,7 @@ const intro = computed(() => postStore.infoUserCard.intro);
 const enterChat = async ({ ...userInfo }) => {
   const chatId = await messageStore.addContact({ ...userInfo });
 
-  // Close modals if any
-  if (postStore.isShowPostDetails) {
-    postStore.hidePostDetails();
-  }
-
-  if (
-    !messageStore.currentContact ||
-    messageStore.currentContact.chatId !== chatId
-  ) {
-    messageStore.loadMessages(chatId);
-    messageStore.setCurrentChat(chatId);
-  }
-
-  messageStore.toggle(true);
-  messageStore.enterChat(true);
+  router.push("/messages/" + chatId);
 };
 
 onBeforeMount(() => {
