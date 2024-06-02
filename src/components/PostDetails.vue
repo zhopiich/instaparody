@@ -167,8 +167,6 @@
 </template>
 
 <script setup>
-import { dateToRelative } from "../utils/date";
-
 const getUUID = () => window.crypto.randomUUID();
 
 import TheModal from "./TheModal.vue";
@@ -185,10 +183,6 @@ import TimeBanner from "./PostButtons/TimeBanner.vue";
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
 
-import { useMediaQueryStore } from "../stores/mediaQuery";
-const mediaQueryStore = useMediaQueryStore();
-const isMobile = computed(() => mediaQueryStore.isMobile);
-
 import { usePostStore } from "../stores/post";
 
 const postStore = usePostStore();
@@ -201,11 +195,8 @@ const props = defineProps({
   isLikedOrSaved: {
     type: Boolean,
   },
+  isMobile: { type: Boolean },
 });
-
-const dateDisplay = computed(() =>
-  dateToRelative(props.post.createdAt.seconds, { interval: "week" })
-);
 
 const commentInput = ref(null);
 const setInputRef = (val) => {
@@ -247,7 +238,7 @@ const variableWidth = computed(() => {
   const squareImageWidth = remainedY.value;
   const remainedWidth = remainedX.value - squareImageWidth;
 
-  if (isMobile.value) return "100%";
+  if (props.isMobile) return "100%";
 
   return (
     (remainedWidth <= 405 ? 405 : remainedWidth <= 500 ? remainedWidth : 500) +
@@ -258,7 +249,7 @@ const variableHeight = computed(() => {
   const squareImageWidth = remainedX.value - 405;
   const squareImageHeight = remainedY.value;
 
-  if (isMobile.value) return "265px";
+  if (props.isMobile) return "265px";
 
   return (
     (squareImageWidth <= 450 || squareImageHeight <= 450

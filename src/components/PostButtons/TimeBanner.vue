@@ -17,6 +17,7 @@ const props = defineProps({
   timestamp: { type: Number },
   "font-size": { type: String, default: "sm" },
   "line-height": { type: Number, default: 3 },
+  isKeptFull: { type: Boolean, default: false },
 });
 
 const isHovered = ref(false);
@@ -24,7 +25,7 @@ const isHovered = ref(false);
 const timeDisplay = computed(() =>
   dateToRelative(props.timestamp, {
     short: true,
-    interval: isHovered.value ? null : "week",
+    interval: props.isKeptFull || isHovered.value ? null : "week",
   })
 );
 </script>

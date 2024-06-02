@@ -42,6 +42,28 @@ const routes = [
     },
   },
   {
+    path: "/post/:postId?",
+    name: "postDetails",
+    component: () => import("./pages/PostDetailsPage.vue"),
+    beforeEnter: (to, from) => {
+      if (!to.params.postId) {
+        return {
+          name: "NotAvailable",
+          params: { pathMatch: to.path.substring(1).split("/") },
+        };
+      }
+
+      const postStore = usePostStore();
+      postStore.loadPostDetails(to.params.postId);
+    },
+  },
+  {
+    path: "/post/:postId?/comments",
+    name: "comments",
+    component: () => import("./pages/CommentsPage.vue"),
+    beforeEnter: (to, from) => {},
+  },
+  {
     path: "/profile/edit",
     name: "profileEdit",
     component: () => import("./pages/ProfileEditingPage.vue"),

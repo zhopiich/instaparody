@@ -183,6 +183,47 @@ export const usePostStore = defineStore("post", () => {
     }
   };
 
+  //
+  const postSnapshot = ref(null);
+
+  const postListener = (postId) => {
+    return onSnapshot(
+      doc(db, "posts", postId),
+      (doc) => {
+        if (doc.data()) {
+          postSnapshot.value = { ...doc.data(), id: doc.id };
+        } else {
+          postSnapshot.value = "noSuchPost";
+        }
+      },
+      (err) => {
+        console.log(err.message);
+      }
+    );
+  };
+
+  let unsubPost = null;
+
+  const loadPost = (postId) => {
+    if (unsubPost !== null) {
+      unsubPost();
+    }
+
+    unsubPost = postListener(postId);
+  };
+
+  const triggerUnSubPost = () => {
+    if (unsubPost !== null) {
+      unsubPost();
+      unsubPost = null;
+      console.log("unsub! Post");
+    } else {
+      console.log("No postListener");
+    }
+
+    postSnapshot.value = null;
+  };
+
   const userStore = useUserStore();
 
   async function uploadPost({ images, description }) {
@@ -312,6 +353,7 @@ export const usePostStore = defineStore("post", () => {
 
   const postIdClicked = ref(null);
 
+  // shown in the modal
   async function showPostDetails(id, { idLikedOrSaved = null } = {}) {
     postIdClicked.value = id;
 
@@ -328,6 +370,22 @@ export const usePostStore = defineStore("post", () => {
     commentStore.cleanComments();
     toggleShowPostDetails(false);
   }
+
+  // loaded every time enter the page
+  const loadPostDetails = (postId) => {
+    loadPost(postId);
+
+    if (userStore.isLoggedIn) {
+      commentStore.loadComments(postId);
+    }
+  };
+
+  const resetPostDetailsPage = () => {
+    triggerUnSubPost();
+
+    commentStore.triggerUnSub();
+    commentStore.cleanComments();
+  };
 
   async function searchPosts(term) {
     const postsResult = await loadPosts(
@@ -403,11 +461,16 @@ export const usePostStore = defineStore("post", () => {
     postsFiltered,
     loadPostsFiltered,
     triggerUnSubFiltered,
+    postSnapshot,
+    loadPost,
+    triggerUnSubPost,
     uploadPost,
     toggleActions,
     postIdClicked,
     showPostDetails,
     hidePostDetails,
+    loadPostDetails,
+    resetPostDetailsPage,
     // postDetails,
     // searchResult,
     searchPosts,

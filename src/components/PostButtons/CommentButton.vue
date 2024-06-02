@@ -3,7 +3,9 @@
     <div
       class="w-full h-full flex justify-center items-center hover:text-neutral-500 active:text-neutral-400"
       @click="
-        !postStore.isShowPostDetails
+        isToPage
+          ? $router.push('/post/' + post.id + '/comments')
+          : $route.name !== 'postDetails' && !postStore.isShowPostDetails
           ? postStore.showPostDetails(post.id)
           : emits('focusInput')
       "
@@ -18,12 +20,14 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 
-import { ref, onMounted, computed, watchEffect, watch } from "vue";
-
 const props = defineProps({
   post: {
     type: Object,
     default: {},
+  },
+  isToPage: {
+    type: Boolean,
+    default: false,
   },
 });
 

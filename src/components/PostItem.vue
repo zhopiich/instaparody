@@ -5,7 +5,7 @@
     >
       <img
         class="h-full w-full object-contain md:object-cover cursor-pointer"
-        @click="postStore.showPostDetails(post.id)"
+        @click="showPostDetails(post.id)"
         :src="post.image || post.images[0]"
         alt=""
       />
@@ -55,7 +55,7 @@
           <LikeButton :post="post" />
         </div>
         <div class="">
-          <CommentButton :post="post" />
+          <CommentButton :post="post" :isToPage="isMobile" />
         </div>
         <div class="-mr-2.5 ml-auto">
           <SaveButton :post="post" />
@@ -72,7 +72,7 @@
           <span
             v-if="post.description.length > maxDescLength"
             class="text-gray-500 cursor-pointer"
-            @click="postStore.showPostDetails(post.id)"
+            @click="showPostDetails(post.id)"
             >more</span
           >
         </p>
@@ -85,14 +85,18 @@
           v-if="post.comments === 0"
           @click="
             () => {
-              commentStore.setIsFocus(true);
-              postStore.showPostDetails(post.id);
+              if (!isMobile) {
+                commentStore.setIsFocus(true);
+                postStore.showPostDetails(post.id);
+              } else {
+                router.push('/post/' + post.id + '/comments');
+              }
             }
           "
         >
           Make the first comment
         </p>
-        <p v-else @click="postStore.showPostDetails(post.id)">
+        <p v-else @click="showPostDetails(post.id)">
           {{
             "View " +
             `${
@@ -113,18 +117,15 @@
   <PostDetails
     v-if="isShowPostDetails && post.id === postIdClicked"
     :post="post"
+    :isMobile="isMobile"
   />
 </template>
 
 <script setup>
-import { dateToRelative } from "../utils/date";
-
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faImages } from "@fortawesome/free-solid-svg-icons";
 
-import TheAvatar from "../components/TheAvatar.vue";
 import PostDetails from "./PostDetails.vue";
-import UserPlate from "./UserPlate.vue";
 import AvatarLink from "./AvatarLink.vue";
 import DisplayNameLink from "./DisplayNameLink.vue";
 import TimeBanner from "./PostButtons/TimeBanner.vue";
@@ -134,6 +135,13 @@ import SaveButton from "./PostButtons/SaveButton.vue";
 import LikesCountBanner from "./PostButtons/LikesCountBanner.vue";
 
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+import { useMediaQueryStore } from "../stores/mediaQuery";
+const mediaQueryStore = useMediaQueryStore();
+const isMobile = computed(() => mediaQueryStore.isMobile);
 
 import { usePostStore } from "../stores/post";
 import { useCommentStore } from "../stores/comment";
@@ -150,6 +158,14 @@ const props = defineProps({
     default: {},
   },
 });
+
+const showPostDetails = (postId) => {
+  if (isMobile.value) {
+    router.push("/post/" + postId);
+  } else {
+    postStore.showPostDetails(postId);
+  }
+};
 
 const maxDescLength = 90;
 const maxTruncatedWordLength = 10;

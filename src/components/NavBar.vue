@@ -8,7 +8,7 @@
   <NavBarSliding v-else @turn="changeDirection" @scroll="changePosition">
     <nav
       class="navbar px-4 lg:px-[10dvw] z-10"
-      :class="{ '!shadow-none border-b': $route.name === 'messages' }"
+      :class="{ '!shadow-none border-b': $route.name !== 'home' }"
     >
       <router-link class="logo" to="/"
         ><img src="../assets/logo.svg"

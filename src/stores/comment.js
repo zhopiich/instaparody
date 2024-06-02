@@ -39,7 +39,7 @@ export const useCommentStore = defineStore("comment", () => {
   //   post.comments++;
   // }
 
-  let unsubscribe;
+  let unsubscribe = null;
 
   const triggerUnSub = () => {
     if (unsubscribe) {

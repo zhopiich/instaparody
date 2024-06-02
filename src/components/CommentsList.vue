@@ -31,7 +31,9 @@
         </div>
 
         <div class="inline">
-          <span class="inline">{{ comment.content }}</span>
+          <span class="inline text-pretty break-all">{{
+            comment.content
+          }}</span>
         </div>
 
         <div class="mt-2 mb-1 w-full flex *:leading-4">

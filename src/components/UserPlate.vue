@@ -28,12 +28,14 @@
         :to="profilePageURL(user.username)"
         @click.stop="$emit('linkClicked')"
       >
-        <p class="font-bold cursor-pointer hover:text-zinc-400">
+        <p
+          class="font-bold text-pretty break-all cursor-pointer hover:text-zinc-400"
+        >
           {{ user.displayName }}
         </p>
       </router-link>
 
-      <p v-else class="font-bold">
+      <p v-else class="font-bold text-pretty break-all">
         {{ user.displayName }}
       </p>
       <p v-if="isUsernameShown" class="text-slate-500">@{{ user.username }}</p>
