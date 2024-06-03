@@ -15,7 +15,10 @@
       <router-view></router-view>
     </template>
 
-    <footer v-if="$route.name !== 'messages'" class="mb-12 md:mb-0">
+    <footer
+      v-if="$route.name !== 'messages' && $route.name !== 'comments'"
+      class="mb-12 md:mb-0"
+    >
       &copy; 2023INSTAGRAM FROM MEGA
     </footer>
   </div>

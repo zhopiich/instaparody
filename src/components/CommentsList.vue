@@ -43,7 +43,7 @@
 
           <div
             v-if="comment.createdBy.userId === user.uid"
-            class="ml-auto mr-1 hidden deleteBtn"
+            class="ml-auto mr-1 md:hidden deleteBtn"
           >
             <div
               class="text-red-500 hover:text-red-400 active:text-red-300 cursor-pointer"
@@ -59,18 +59,11 @@
 </template>
 
 <script setup>
-import { dateToRelative } from "../utils/date";
-
-import UserPlate from "./UserPlate.vue";
-import UserCard from "./UserCard.vue";
 import TimeBanner from "./PostButtons/TimeBanner.vue";
 import AvatarLink from "./AvatarLink.vue";
 import DisplayNameLink from "./DisplayNameLink.vue";
 
-import { ref, computed, onMounted } from "vue";
-
-const hoveredAvatarId = ref(null);
-const hoveredDisplayNameId = ref(null);
+import { computed } from "vue";
 
 const props = defineProps(["postId"]);
 

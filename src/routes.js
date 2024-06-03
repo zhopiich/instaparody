@@ -53,15 +53,25 @@ const routes = [
         };
       }
 
-      const postStore = usePostStore();
-      postStore.loadPostDetails(to.params.postId);
+      if (from.name !== "comments" || from.params.postId !== to.params.postId) {
+        const postStore = usePostStore();
+        postStore.loadPostDetails(to.params.postId);
+      }
     },
   },
   {
     path: "/post/:postId?/comments",
     name: "comments",
     component: () => import("./pages/CommentsPage.vue"),
-    beforeEnter: (to, from) => {},
+    beforeEnter: (to, from) => {
+      if (
+        from.name !== "postDetails" ||
+        from.params.postId !== to.params.postId
+      ) {
+        const postStore = usePostStore();
+        postStore.loadPostDetails(to.params.postId);
+      }
+    },
   },
   {
     path: "/profile/edit",

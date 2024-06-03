@@ -288,7 +288,11 @@ watch(
 );
 
 const back = () => {
-  if (prevPath) {
+  if (
+    prevPath &&
+    (prevPath.endsWith("/") ? prevPath.slice(0, -1) : prevPath) !==
+      "/post/" + route.params.postId + "/comments"
+  ) {
     router.back();
   } else {
     router.push("/");
@@ -304,7 +308,14 @@ onBeforeRouteUpdate((to) => {
   postStore.loadPostDetails(to.params.postId);
 });
 
-onBeforeRouteLeave(() => {
+onBeforeRouteLeave((to) => {
+  if (
+    to.name === "comments" &&
+    to.params.postId &&
+    to.params.postId === route.params.postId
+  )
+    return;
+
   postStore.resetPostDetailsPage();
 });
 </script>

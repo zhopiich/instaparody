@@ -85,18 +85,14 @@
           v-if="post.comments === 0"
           @click="
             () => {
-              if (!isMobile) {
-                commentStore.setIsFocus(true);
-                postStore.showPostDetails(post.id);
-              } else {
-                router.push('/post/' + post.id + '/comments');
-              }
+              if (!isMobile) commentStore.setIsFocus(true);
+              showComments(post.id);
             }
           "
         >
           Make the first comment
         </p>
-        <p v-else @click="showPostDetails(post.id)">
+        <p v-else @click="showComments(post.id)">
           {{
             "View " +
             `${
@@ -162,6 +158,14 @@ const props = defineProps({
 const showPostDetails = (postId) => {
   if (isMobile.value) {
     router.push("/post/" + postId);
+  } else {
+    postStore.showPostDetails(postId);
+  }
+};
+
+const showComments = (postId) => {
+  if (isMobile.value) {
+    router.push("/post/" + postId + "/comments");
   } else {
     postStore.showPostDetails(postId);
   }
