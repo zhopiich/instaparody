@@ -116,7 +116,7 @@
 
   <PostDetails
     v-if="isShowPostDetails && post.id === postIdClicked"
-    :post="post"
+    :postProps="post"
     :isMobile="isMobile"
   />
 </template>

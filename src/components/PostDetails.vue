@@ -9,6 +9,7 @@
     >
       <div class="flex flex-col w-full h-full justify-center items-center my-0">
         <div
+          v-if="post !== null"
           class="detailsContainer m-auto h-full"
           :class="{ mobile: isMobile }"
         >
@@ -82,11 +83,7 @@
                     </div>
                   </div>
 
-                  <div
-                    v-if="!isLikedOrSaved"
-                    class="shrink-0"
-                    :class="{ 'border-t': !isMobile }"
-                  >
+                  <div class="shrink-0" :class="{ 'border-t': !isMobile }">
                     <div
                       class="px-4 flex justify-start"
                       :class="isMobile ? 'py-0' : 'py-2'"
@@ -188,36 +185,40 @@ import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
 
 const props = defineProps({
-  post: {
+  postProps: {
     type: Object,
     default: {},
   },
   isLikedOrSaved: {
     type: Boolean,
+    default: false,
   },
   isMobile: { type: Boolean },
 });
+
+if (props.isLikedOrSaved) {
+  postStore.loadPost(postStore.postIdClicked);
+}
+
+const post = computed(() =>
+  props.isLikedOrSaved ? postStore.postSnapshot : props.postProps
+);
 
 const commentInput = ref(null);
 const setInputRef = (val) => {
   commentInput.value = val;
 };
 
-const postImages = ref([]);
-if (props.post.images && props.post.images.length > 1) {
-  postImages.value = props.post.images.map((image) => ({
-    url: image,
-    id: getUUID(),
-  }));
-}
+const postImages = computed(() =>
+  post.value.images && post.value.images.length > 1
+    ? post.value.images.map((image) => ({
+        url: image,
+        id: getUUID(),
+      }))
+    : null
+);
 
-const postId = computed(() => {
-  if (props.isLikedOrSaved) {
-    return props.post.postId;
-  } else {
-    return props.post.id;
-  }
-});
+const postId = computed(() => post.value.id);
 
 // Rein in the size of the right part
 
@@ -273,6 +274,10 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  if (props.isLikedOrSaved) {
+    postStore.triggerUnSubPost();
+  }
+
   resizeObserver.disconnect();
 });
 </script>

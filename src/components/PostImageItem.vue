@@ -33,9 +33,10 @@
   </div>
 
   <PostDetails
-    v-if="isShowPostDetails && post.id === postIdClicked"
-    :post="post"
+    v-if="!isLikedOrSaved && isShowPostDetails && post.id === postIdClicked"
+    :postProps="post"
     :isLikedOrSaved="isLikedOrSaved"
+    :isMobile="isMobile"
   />
 </template>
 
@@ -57,26 +58,25 @@ const props = defineProps({
   },
 });
 
-import { ref, computed, onMounted } from "vue";
+import { computed } from "vue";
 
-import TheAvatar from "../components/TheAvatar.vue";
+import { useMediaQueryStore } from "../stores/mediaQuery";
+const mediaQueryStore = useMediaQueryStore();
+const isMobile = computed(() => mediaQueryStore.isMobile);
+
 import PostDetails from "./PostDetails.vue";
-
-import { dateToRelative } from "../utils/date";
 
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
 const isShowPostDetails = computed(() => postStore.isShowPostDetails);
 const postIdClicked = computed(() => postStore.postIdClicked);
 
+const postId = computed(() =>
+  props.isLikedOrSaved ? props.post.postId : props.post.id
+);
+
 const handlePostDetails = () => {
-  if (props.isLikedOrSaved) {
-    postStore.showPostDetails(props.post.id, {
-      idLikedOrSaved: props.post.postId,
-    });
-  } else {
-    postStore.showPostDetails(props.post.id);
-  }
+  postStore.showPostDetails(postId.value);
 };
 
 const formatNumber = (number) =>

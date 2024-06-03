@@ -354,20 +354,22 @@ export const usePostStore = defineStore("post", () => {
   const postIdClicked = ref(null);
 
   // shown in the modal
-  async function showPostDetails(id, { idLikedOrSaved = null } = {}) {
+  async function showPostDetails(id) {
     postIdClicked.value = id;
 
     if (userStore.isLoggedIn) {
-      commentStore.loadComments(idLikedOrSaved || id);
+      commentStore.loadComments(id);
     }
 
     toggleShowPostDetails(true);
   }
 
   function hidePostDetails() {
+    postIdClicked.value = null;
+
     commentStore.triggerUnSub();
-    // setCurrentId(null);
     commentStore.cleanComments();
+
     toggleShowPostDetails(false);
   }
 

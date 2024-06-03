@@ -173,6 +173,11 @@
   </div>
 
   <!-- <PostUpload v-if="isShowPostUpload" /> -->
+  <PostDetails
+    v-if="currentTab !== 'created' && isShowPostDetails"
+    :isLikedOrSaved="currentTab !== 'created'"
+    :isMobile="isMobile"
+  />
 </template>
 
 <script setup>
@@ -222,6 +227,8 @@ onUnmounted(() => {
 import PostImageList from "../components/PostImageList.vue";
 import PostImageItem from "../components/PostImageItem.vue";
 // import PostUpload from "../components/PostUpload.vue";
+import PostDetails from "../components/PostDetails.vue";
+
 import TheAvatar from "../components/TheAvatar.vue";
 
 import { usePostStore } from "../stores/post";
@@ -232,6 +239,7 @@ const router = useRouter();
 
 const postStore = usePostStore();
 // const isShowPostUpload = computed(() => postStore.isShowPostUpload);
+const isShowPostDetails = computed(() => postStore.isShowPostDetails);
 
 const postsFiltered = (() => {
   const obj = {};
