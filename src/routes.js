@@ -98,9 +98,18 @@ const routes = [
     },
   },
   {
-    path: "/:username",
+    path: "/:username/:tab?",
     name: "profile",
     component: () => import("./pages/ProfilePage.vue"),
+    beforeEnter: (to, from) => {
+      const userStore = useUserStore();
+      if (!userStore.isLoggedIn && to.params.tab === "saved") {
+        return {
+          name: "profile",
+          params: { username: to.params.username, tab: "" },
+        };
+      }
+    },
   },
   {
     path: "/:pathMatch(.*)*",
