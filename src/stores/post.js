@@ -448,6 +448,20 @@ export const usePostStore = defineStore("post", () => {
       .map((post) => post.image || post.images[0]);
   };
 
+  const postsCount = ref(0);
+
+  const getPostsCount = async (username) => {
+    const postsRef = collection(db, "posts");
+    const queryPosts = query(
+      postsRef,
+      where("createdBy.username", "==", username)
+    );
+
+    const postsSnap = await getDocs(queryPosts);
+
+    postsCount.value = postsSnap.docs.length;
+  };
+
   return {
     isShowPostUpload,
     toggleShowPostUpload,
@@ -485,5 +499,7 @@ export const usePostStore = defineStore("post", () => {
     cleanUsersLike,
     infoUserCard,
     getPostsByUser,
+    getPostsCount,
+    postsCount,
   };
 });

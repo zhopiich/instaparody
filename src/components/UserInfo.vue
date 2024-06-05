@@ -76,8 +76,8 @@
 
       <div class="mt-4 flex items-center">
         <p class="text-base leading-[18px]">
-          <span class="font-semibold">{{ postsByUserCount }}</span
-          >{{ " post" + `${postsByUserCount !== 1 ? "s" : ""}` }}
+          <span class="font-semibold">{{ postsCount }}</span
+          >{{ " post" + `${postsCount !== 1 ? "s" : ""}` }}
         </p>
       </div>
     </section>
@@ -130,9 +130,10 @@ import TheAvatar from "../components/TheAvatar.vue";
 
 const props = defineProps(["user", "isMobile", "isMe"]);
 
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
+const route = useRoute();
 const router = useRouter();
 
 // For <Teleport />
@@ -154,11 +155,15 @@ const enterChat = async ({ ...userInfo }) => {
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
 
-const postsByUserCount = computed(() => {
-  const posts = postStore.postsFiltered.created;
-  if (!posts) return;
-  return posts.length;
-});
+const postsCount = computed(() => postStore.postsCount);
+
+watch(
+  () => route.params.username,
+  (newVal) => {
+    postStore.getPostsCount(newVal);
+  },
+  { immediate: true }
+);
 
 const urlDisplay = computed(() => {
   if (!props.user) return;
