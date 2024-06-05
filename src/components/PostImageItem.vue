@@ -59,6 +59,9 @@ const props = defineProps({
 });
 
 import { computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 import { useMediaQueryStore } from "../stores/mediaQuery";
 const mediaQueryStore = useMediaQueryStore();
@@ -76,7 +79,11 @@ const postId = computed(() =>
 );
 
 const handlePostDetails = () => {
-  postStore.showPostDetails(postId.value);
+  if (isMobile.value) {
+    router.push("/post/" + postId.value);
+  } else {
+    postStore.showPostDetails(postId.value);
+  }
 };
 
 const formatNumber = (number) =>
