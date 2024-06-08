@@ -85,11 +85,15 @@ export const updateUserDoc = async (uid, data) => {
 export const addPost = async (vals) => {
   const colRef = collection(db, "posts");
 
-  const docRef = await addDoc(colRef, {
-    ...vals,
-  });
+  try {
+    const docRef = await addDoc(colRef, {
+      ...vals,
+    });
 
-  return { docRef };
+    return docRef;
+  } catch (err) {
+    console.log("addDoc:", err);
+  }
 };
 
 // comment

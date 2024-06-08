@@ -5,24 +5,70 @@
         <div
           class="min-w-[336px] w-[calc(100dvw_-_8px)] max-w-[450px] sm:max-w-[600px]"
         >
-          <div class="size-full flex flex-col">
-            <div class="w-full aspect-square relative">
+          <div class="size-full flex flex-col relative">
+            <div
+              class="w-full aspect-square relative"
+              :class="{ 'bg-white': imagesPosted.length === 0 }"
+            >
               <DragAndDropInput @edit-imagesFile="handleImagesPosted" />
             </div>
 
-            <div class="postContent border-t h-[125px] flex">
-              <textarea
-                placeholder="Write something..."
-                class="postContentInput"
-                v-model="descriptionPost"
-              ></textarea>
-              <TheButton
-                class="self-end"
-                color="immerse"
-                :isDisable="!descriptionPost"
-                @click="publishPost"
-                >Post</TheButton
+            <div
+              class="postContent border-t transition-[height] duration-300"
+              :class="imagesPosted.length > 0 ? 'h-[125px]' : 'h-0'"
+            >
+              <div v-if="imagesPosted.length > 0" class="size-full flex">
+                <textarea
+                  placeholder="Write something..."
+                  class="postContentInput"
+                  v-model="descriptionPost"
+                ></textarea>
+                <TheButton
+                  class="self-end"
+                  color="immerse"
+                  :isDisable="imagesPosted.length === 0"
+                  @click="publishPost"
+                  >Post</TheButton
+                >
+              </div>
+            </div>
+
+            <div v-if="isUploading" class="size-full absolute bg-white/70">
+              <div class="size-full flex justify-center items-center">
+                <span class="loading loading-spinner text-blue-500 w-24"></span>
+              </div>
+            </div>
+
+            <div v-if="isUploadFailed" class="size-full absolute bg-white">
+              <div
+                class="size-full p-6 flex flex-col justify-center items-center"
               >
+                <div class="h-24 aspect-square">
+                  <FontAwesomeIcon
+                    :icon="faCircleExclamation"
+                    class="size-full"
+                  />
+                </div>
+
+                <div class="overflow-y-visible mt-4">
+                  <span class="text-pretty text-xl"
+                    >Your post could not be shared. Please try again.</span
+                  >
+                </div>
+
+                <div class="mt-6 flex flex-row-reverse">
+                  <TheButton :width="94" @click="publishPost"
+                    >Try again</TheButton
+                  >
+                  <TheButton
+                    class="mr-2"
+                    color="reverse"
+                    :width="94"
+                    @click="isUploadFailed = false"
+                    >Cancel</TheButton
+                  >
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -34,6 +80,9 @@
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+
 import TheModal from "./TheModal.vue";
 import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
@@ -45,20 +94,34 @@ const postStore = usePostStore();
 
 import { ref } from "vue";
 
-const imagesPosted = ref([]);
+const isUploading = ref(false);
+const isUploadFailed = ref(false);
 
+const imagesPosted = ref([]);
 const descriptionPost = ref("");
 
 async function handleImagesPosted(ImagesFile) {
   imagesPosted.value = ImagesFile;
 }
 
-function publishPost() {
-  postStore.uploadPost({
+const publishPost = async () => {
+  if (isUploadFailed.value) {
+    isUploadFailed.value = false;
+  }
+  isUploading.value = true;
+
+  const docRef = await postStore.uploadPost({
     images: imagesPosted.value,
     description: descriptionPost.value,
   });
-}
+
+  if (docRef) {
+    postStore.toggleShowPostUpload(false);
+  } else {
+    isUploading.value = false;
+    isUploadFailed.value = true;
+  }
+};
 
 const isShowConfirm = ref(false);
 const handleClose = () => {
@@ -79,6 +142,6 @@ const handleClose = () => {
 }
 
 .postContentInput::placeholder {
-  color: #757575;
+  color: #929292;
 }
 </style>

@@ -227,13 +227,16 @@ export const usePostStore = defineStore("post", () => {
   const userStore = useUserStore();
 
   async function uploadPost({ images, description }) {
-    // const imageUrl = await uploadFile(image);
+    if (!images.length) {
+      console.log("uploadPost: No images.");
+      return;
+    }
 
     const imagesUrl = await Promise.all(
       images.map((image) => uploadFile(image))
     );
 
-    await addPost({
+    const docRef = await addPost({
       images: imagesUrl,
       description,
       createdBy: {
@@ -248,7 +251,7 @@ export const usePostStore = defineStore("post", () => {
       comments: 0,
     });
 
-    toggleShowPostUpload(false);
+    return docRef;
   }
 
   const isLikedByMe = ref({});

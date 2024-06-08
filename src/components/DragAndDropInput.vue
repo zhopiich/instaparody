@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-full w-full absolute top-0"
+    class="size-full"
     @dragover="dragover"
     @dragleave="dragleave"
     @drop="drop"
