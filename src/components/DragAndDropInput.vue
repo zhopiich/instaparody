@@ -105,6 +105,7 @@ const addImages = () => {
 
   let imagesArray = [];
   imagesArray.push(...newImagesFile);
+  fileInput.value.value = null;
 
   const notImage = imagesArray.find((file) => !file.type.startsWith("image/"));
   if (notImage) {
