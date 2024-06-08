@@ -1,21 +1,31 @@
 <template>
   <TheModal @close="handleClose">
-    <!-- slot following -->
-    <div class="postUpload bg-white rounded-lg overflow-hidden">
-      <div class="w=[640px] h-[640px] relative">
-        <DragAndDropInput @edit-imagesFile="handleImagesPosted" />
-      </div>
-
-      <!--  -->
-      <div class="postContent">
-        <textarea
-          placeholder="Write something..."
-          class="postContentInput"
-          v-model="descriptionPost"
-        ></textarea>
-        <TheButton class="pubBtn" color="immerse" @click="publishPost"
-          >Post</TheButton
+    <div class="max-h-dvh overflow-y-auto">
+      <div class="bg-white rounded-lg overflow-hidden">
+        <div
+          class="min-w-[336px] w-[calc(100dvw_-_8px)] max-w-[450px] sm:max-w-[600px]"
         >
+          <div class="size-full flex flex-col">
+            <div class="w-full aspect-square relative">
+              <DragAndDropInput @edit-imagesFile="handleImagesPosted" />
+            </div>
+
+            <div class="postContent border-t h-[125px] flex">
+              <textarea
+                placeholder="Write something..."
+                class="postContentInput"
+                v-model="descriptionPost"
+              ></textarea>
+              <TheButton
+                class="self-end"
+                color="immerse"
+                :isDisable="!descriptionPost"
+                @click="publishPost"
+                >Post</TheButton
+              >
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </TheModal>
@@ -24,8 +34,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-// import { useRoute } from "vue-router";
 import TheModal from "./TheModal.vue";
 import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
@@ -35,7 +43,7 @@ import ConfirmDiscardPost from "./ConfirmDiscardPost.vue";
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
 
-// const route = useRoute();
+import { ref } from "vue";
 
 const imagesPosted = ref([]);
 
@@ -46,13 +54,10 @@ async function handleImagesPosted(ImagesFile) {
 }
 
 function publishPost() {
-  postStore.uploadPost(
-    {
-      images: imagesPosted.value,
-      description: descriptionPost.value,
-    }
-    // route.name
-  );
+  postStore.uploadPost({
+    images: imagesPosted.value,
+    description: descriptionPost.value,
+  });
 }
 
 const isShowConfirm = ref(false);
@@ -67,69 +72,13 @@ const handleClose = () => {
 </script>
 
 <style scoped>
-.postUpload {
-  /* width: 50vw; */
-  /* height: 70vh; */
-  display: flex;
-  /* grid-template-rows: 4fr 1fr; */
-  flex-direction: column;
-  @apply max-h-screen w-[348px] sm:w-[596px] lg:w-[640px];
-}
-
-.preview {
-  width: inherit;
-  /* width: 100%;
-  height: 100%; */
-  object-fit: contain;
-  min-height: 0;
-  @apply aspect-square;
-}
-
-.preview.previewBackground {
-  @apply bg-slate-600;
-}
-
-.upload {
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  /* min-height: 0; */
-  width: inherit;
-  @apply aspect-square;
-}
-
-.upload > svg {
-  width: 254px;
-  height: 316px;
-}
-
-.fileChooser {
-  opacity: 0;
-  position: absolute;
-  /* top: 0;
-  left: 0; */
-}
-
-.postContent {
-  display: grid;
-}
-
 .postContentInput {
-  border-bottom: none;
+  border: none;
   resize: none;
-  padding: 12px 24px;
+  padding: 8px 16px;
 }
 
 .postContentInput::placeholder {
   color: #757575;
-}
-
-.pubBtn {
-  align-self: end;
-  justify-self: end;
-  position: relative;
-  /* right: 24px;
-  bottom: 18px; */
-  @apply right-[6px] bottom-0;
 }
 </style>
