@@ -59,7 +59,7 @@ import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
 import NavBarSliding from "./NavBarSliding.vue";
 import Search from "./Search.vue";
-import PostUpload from "../components/PostUpload.vue";
+import PostUpload from "../components/PostUpload/PostUpload.vue";
 
 // import { userListener, getUser, updateUser } from "../firebase/firestore.js";
 

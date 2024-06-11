@@ -37,9 +37,9 @@
 </template>
 
 <script setup>
-import TheModal from "./TheModal.vue";
+import TheModal from "../TheModal.vue";
 
-import { usePostStore } from "../stores/post";
+import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
 const emit = defineEmits(["close"]);

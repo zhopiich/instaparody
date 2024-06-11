@@ -1,6 +1,6 @@
 <template>
   <div
-    class="size-full"
+    class="size-full relative"
     @dragover="dragover"
     @dragleave="dragleave"
     @drop="drop"
@@ -39,7 +39,7 @@
         <p class="text-xl">or</p>
 
         <label
-          class="select-none text-base text-center text-white font-bold rounded-lg px-4 py-2 mt-5 bg-sky-500 hover:bg-blue-500 cursor-pointer"
+          class="select-none text-base text-center text-white font-bold rounded-lg px-4 py-2 mt-5 bg-sky-500 hover:bg-blue-500 active:bg-blue-400 cursor-pointer"
           for="postImageInput"
         >
           Select among files
@@ -67,6 +67,10 @@
       </div>
     </div>
 
+    <div class="absolute bottom-0 w-full pointer-events-none">
+      <InputAlert :alertList="alertList" @shiftList="alertList.shift()" />
+    </div>
+
     <div
       v-if="isDraggingOver"
       class="absolute top-0 border-2 rounded-xl border-dashed border-sky-400 pointer-events-none m-[10px]"
@@ -82,9 +86,10 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
-import ImageCarousel from "./ImageCarousel.vue";
+import ImageCarousel from "../ImageCarousel.vue";
+import InputAlert from "./InputAlert.vue";
 
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, reactive, computed, onMounted, watch } from "vue";
 // const props = defineProps(["imagesCount"]);
 const emit = defineEmits(["editImagesFile"]);
 
@@ -95,6 +100,8 @@ const imagesObjUrl = ref([]);
 
 const fileInput = ref(null);
 const dropzone = ref(null);
+
+const alertList = reactive([]);
 
 const isDraggingOver = ref(false);
 
@@ -109,23 +116,25 @@ const addImages = () => {
 
   const notImage = imagesArray.find((file) => !file.type.startsWith("image/"));
   if (notImage) {
-    // Throw(
-    //   `There's a file not supported. ${notImage.name} could not be uploaded.`
-    // );
+    alertList.push(
+      `There's a file not supported. ${notImage.name} could not be uploaded.`
+    );
+
     return;
   }
 
   const remaining = maxAllowed - imageFiles.value.length;
   if (remaining === 0) {
-    // Throw(
-    //   "Up to 10 photos could be uploaded. Please remove at least one to select another."
-    // );
+    alertList.push(
+      "Up to 10 photos could be uploaded. Please remove at least one to select another."
+    );
+
     return;
   }
   if (remaining < imagesArray.length) {
-    // Throw(
-    //   "Up to 10 photos could be uploaded. Any more than that were discarded."
-    // );
+    alertList.push(
+      "Up to 10 photos could be uploaded. Any more than that were discarded."
+    );
 
     imagesArray = imagesArray.slice(0, remaining);
   }

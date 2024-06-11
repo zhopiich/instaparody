@@ -7,15 +7,17 @@
         >
           <div class="size-full flex flex-col relative">
             <div
-              class="w-full aspect-square relative"
-              :class="{ 'bg-white': imagesPosted.length === 0 }"
+              class="w-full aspect-square"
+              :class="{
+                // 'bg-white': imagesPosted.length === 0,
+              }"
             >
               <DragAndDropInput @edit-imagesFile="handleImagesPosted" />
             </div>
 
             <div
-              class="postContent border-t transition-[height] duration-300"
-              :class="imagesPosted.length > 0 ? 'h-[125px]' : 'h-0'"
+              class="postContent box-border transition-[height] duration-300"
+              :class="imagesPosted.length > 0 ? 'h-[125px] border-t' : 'h-0'"
             >
               <div v-if="imagesPosted.length > 0" class="size-full flex">
                 <textarea
@@ -83,13 +85,13 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
-import TheModal from "./TheModal.vue";
-import TheIcon from "./TheIcon.vue";
-import TheButton from "./TheButton.vue";
+import TheModal from "../TheModal.vue";
+import TheIcon from "../TheIcon.vue";
+import TheButton from "../TheButton.vue";
 import DragAndDropInput from "./DragAndDropInput.vue";
 import ConfirmDiscardPost from "./ConfirmDiscardPost.vue";
 
-import { usePostStore } from "../stores/post";
+import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
 import { ref } from "vue";
