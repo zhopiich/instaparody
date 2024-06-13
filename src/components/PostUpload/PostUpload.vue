@@ -94,6 +94,9 @@ import ConfirmDiscardPost from "./ConfirmDiscardPost.vue";
 import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
+import { useAlertStore } from "../../stores/alert";
+const alertStore = useAlertStore();
+
 import { ref } from "vue";
 
 const isUploading = ref(false);
@@ -119,6 +122,11 @@ const publishPost = async () => {
 
   if (docRef) {
     postStore.toggleShowPostUpload(false);
+
+    alertStore.addAlert({
+      content: "Your post was sent.",
+      link: { name: "View", to: "/post/" + docRef.id },
+    });
   } else {
     isUploading.value = false;
     isUploadFailed.value = true;

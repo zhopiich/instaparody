@@ -5,6 +5,7 @@
       <NavBar :isMobile="isMobile" />
       <!-- </header> -->
       <TheLayout>
+        <Alert />
         <router-view></router-view>
       </TheLayout>
 
@@ -29,6 +30,7 @@ import "./assets/base.css";
 import NavBar from "./components/NavBar.vue";
 import TheLayout from "./components/TheLayout.vue";
 import MessagesContainer from "./components/Messages/MessagesContainer.vue";
+import Alert from "./components/Alert/Alert.vue";
 
 import { computed, onMounted } from "vue";
 

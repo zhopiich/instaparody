@@ -119,6 +119,9 @@ const emits = defineEmits(["lastMounted", "imageMounted"]);
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
+import { useAlertStore } from "../../stores/alert";
+const alertStore = useAlertStore();
+
 const handleDelete = () => {
   messageStore.deleteMessage(messageId, props.isLast);
 };
@@ -129,8 +132,7 @@ const handleCopy = () => {
     .join(" ");
 
   navigator.clipboard.writeText(copied).then(() => {
-    //
-    console.log("Copied!");
+    alertStore.addAlert({ content: "Copied to clipboard" });
     isShowMoreMenu.value = false;
   });
 };

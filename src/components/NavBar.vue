@@ -104,6 +104,9 @@ const profilePageURL = computed(() => {
 import { useMessageStore } from "../stores/message";
 const messageStore = useMessageStore();
 
+import { useAlertStore } from "../stores/alert";
+const alertStore = useAlertStore();
+
 // onMounted(async () => {
 //   // if (userPnia.value) {
 //   // await userStore.getUserDoc(userPnia.value.uid);
@@ -116,6 +119,8 @@ async function logout() {
 
   //
   messageStore.reset();
+
+  alertStore.reset();
 
   await logOut();
   router.push("/login");

@@ -42,6 +42,9 @@ const route = useRoute();
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
+import { useAlertStore } from "../../stores/alert";
+const alertStore = useAlertStore();
+
 const isDraggingOver = ref(false);
 
 const dropzone = ref(null);
@@ -70,13 +73,13 @@ const drop = (e) => {
   let imagesFile = [];
   imagesFile.push(...e.dataTransfer.files);
 
-  if (imagesFile.length > 1) {
-    ///
+  if (imagesFile.length > 1 || messageStore.imagePreview) {
+    alertStore.addAlert({ content: "Only 1 photo could be uploaded." });
     return;
   }
 
   if (!imagesFile.every((file) => file.type.startsWith("image/"))) {
-    ///
+    alertStore.addAlert({ content: "Please choose 1 photo or GIF." });
     return;
   }
 
