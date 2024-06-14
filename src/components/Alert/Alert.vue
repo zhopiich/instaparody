@@ -1,16 +1,25 @@
 <template>
   <div
-    class="fixed bottom-0 z-[2] w-full overflow-hidden flex justify-center pointer-events-none"
+    class="fixed bottom-0 transition-transform z-[2] w-full overflow-hidden flex justify-center pointer-events-none"
+    :style="{ transform: `translateY(${-positionBottom}px)` }"
   >
     <div
       class="transition-transform duration-300"
-      :class="isAlertShown ? 'translate-y-0' : 'translate-y-full'"
+      :class="[
+        isAlertShown ? 'translate-y-0' : 'translate-y-full',
+        { 'w-full': isMobile },
+      ]"
     >
       <Transition name="slide">
-        <div v-if="isAlertShown" class="mb-8">
+        <div
+          v-if="isAlertShown"
+          class="md:mb-8"
+          :class="{ 'w-full': isMobile }"
+        >
           <div
             role="alert"
-            class="rounded overflow-hidden bg-blue-400 pointer-events-auto"
+            class="md:rounded overflow-hidden bg-blue-400 pointer-events-auto"
+            :class="{ 'w-full': isMobile }"
           >
             <div class="p-3">
               <AlertContent />
@@ -31,9 +40,25 @@ const alertStore = useAlertStore();
 import { useRoute } from "vue-router";
 const route = useRoute();
 
-import { ref, computed } from "vue";
+import { computed } from "vue";
+
+import { useMediaQueryStore } from "../../stores/mediaQuery";
+const mediaQueryStore = useMediaQueryStore();
+const isMobile = computed(() => mediaQueryStore.isMobile);
 
 const isAlertShown = computed(() => alertStore.isAlertShown);
+
+const positionBottom = computed(() => {
+  if (!isMobile.value) return 0;
+
+  switch (route.name) {
+    case "messages":
+      if (route.params.chatId) return 49 + 57;
+      return 49;
+    default:
+      return 49;
+  }
+});
 </script>
 
 <style scoped>
