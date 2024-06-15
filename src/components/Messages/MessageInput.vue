@@ -32,13 +32,21 @@
       <!-- text input -->
       <div class="grow w-0 min-h-fit flex flex-col justify-center">
         <label class="px-3">
-          <span
-            class="textarea resize-none border-none shadow-none py-1 px-0 bg-transparent overflow-auto"
-            role="textbox"
-            contenteditable="plaintext-only"
-            @input="onInput"
-            ref="contentEditor"
-          ></span>
+          <div class="relative">
+            <div v-if="!messageContent" class="editorPlaceHolder py-1">
+              <span>Start a new message</span>
+            </div>
+            <div
+              class="textarea resize-none border-none shadow-none py-1 px-0 bg-transparent overflow-auto"
+              role="textbox"
+              contenteditable="true"
+              aria-multiline="true"
+              @input="handleInput"
+              @paste="handlePaste"
+              @keypress.enter="handleEnter"
+              ref="contentEditor"
+            ></div>
+          </div>
         </label>
       </div>
 
@@ -79,12 +87,23 @@ const isInputValid = computed(
   () => trimmedContent.value !== "" || messageStore.imageToBeSent
 );
 
-const onInput = (e) => {
-  if (e.target.innerText === "") {
-    messageContent.value = "";
-    return;
-  }
-  messageContent.value = e.target.innerText;
+const handleInput = (e) => {
+  messageContent.value = e.target.textContent;
+};
+
+const handlePaste = (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+
+  const paste = (e.clipboardData || window.clipboardData).getData("text");
+
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+  selection.deleteFromDocument();
+  selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+  selection.collapseToEnd();
+
+  handleInput(e);
 };
 
 const contentEditor = ref(null);
@@ -128,6 +147,17 @@ const sendMessage = async () => {
   const messageId = messageRef.id;
   await messageStore.updateLastMessage({ content, id: messageId });
 };
+
+const handleEnter = (e) => {
+  if (e.shiftKey || e.metaKey || e.ctrlKey) return;
+
+  e.stopPropagation();
+  e.preventDefault();
+
+  if (!isInputValid.value) return;
+
+  sendMessage();
+};
 </script>
 
 <style scoped>
@@ -139,15 +169,20 @@ const sendMessage = async () => {
   line-height: 20px;
   outline: none;
 
-  /* user-select: text; */
+  user-select: text;
   white-space: pre-wrap;
-  /* overflow-wrap: break-word; */
+  overflow-wrap: break-word;
 
-  font-size: 1.1em;
+  font-size: 15px;
+  cursor: text;
 }
 
-.textarea[contenteditable]:empty::before {
-  content: "Start a new message";
+.editorPlaceHolder {
+  position: absolute;
+  pointer-events: none;
+  white-space: pre-wrap;
   color: gray;
+  font-size: 15px;
+  line-height: 20px;
 }
 </style>

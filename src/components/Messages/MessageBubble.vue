@@ -40,9 +40,9 @@
 
         <!-- content -->
         <div v-if="message.content" class="py-3 px-4">
-          <p class="message-content leading-5">
-            {{ message.content }}
-          </p>
+          <pre class="font-sans message-content leading-5">{{
+            message.content
+          }}</pre>
         </div>
 
         <!-- <div
@@ -317,5 +317,6 @@ onBeforeUnmount(() => {
 
 .message-content {
   overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 </style>
