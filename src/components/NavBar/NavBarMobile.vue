@@ -80,16 +80,16 @@ import {
   faPaperPlane,
 } from "@fortawesome/free-regular-svg-icons";
 
-import TheAvatar from "./TheAvatar.vue";
-import SearchMobile from "./SearchMobile.vue";
+import TheAvatar from "../TheAvatar.vue";
+import SearchMobile from "../SearchMobile.vue";
 
-import { logOut } from "../firebase/auth";
+import { logOut } from "../../firebase/auth";
 
 import { useRoute } from "vue-router";
 
 const route = useRoute();
 
-import { usePostStore } from "../stores/post";
+import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
 const props = defineProps(["avatar", "profilePageURL"]);

@@ -16,7 +16,7 @@
 
       <Search :direction="direction" :navbarPosition="navbarPosition" />
 
-      <div class="navItems">
+      <div v-if="userStore.isLoggedIn" class="navItems">
         <button
           v-if="$route.name === 'home' || $route.name === 'profile'"
           @click="publishPost"
@@ -42,6 +42,9 @@
           </Transition>
         </div>
       </div>
+      <div v-else class="justify-self-end flex">
+        <LoginButton />
+      </div>
     </nav>
   </NavBarSliding>
 
@@ -51,14 +54,15 @@
 <script setup>
 import { logOut } from "../firebase/auth";
 
-import NavBarMobile from "./NavBarMobile.vue";
+import NavBarMobile from "./NavBar/NavBarMobile.vue";
 import TheAvatar from "./TheAvatar.vue";
 import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
-import NavBarSliding from "./NavBarSliding.vue";
+import NavBarSliding from "./NavBar/NavBarSliding.vue";
 import Search from "./Search.vue";
 import PostUpload from "./PostUpload/PostUpload.vue";
-import ProfileIconMenu from "./ProfileIconMenu.vue";
+import ProfileIconMenu from "./NavBar/ProfileIconMenu.vue";
+import LoginButton from "./NavBar/LoginButton.vue";
 
 // import { userListener, getUser, updateUser } from "../firebase/firestore.js";
 
