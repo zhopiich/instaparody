@@ -399,24 +399,29 @@ export const usePostStore = defineStore("post", () => {
     leadPostsShown(postsResult);
   }
 
-  const usersLike = ref([]);
+  const usersLike = ref(null);
 
-  const getUsersLike = async (postId) => {
-    //
+  const getUsersLike = async (postId, { isToBeChecked = false } = {}) => {
+    if (isToBeChecked) {
+      const docRef = doc(db, "posts", postId);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        usersLike.value = "noSuchPost";
+        return;
+      }
+    }
+
     const colRef = collection(db, "likes");
     const q = query(colRef, where("postId", "==", postId));
 
     const querySnapshot = await getDocs(q);
 
-    // const results = querySnapshot.docs.map((doc) => ({
-    //   ...doc.data(),
-    //   id: doc.id,
-    // }));
     usersLike.value = querySnapshot.docs.map((doc) => doc.data().likedBy);
   };
 
   const cleanUsersLike = () => {
-    usersLike.value = [];
+    usersLike.value = null;
   };
 
   const infoUserCard = ref({});

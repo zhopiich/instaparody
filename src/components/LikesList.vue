@@ -17,7 +17,7 @@
               <div class="w-[50px]"></div>
             </div>
             <div class="grow basis-0 overflow-auto">
-              <div v-for="user in list">
+              <div v-if="list" v-for="user in list">
                 <div class="flex items-center justify-between px-4 py-2">
                   <div class="">
                     <UserPlate

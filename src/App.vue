@@ -17,7 +17,11 @@
     </template>
 
     <footer
-      v-if="$route.name !== 'messages' && $route.name !== 'comments'"
+      v-if="
+        $route.name !== 'messages' &&
+        $route.name !== 'comments' &&
+        $route.name !== 'likes'
+      "
       class="mb-12 md:mb-0"
     >
       &copy; 2023INSTAGRAM FROM MEGA

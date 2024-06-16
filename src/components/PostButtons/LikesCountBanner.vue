@@ -26,6 +26,13 @@
 import LikesList from "../LikesList.vue";
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+import { useMediaQueryStore } from "../../stores/mediaQuery";
+const mediaQueryStore = useMediaQueryStore();
+const isMobile = computed(() => mediaQueryStore.isMobile);
 
 const props = defineProps({
   post: {
@@ -40,9 +47,13 @@ const postStore = usePostStore();
 const isShowLikesList = ref(false);
 
 const showLikes = (postId) => {
-  isShowLikesList.value = true;
+  if (isMobile.value) {
+    router.push("/post/" + postId + "/liked_by");
+  } else {
+    isShowLikesList.value = true;
 
-  postStore.getUsersLike(postId);
+    postStore.getUsersLike(postId);
+  }
 };
 
 const closeLikes = () => {

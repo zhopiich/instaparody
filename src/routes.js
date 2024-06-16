@@ -74,6 +74,15 @@ const routes = [
     },
   },
   {
+    path: "/post/:postId?/liked_by",
+    name: "likes",
+    component: () => import("./pages/LikesPage.vue"),
+    beforeEnter: (to, from) => {
+      const postStore = usePostStore();
+      postStore.getUsersLike(to.params.postId, { isToBeChecked: true });
+    },
+  },
+  {
     path: "/profile/edit",
     name: "profileEdit",
     component: () => import("./pages/ProfileEditingPage.vue"),
