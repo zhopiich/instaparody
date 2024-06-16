@@ -24,24 +24,22 @@
           <TheIcon icon="publish" />
         </button>
 
-        <div class="profileDropDown">
+        <div class="profileDropDown" ref="avatarIcon">
           <TheAvatar
             :src="user?.photoURL"
             :width="42"
             style="cursor: pointer"
             @click="isShowDropdown = !isShowDropdown"
           />
-          <div
-            class="dropdownMenu"
-            v-show="isShowDropdown"
-            @click="isShowDropdown = false"
-          >
-            <ul class="profileMenu">
-              <li><router-link :to="profilePageURL">My Page</router-link></li>
-              <li><router-link to="/messages">Messages</router-link></li>
-              <li @click="logout">Log Out</li>
-            </ul>
-          </div>
+          <Transition name="menu">
+            <ProfileIconMenu
+              v-if="isShowDropdown"
+              :profilePageURL="profilePageURL"
+              :avatar="avatarIcon"
+              @close="isShowDropdown = false"
+              @logout="logout"
+            />
+          </Transition>
         </div>
       </div>
     </nav>
@@ -59,7 +57,8 @@ import TheIcon from "./TheIcon.vue";
 import TheButton from "./TheButton.vue";
 import NavBarSliding from "./NavBarSliding.vue";
 import Search from "./Search.vue";
-import PostUpload from "../components/PostUpload/PostUpload.vue";
+import PostUpload from "./PostUpload/PostUpload.vue";
+import ProfileIconMenu from "./ProfileIconMenu.vue";
 
 // import { userListener, getUser, updateUser } from "../firebase/firestore.js";
 
@@ -68,6 +67,8 @@ const props = defineProps(["isMobile"]);
 import { ref, computed, onMounted } from "vue";
 
 const isShowDropdown = ref(false);
+
+const avatarIcon = ref(null);
 
 const navbarHeight = ref(80);
 
@@ -184,40 +185,13 @@ const changePosition = (position) => {
   position: relative;
 }
 
-.profileMenu {
-  position: absolute;
-  width: max-content;
-  padding: 24px 26px;
-  list-style: none;
-  background: white;
-  box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.08);
-  border-radius: 4px;
-  right: 0;
-  display: grid;
-  row-gap: 18px;
-  transform: translateY(18px);
+.menu-enter-active,
+.menu-leave-active {
+  transition: opacity 0.2s ease;
 }
 
-.profileMenu::before {
-  content: "";
-  display: block;
-  position: absolute;
-  width: 0;
-  height: 0;
-  top: -12px;
-  right: 10px;
-  border-bottom: 12px solid white;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-}
-
-.profileMenu a,
-.profileMenu li {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.profileMenu a:visited {
-  color: initial;
+.menu-enter-from,
+.menu-leave-to {
+  opacity: 0;
 }
 </style>
