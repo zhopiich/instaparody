@@ -47,7 +47,10 @@
           />
         </div>
 
-        <div class="imageFrame overflow-hidden h-full aspect-square">
+        <div
+          class="imageFrame overflow-hidden aspect-square"
+          :class="isMobile ? 'w-full' : 'h-full'"
+        >
           <div class="size-full relative bg-black">
             <img
               v-if="post.image || post.images.length === 1"
