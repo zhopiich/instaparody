@@ -88,6 +88,8 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   const findChat = async ({ userId1, userId2 }) => {
+    if (!userStore.isLoggedIn) return;
+
     const user = (userId) => `users.${userId}`;
 
     const q = query(
@@ -111,6 +113,8 @@ export const useMessageStore = defineStore("message", () => {
     avatar = null,
     displayName = null,
   } = {}) => {
+    if (!userStore.isLoggedIn) return "";
+
     const me = getUserInfo(userStore.userDoc, userStore.user.uid);
 
     if (username === me.username || userId === me.userId) return;
@@ -184,6 +188,8 @@ export const useMessageStore = defineStore("message", () => {
   const lastMessagesAt = ref({});
 
   const contactsListener = () => {
+    if (!userStore.isLoggedIn) return;
+
     console.log("**Contacts Listening...");
 
     const messagesRef = collection(db, "messages");
@@ -262,7 +268,7 @@ export const useMessageStore = defineStore("message", () => {
 
   let unSubContacts;
   const loadContacts = () => {
-    if (userStore.user === "guest") return;
+    if (!userStore.isLoggedIn) return;
 
     unSubContacts = contactsListener();
   };
@@ -332,13 +338,25 @@ export const useMessageStore = defineStore("message", () => {
   );
 
   const isChatExists = async (chatId) => {
-    const chatRef = doc(db, "messages", chatId);
-    const chatSnap = await getDoc(chatRef);
+    if (!userStore.isLoggedIn) return false;
 
-    return chatSnap.exists();
+    const chatRef = doc(db, "messages", chatId);
+
+    try {
+      const chatSnap = await getDoc(chatRef);
+      return chatSnap.exists();
+    } catch (err) {
+      // console.log(err);
+
+      // the chat doesn't exist or isn't yours,
+      // rejected by Firestore due to the security rules
+      return false;
+    }
   };
 
   const messagesListener = (chatId) => {
+    if (!userStore.isLoggedIn) return;
+
     const messagesRef = collection(db, "messages");
     const chatRef = collection(messagesRef, chatId, "chat");
     const q = query(chatRef, orderBy("at", "asc"));
@@ -386,6 +404,8 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   const sendMessage = async (content, image = null) => {
+    if (!userStore.isLoggedIn) return;
+
     let imageUrl = null;
     if (image) {
       imageUrl = await uploadFile(image, "messageImages/");
@@ -420,6 +440,8 @@ export const useMessageStore = defineStore("message", () => {
     { content = null, id = null, from = userStore.user.uid } = {},
     isImageSent = isImageSending.value
   ) => {
+    if (!userStore.isLoggedIn) return;
+
     const chatRef = doc(db, "messages", currentChatId.value);
 
     let lastMessage = null;
@@ -455,6 +477,8 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   const deleteMessage = async (messageId, isLast = false) => {
+    if (!userStore.isLoggedIn) return;
+
     const chatRef = doc(db, "messages", currentChatId.value);
 
     const messageDocRef = doc(chatRef, "chat", messageId);
@@ -489,6 +513,8 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   const updateLastSeeAt = async (time) => {
+    if (!userStore.isLoggedIn) return;
+
     const chatRef = doc(db, "messages", currentChatId.value);
 
     await updateDoc(chatRef, {

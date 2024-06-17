@@ -64,9 +64,14 @@
     <div v-if="!isEnterChat" class="flex items-center">
       <div
         class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-neutral-300/50 transition-colors"
+        :class="{ 'pointer-events-none': !userStore.isLoggedIn }"
         @click.stop="messageStore.toggleSearch(true)"
       >
-        <FontAwesomeIcon :icon="faCommentMedical" class="fa-xl scale-90" />
+        <FontAwesomeIcon
+          :icon="faCommentMedical"
+          class="fa-xl scale-90"
+          :class="{ 'text-neutral-300': !userStore.isLoggedIn }"
+        />
       </div>
     </div>
 
@@ -95,6 +100,9 @@ import {
 import { ref, shallowRef, computed, watch, onMounted } from "vue";
 
 const props = defineProps(["isEnterChat", "isExtended", "heightTab"]);
+
+import { useUserStore } from "../../stores/user";
+const userStore = useUserStore();
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();

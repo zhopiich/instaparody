@@ -34,19 +34,39 @@
                   <div class="flex items-center">
                     <div
                       class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-neutral-300/50 transition-colors"
+                      :class="{ 'pointer-events-none': !userStore.isLoggedIn }"
                       @click.stop="messageStore.toggleSearch(true)"
                     >
                       <FontAwesomeIcon
                         :icon="faCommentMedical"
                         class="fa-xl scale-90"
+                        :class="{ 'text-neutral-300': !userStore.isLoggedIn }"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="grow overflow-hidden">
+              <div v-if="userStore.isLoggedIn" class="grow overflow-hidden">
                 <Contacts />
+              </div>
+
+              <div v-else class="grow w-full">
+                <div class="size-full px-4 flex items-center">
+                  <div class="w-full text-center">
+                    <span
+                      class="text-xl md:text-base break-words whitespace-pre-line"
+                    >
+                      Please
+                      <router-link
+                        to="/login"
+                        class="underline text-neutral-600 hover:text-neutral-400 active:text-neutral-700"
+                        >log in</router-link
+                      >
+                      to send messages
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -57,7 +77,7 @@
             "
           >
             <div
-              v-if="isBraced && route.params.chatId"
+              v-if="userStore.isLoggedIn && isBraced && route.params.chatId"
               class="size-full relative"
             >
               <div class="absolute top-0 w-full h-[53px] z-[1]" id="messageTab">
@@ -127,7 +147,6 @@ import {
 
 import Contacts from "../components/Messages/Contacts.vue";
 import Messages from "../components/Messages/Messages.vue";
-import Chat from "../components/Messages/Chat.vue";
 import AvatarLink from "../components/AvatarLink.vue";
 import SearchPeople from "../components/Messages/SearchPeople.vue";
 
@@ -146,6 +165,9 @@ import { useMediaQueryStore } from "../stores/mediaQuery";
 const mediaQueryStore = useMediaQueryStore();
 const isMobile = computed(() => mediaQueryStore.isMobile);
 
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
+
 import { useMessageStore } from "../stores/message";
 const messageStore = useMessageStore();
 
@@ -159,11 +181,15 @@ const currentContact = computed(() => messageStore.currentContact);
 const isBraced = computed(() => typeof messageStore.isThereNew === "boolean");
 
 const messagesList = computed(() => messageStore.messagesList);
-watch(messagesList, (newVal) => {
-  if (newVal === "noSuchChat") {
-    router.push("/messages");
-  }
-});
+watch(
+  messagesList,
+  (newVal) => {
+    if (newVal === "noSuchChat") {
+      router.push("/messages");
+    }
+  },
+  { immediate: true }
+);
 
 const areThereNews = computed(() => messageStore.areThereNews);
 const isThereAnyNew = computed(() => {

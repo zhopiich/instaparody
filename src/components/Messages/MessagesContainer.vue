@@ -14,7 +14,7 @@
     />
 
     <div
-      class=""
+      v-if="userStore.isLoggedIn"
       :class="isEnterChat ? 'absolute top-0 w-full h-full' : 'relative grow'"
     >
       <Transition name="slide">
@@ -22,6 +22,22 @@
           <Chat />
         </template>
       </Transition>
+    </div>
+
+    <div v-else class="grow w-full">
+      <div class="size-full px-4 flex items-center">
+        <div class="w-full text-center">
+          <span class="text-base break-words whitespace-pre-line">
+            Please
+            <router-link
+              to="/login"
+              class="underline text-neutral-600 hover:text-neutral-400 active:text-neutral-700"
+              >log in</router-link
+            >
+            to send messages
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -37,6 +53,9 @@ import SearchPeople from "./SearchPeople.vue";
 import ContainerTab from "./ContainerTab.vue";
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+import { useUserStore } from "../../stores/user";
+const userStore = useUserStore();
 
 const heightTab = ref("53px");
 
