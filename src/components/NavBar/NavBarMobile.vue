@@ -47,7 +47,7 @@
             class="h-full aspect-square flex justify-center items-center *:select-none"
           >
             <div class="flex rounded-full overflow-hidden" @click="closeSearch">
-              <router-link :to="profilePageURL">
+              <router-link :to="isLoggedIn ? profilePageURL : '/login'">
                 <div
                   class="rounded-full border-2 active:scale-90 transition-all flex"
                   :class="
