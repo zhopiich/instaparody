@@ -1,5 +1,8 @@
 <template>
-  <div class="h-10 aspect-square cursor-pointer">
+  <div
+    class="h-10 aspect-square cursor-pointer"
+    :class="{ 'pointer-events-none': isDisabled }"
+  >
     <div
       class="w-full h-full flex justify-center items-center"
       :class="{
@@ -13,7 +16,10 @@
       <FontAwesomeIcon
         :icon="isLikedByMe ? filledHeart : emptyHeart"
         class="fa-xl transition-transform"
-        :class="{ 'text-red-500 active:text-red-400 liked': isLikedByMe }"
+        :class="[
+          { 'text-neutral-300': isDisabled },
+          { 'text-red-500 active:text-red-400 liked': isLikedByMe },
+        ]"
       />
     </div>
   </div>
@@ -32,6 +38,10 @@ const props = defineProps({
   post: {
     type: Object,
     default: {},
+  },
+  isDisabled: {
+    type: Boolean,
+    default: false,
   },
 });
 

@@ -72,14 +72,16 @@
                     v-if="!isMobile"
                     class="flex-auto border-t overflow-auto scrollbar-hidden"
                   >
-                    <div class="px-4">
+                    <div class="px-4 h-full flex flex-col">
                       <div class="py-4">
                         <pre
                           class="font-sans break-words whitespace-pre-wrap"
                           >{{ post.description }}</pre
                         >
                       </div>
-                      <CommentsList :postId="postId" />
+                      <div class="grow">
+                        <CommentsList :postId="postId" />
+                      </div>
                     </div>
                   </div>
 
@@ -89,16 +91,23 @@
                       :class="isMobile ? 'py-0' : 'py-2'"
                     >
                       <div class="-ml-2">
-                        <LikeButton :post="post" />
+                        <LikeButton
+                          :post="post"
+                          :isDisabled="!userStore.isLoggedIn"
+                        />
                       </div>
                       <div class="">
                         <CommentButton
                           :post="post"
+                          :isDisabled="!userStore.isLoggedIn"
                           @focusInput="commentInput.focus()"
                         />
                       </div>
                       <div class="-mr-2.5 ml-auto">
-                        <SaveButton :post="post" />
+                        <SaveButton
+                          :post="post"
+                          :isDisabled="!userStore.isLoggedIn"
+                        />
                       </div>
                     </div>
 
@@ -108,23 +117,25 @@
 
                     <div v-if="isMobile" class="px-4">
                       <div
-                        class="mt-1 *:text-gray-500 *:leading-4 *:cursor-pointer *:text-sm flex items-center"
+                        class="mt-1 *:text-gray-500 *:leading-5 *:cursor-pointer *:text-base flex items-center"
                       >
-                        <span v-if="post.comments === 0" @click="">
-                          Make the first comment
-                        </span>
-                        <span v-else @click="">
+                        <span
+                          v-if="userStore.isLoggedIn"
+                          @click="$router.push('/post/' + postId + '/comments')"
+                        >
                           {{
-                            "View " +
-                            `${
-                              post.comments === 1
-                                ? "the "
-                                : post.comments === 2
-                                ? "both "
-                                : "all " + post.comments + " "
-                            }` +
-                            "comment" +
-                            `${post.comments > 1 ? "s" : ""}`
+                            post.comments === 0
+                              ? "Make the first comment"
+                              : "View " +
+                                `${
+                                  post.comments === 1
+                                    ? "the "
+                                    : post.comments === 2
+                                    ? "both "
+                                    : "all " + post.comments + " "
+                                }` +
+                                "comment" +
+                                `${post.comments > 1 ? "s" : ""}`
                           }}
                         </span>
                       </div>
@@ -140,13 +151,22 @@
 
                   <div v-if="isMobile" class="overflow-auto grow">
                     <div class="px-4 pb-1">
-                      <pre class="font-sans break-words whitespace-pre-wrap">{{
-                        post.description
-                      }}</pre>
+                      <p class="font-sans break-words whitespace-pre-wrap">
+                        {{ descDisplay }}
+                        <router-link
+                          v-if="post.description.length > maxDescLength"
+                          :to="'/post/' + postId"
+                          class="text-gray-500 cursor-pointer"
+                          >more</router-link
+                        >
+                      </p>
                     </div>
                   </div>
 
-                  <div class="shrink-0 border-t border-gray-300">
+                  <div
+                    v-if="userStore.isLoggedIn && !isMobile"
+                    class="shrink-0 border-t border-gray-300"
+                  >
                     <CommentInput
                       :postId="postId"
                       @setInputRef="setInputRef"
@@ -180,8 +200,10 @@ import TimeBanner from "./PostButtons/TimeBanner.vue";
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
 
-import { usePostStore } from "../stores/post";
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
 
+import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
 
 const props = defineProps({
@@ -250,7 +272,7 @@ const variableHeight = computed(() => {
   const squareImageWidth = remainedX.value - 405;
   const squareImageHeight = remainedY.value;
 
-  if (props.isMobile) return "265px";
+  if (props.isMobile) return userStore.isLoggedIn ? "220px" : "200px";
 
   return (
     (squareImageWidth <= 450 || squareImageHeight <= 450
@@ -258,6 +280,25 @@ const variableHeight = computed(() => {
       : squareImageWidth <= squareImageHeight
       ? squareImageWidth
       : squareImageHeight) + "px"
+  );
+});
+
+const maxDescLength = 19;
+const maxTruncatedWordLength = 10;
+
+const descDisplay = computed(() => {
+  const desc = post.value.description;
+
+  if (!props.isMobile || desc.length <= maxDescLength) return desc;
+
+  const trimmed = desc.substring(0, maxDescLength);
+
+  const lastIndexOfSpace = trimmed.lastIndexOf(" ");
+
+  return (
+    (trimmed.length - (lastIndexOfSpace + 1) > maxTruncatedWordLength
+      ? trimmed
+      : trimmed.substring(0, lastIndexOfSpace)) + "..."
   );
 });
 

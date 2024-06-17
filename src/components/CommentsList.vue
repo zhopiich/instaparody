@@ -1,5 +1,18 @@
 <template>
-  <div v-if="!userStore.isLoggedIn">**Please log in to see comments**</div>
+  <div
+    v-if="!userStore.isLoggedIn"
+    class="h-full py-4 flex justify-center items-center"
+  >
+    <span class="text-base leading-5 break-words whitespace-pre-line">
+      Please
+      <router-link
+        to="/login"
+        class="underline text-neutral-600 hover:text-neutral-400 active:text-neutral-700"
+        >log in</router-link
+      >
+      to see the comments
+    </span>
+  </div>
 
   <div v-else class="flex flex-col items-stretch">
     <div v-for="comment in comments" class="mb-4 flex items-start commentItem">

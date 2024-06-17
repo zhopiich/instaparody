@@ -1,5 +1,8 @@
 <template>
-  <div class="h-10 aspect-square cursor-pointer">
+  <div
+    class="h-10 aspect-square cursor-pointer"
+    :class="{ 'pointer-events-none': isDisabled }"
+  >
     <div
       class="w-full h-full flex justify-center items-center hover:text-neutral-500 active:text-neutral-400"
       @click="
@@ -11,7 +14,11 @@
       "
       ref="commentButton"
     >
-      <FontAwesomeIcon :icon="faComment" class="fa-xl transition-transform" />
+      <FontAwesomeIcon
+        :icon="faComment"
+        class="fa-xl transition-transform"
+        :class="{ 'text-neutral-300': isDisabled }"
+      />
     </div>
   </div>
 </template>
@@ -26,6 +33,10 @@ const props = defineProps({
     default: {},
   },
   isToPage: {
+    type: Boolean,
+    default: false,
+  },
+  isDisabled: {
     type: Boolean,
     default: false,
   },
