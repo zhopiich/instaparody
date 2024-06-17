@@ -92,7 +92,7 @@ const route = useRoute();
 import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
-const props = defineProps(["avatar", "profilePageURL"]);
+const props = defineProps(["avatar", "profilePageURL", "isLoggedIn"]);
 
 import { ref, computed } from "vue";
 
@@ -113,32 +113,34 @@ const togglePost = () => {
   postStore.toggleShowPostUpload(!postStore.isShowPostUpload);
 };
 
-const menuList = computed(() => [
-  {
-    icon: faHouse,
-    to: "/",
-    name: "Home",
-    isActive: route.name === "home",
-  },
-  {
-    icon: faMagnifyingGlass,
-    clickHandler: toggleSearch,
-    name: "Search",
-    isActive: isShowSearch.value,
-  },
-  {
-    icon: faSquarePlus,
-    clickHandler: togglePost,
-    name: "Post",
-    isActive: postStore.isShowPostUpload,
-  },
-  {
-    icon: faPaperPlane,
-    to: "/messages",
-    name: "Messages",
-    isActive: route.name === "messages",
-  },
-]);
+const menuList = computed(() =>
+  [
+    {
+      icon: faHouse,
+      to: "/",
+      name: "Home",
+      isActive: route.name === "home",
+    },
+    {
+      icon: faMagnifyingGlass,
+      clickHandler: toggleSearch,
+      name: "Search",
+      isActive: isShowSearch.value,
+    },
+    {
+      icon: faSquarePlus,
+      clickHandler: togglePost,
+      name: "Post",
+      isActive: postStore.isShowPostUpload,
+    },
+    {
+      icon: faPaperPlane,
+      to: "/messages",
+      name: "Messages",
+      isActive: route.name === "messages",
+    },
+  ].filter((item) => item.name !== "Post" || props.isLoggedIn)
+);
 </script>
 
 <style scoped>

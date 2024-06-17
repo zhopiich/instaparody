@@ -3,6 +3,7 @@
     v-if="isMobile"
     :avatar="user?.photoURL"
     :profilePageURL="profilePageURL"
+    :isLoggedIn="userStore.isLoggedIn"
   />
 
   <NavBarSliding v-else @turn="changeDirection" @scroll="changePosition">
@@ -17,12 +18,17 @@
       <Search :direction="direction" :navbarPosition="navbarPosition" />
 
       <div v-if="userStore.isLoggedIn" class="navItems">
-        <button
+        <div
           v-if="$route.name === 'home' || $route.name === 'profile'"
+          class="cursor-pointer rounded-lg overflow-hidden h-12 aspect-square bg-white hover:bg-neutral-100 active:bg-neutral-200 active:scale-95 transition-[background-color,_transform]"
           @click="publishPost"
         >
-          <TheIcon icon="publish" />
-        </button>
+          <div
+            class="pointer-events-none size-full flex justify-center items-center"
+          >
+            <FontAwesomeIcon :icon="faSquarePlus" class="scale-[.80]" />
+          </div>
+        </div>
 
         <div class="profileDropDown" ref="avatarIcon">
           <TheAvatar
@@ -48,16 +54,17 @@
     </nav>
   </NavBarSliding>
 
-  <PostUpload v-if="isShowPostUpload" />
+  <PostUpload v-if="userStore.isLoggedIn && isShowPostUpload" />
 </template>
 
 <script setup>
 import { logOut } from "../firebase/auth";
 
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
+
 import NavBarMobile from "./NavBar/NavBarMobile.vue";
 import TheAvatar from "./TheAvatar.vue";
-import TheIcon from "./TheIcon.vue";
-import TheButton from "./TheButton.vue";
 import NavBarSliding from "./NavBar/NavBarSliding.vue";
 import Search from "./Search.vue";
 import PostUpload from "./PostUpload/PostUpload.vue";

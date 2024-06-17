@@ -227,6 +227,8 @@ export const usePostStore = defineStore("post", () => {
   const userStore = useUserStore();
 
   async function uploadPost({ images, description }) {
+    if (!userStore.isLoggedIn) return;
+
     if (!images.length) {
       console.log("uploadPost: No images.");
       return;
