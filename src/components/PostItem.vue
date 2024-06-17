@@ -52,13 +52,17 @@
 
       <div class="mb-1 flex">
         <div class="-ml-2">
-          <LikeButton :post="post" />
+          <LikeButton :post="post" :isDisabled="!userStore.isLoggedIn" />
         </div>
         <div class="">
-          <CommentButton :post="post" :isToPage="isMobile" />
+          <CommentButton
+            :post="post"
+            :isDisabled="!userStore.isLoggedIn"
+            :isToPage="isMobile"
+          />
         </div>
         <div class="-mr-2.5 ml-auto">
-          <SaveButton :post="post" />
+          <SaveButton :post="post" :isDisabled="!userStore.isLoggedIn" />
         </div>
       </div>
 
@@ -66,7 +70,7 @@
         <LikesCountBanner :post="post" />
       </div>
 
-      <div class="mt-2 min-h-10 grow">
+      <div class="my-2 min-h-10 grow">
         <p class="whitespace-pre-line leading-5">
           {{ descriptionDisplay }}
           <span
@@ -79,7 +83,8 @@
       </div>
 
       <div
-        class="my-2 *:text-gray-500 *:leading-5 *:cursor-pointer h-6 flex items-center"
+        v-if="userStore.isLoggedIn"
+        class="mb-2 *:text-gray-500 *:leading-5 *:cursor-pointer h-6 flex items-center"
       >
         <p
           v-if="post.comments === 0"
@@ -138,6 +143,9 @@ const router = useRouter();
 import { useMediaQueryStore } from "../stores/mediaQuery";
 const mediaQueryStore = useMediaQueryStore();
 const isMobile = computed(() => mediaQueryStore.isMobile);
+
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
 
 import { usePostStore } from "../stores/post";
 import { useCommentStore } from "../stores/comment";
