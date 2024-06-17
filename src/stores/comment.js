@@ -90,6 +90,8 @@ export const useCommentStore = defineStore("comment", () => {
   const userStore = useUserStore();
 
   async function uploadComment({ content, postId }) {
+    if (!userStore.isLoggedIn) return;
+
     await Promise.all([
       addComment({
         content,

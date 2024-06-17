@@ -68,14 +68,14 @@
 
           <div class="pt-2 mb-4 border-b border-gray-300 h-0"></div>
 
-          <div class="px-4">
+          <div class="px-4 grow">
             <CommentsList :postId="postId" />
           </div>
         </div>
       </div>
     </div>
 
-    <div class="shrink-0 border-t bg-white">
+    <div v-if="userStore.isLoggedIn" class="shrink-0 border-t bg-white">
       <CommentInput :postId="postId" />
     </div>
   </div>
@@ -109,6 +109,9 @@ const router = useRouter();
 import { useMediaQueryStore } from "../stores/mediaQuery";
 const mediaQueryStore = useMediaQueryStore();
 const isMobile = computed(() => mediaQueryStore.isMobile);
+
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
 
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();

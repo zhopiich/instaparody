@@ -85,13 +85,15 @@
             </div>
 
             <div v-if="!isMobile" class="flex-auto border-t overflow-auto">
-              <div class="px-4">
+              <div class="px-4 h-full flex flex-col">
                 <div class="py-4">
                   <pre class="font-sans break-words whitespace-pre-wrap">{{
                     post.description
                   }}</pre>
                 </div>
-                <CommentsList :postId="postId" />
+                <div class="grow">
+                  <CommentsList :postId="postId" />
+                </div>
               </div>
             </div>
 
@@ -101,17 +103,24 @@
                 :class="isMobile ? 'py-2' : 'py-1'"
               >
                 <div class="-ml-2">
-                  <LikeButton :post="post" />
+                  <LikeButton
+                    :post="post"
+                    :isDisabled="!userStore.isLoggedIn"
+                  />
                 </div>
                 <div class="">
                   <CommentButton
                     :post="post"
+                    :isDisabled="!userStore.isLoggedIn"
                     @focusInput="commentInput.focus()"
                     :isToPage="isMobile"
                   />
                 </div>
                 <div class="-mr-2.5 ml-auto">
-                  <SaveButton :post="post" />
+                  <SaveButton
+                    :post="post"
+                    :isDisabled="!userStore.isLoggedIn"
+                  />
                 </div>
               </div>
 
@@ -135,7 +144,7 @@
                 </div>
               </div>
 
-              <div v-if="isMobile" class="px-4 pb-2">
+              <div v-if="userStore.isLoggedIn && isMobile" class="px-4 pb-2">
                 <div
                   class="mt-1 *:text-gray-500 *:leading-5 *:cursor-pointer *:text-sm flex items-center"
                 >
@@ -169,7 +178,10 @@
               </div>
             </div>
 
-            <div v-if="!isMobile" class="shrink-0 border-t border-gray-300">
+            <div
+              v-if="userStore.isLoggedIn && !isMobile"
+              class="shrink-0 border-t border-gray-300"
+            >
               <CommentInput
                 :postId="postId"
                 @setInputRef="setInputRef"
@@ -218,6 +230,9 @@ const router = useRouter();
 import { useMediaQueryStore } from "../stores/mediaQuery";
 const mediaQueryStore = useMediaQueryStore();
 const isMobile = computed(() => mediaQueryStore.isMobile);
+
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
 
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
