@@ -3,13 +3,21 @@
     <div class="flex items-center">
       <div class="grow w-0 flex flex-col justify-center">
         <label class="">
-          <span
-            class="textarea resize-none border-none shadow-none py-2 px-0 bg-transparent overflow-auto"
-            role="textbox"
-            contenteditable="plaintext-only"
-            @input="onInput"
-            ref="contentEditor"
-          ></span>
+          <div class="relative">
+            <div v-if="!commentContent" class="editorPlaceHolder py-2">
+              <span>Add a comment...</span>
+            </div>
+            <div
+              class="textarea resize-none border-none shadow-none py-2 px-0 bg-transparent overflow-auto"
+              role="textbox"
+              contenteditable="true"
+              aria-multiline="true"
+              @input="handleInput"
+              @paste="handlePaste"
+              @keypress.enter="handleEnter"
+              ref="contentEditor"
+            ></div>
+          </div>
         </label>
       </div>
 
@@ -53,12 +61,23 @@ const trimmedContent = computed(() => commentContent.value.trim());
 
 const isInputValid = computed(() => trimmedContent.value !== "");
 
-const onInput = (e) => {
-  if (e.target.innerText === "") {
-    commentContent.value = "";
-    return;
-  }
-  commentContent.value = e.target.innerText;
+const handleInput = (e) => {
+  commentContent.value = e.target.textContent;
+};
+
+const handlePaste = (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+
+  const paste = (e.clipboardData || window.clipboardData).getData("text");
+
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+  selection.deleteFromDocument();
+  selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+  selection.collapseToEnd();
+
+  handleInput(e);
 };
 
 const postComment = async () => {
@@ -73,6 +92,17 @@ const postComment = async () => {
   commentContent.value = "";
   contentEditor.value.innerText = "";
   contentEditor.value.focus();
+};
+
+const handleEnter = (e) => {
+  if (e.shiftKey || e.metaKey || e.ctrlKey) return;
+
+  e.stopPropagation();
+  e.preventDefault();
+
+  if (!isInputValid.value) return;
+
+  postComment();
 };
 
 onMounted(() => {
@@ -92,17 +122,23 @@ onMounted(() => {
   width: 100%;
   min-height: 24px;
   max-height: 80px;
-  line-height: 18px;
+
+  font-size: 15px;
+  line-height: 20px;
+
+  cursor: text;
+  user-select: text;
   outline: none;
-
   white-space: pre-wrap;
-
-  font-size: 1em;
+  overflow-wrap: break-word;
 }
 
-.textarea[contenteditable]:empty::before {
-  content: "Add a comment...";
+.editorPlaceHolder {
+  position: absolute;
+  pointer-events: none;
+  white-space: pre-wrap;
   color: gray;
-  font-size: 0.95em;
+  font-size: 15px;
+  line-height: 20px;
 }
 </style>
