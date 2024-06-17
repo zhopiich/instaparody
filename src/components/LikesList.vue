@@ -36,6 +36,9 @@
                     <div
                       v-if="user.userId !== userStore.user.uid"
                       class="px-4 py-1.5 bg-blue-500 hover:bg-blue-600 active:bg-blue-400 rounded-md cursor-pointer"
+                      :class="{
+                        'bg-sky-200 pointer-events-none': !userStore.isLoggedIn,
+                      }"
                       @click="
                         enterChat({
                           username: user.username,
@@ -45,7 +48,7 @@
                         })
                       "
                     >
-                      <p class="text-white text-sm">Message</p>
+                      <p class="text-white text-sm select-none">Message</p>
                     </div>
                   </div>
                 </div>

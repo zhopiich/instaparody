@@ -54,14 +54,15 @@
         <router-link
           v-if="isMe"
           to="/profile/edit"
-          class="m-4 rounded-lg py-1.5 grow *:text-center bg-neutral-100"
+          class="m-4 rounded-lg py-1.5 grow *:text-center bg-gray-100 hover:bg-neutral-200 active:bg-neutral-100 active:text-gray-400"
         >
-          <p class="text-black">Edit profile</p>
+          <p class="text-black select-none">Edit profile</p>
         </router-link>
 
         <div
           v-else
-          class="m-4 rounded-lg py-1.5 grow *:text-center bg-sky-500"
+          class="m-4 rounded-lg py-1.5 grow *:text-center bg-sky-500 hover:bg-blue-500 active:bg-blue-400"
+          :class="{ 'bg-sky-200 pointer-events-none': !userStore.isLoggedIn }"
           @click="
             enterChat({
               username: user.username,
@@ -71,7 +72,7 @@
             })
           "
         >
-          <p class="text-white">Message</p>
+          <p class="text-white select-none">Message</p>
         </div>
       </div>
     </div>

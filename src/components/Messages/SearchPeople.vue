@@ -68,7 +68,10 @@
                   class="flex items-center"
                 >
                   <div
-                    class="h-9 w-24 rounded-md cursor-pointer bg-blue-400 hover:bg-blue-500 transition-colors flex justify-center *:flex *:items-center *:select-none *:text-white"
+                    class="h-9 w-24 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-600 active:bg-blue-400 transition-colors flex justify-center *:flex *:items-center *:select-none *:text-white"
+                    :class="{
+                      'bg-sky-200 pointer-events-none': !userStore.isLoggedIn,
+                    }"
                     @click.stop="
                       contact({
                         username: user.username,

@@ -1,6 +1,11 @@
 <template>
   <div class="py-12 md:py-14 md:px-5 w-full max-w-[975px]">
-    <UserInfo :user="user" :isMobile="isMobile" :isMe="isMe" />
+    <UserInfo
+      :user="user"
+      :isMobile="isMobile"
+      :isMe="isMe"
+      :isLoggedIn="userStore.isLoggedIn"
+    />
 
     <div class="border-t">
       <div

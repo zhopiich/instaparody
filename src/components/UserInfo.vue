@@ -41,7 +41,8 @@
 
             <div
               v-else
-              class="flex items-center rounded-lg px-4 h-8 font-semibold text-sm leading-[18px] bg-blue-500 hover:bg-blue-600 active:bg-blue-400 cursor-pointer"
+              class="flex items-center rounded-lg px-4 h-8 font-semibold text-sm leading-[18px] bg-sky-500 hover:bg-blue-500 active:bg-blue-400 cursor-pointer"
+              :class="{ 'bg-blue-200 pointer-events-none': !isLoggedIn }"
               @click="
                 enterChat({
                   username: user.username,
@@ -51,7 +52,7 @@
                 })
               "
             >
-              <span class="text-white">Message</span>
+              <span class="text-white select-none">Message</span>
             </div>
           </div>
         </div>
@@ -128,7 +129,7 @@ import { faLink } from "@fortawesome/free-solid-svg-icons";
 
 import TheAvatar from "../components/TheAvatar.vue";
 
-const props = defineProps(["user", "isMobile", "isMe"]);
+const props = defineProps(["user", "isMobile", "isMe", "isLoggedIn"]);
 
 import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
