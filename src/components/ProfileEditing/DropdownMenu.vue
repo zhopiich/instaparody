@@ -1,7 +1,7 @@
 <template>
   <TheTooltip :bottom="bottom" :zIndex="1" :isLeanOnRight="true"
     ><div
-      class="w-[366px] py-2.5 bg-white rounded-2xl shadow-custom"
+      class="w-[calc(100dvw_-_24px)] max-w-[366px] py-2.5 bg-white rounded-2xl shadow-custom"
       ref="menu"
     >
       <slot></slot></div

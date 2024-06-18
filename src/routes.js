@@ -90,7 +90,7 @@ const routes = [
       const userStore = useUserStore();
 
       if (!userStore.isLoggedIn) {
-        return { name: "login" };
+        return { name: "home" };
       }
     },
   },

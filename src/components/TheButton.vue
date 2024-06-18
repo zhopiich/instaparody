@@ -65,7 +65,7 @@ const props = defineProps({
 }
 
 .button.disable {
-  background: #8bcfff;
+  background: #aeddff;
   pointer-events: none;
 }
 

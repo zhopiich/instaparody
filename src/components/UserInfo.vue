@@ -32,12 +32,25 @@
           </div>
 
           <div class="mt-1 md:mt-0 shrink-0 flex items-center">
-            <router-link
-              v-if="isMe"
-              to="/profile/edit"
-              class="flex items-center rounded-lg px-4 h-8 font-semibold text-sm leading-[18px] bg-gray-100 hover:bg-neutral-200 active:bg-neutral-100 active:text-gray-400"
-              >Edit profile</router-link
-            >
+            <div v-if="isMe" class="flex gap-2">
+              <router-link
+                to="/profile/edit"
+                class="grow flex justify-center items-center rounded-lg px-4 h-8 bg-gray-100 hover:bg-neutral-200 active:bg-neutral-100 active:text-gray-400"
+                ><span
+                  class="font-semibold text-sm leading-[18px] text-center select-none"
+                  >Edit profile</span
+                >
+              </router-link>
+              <div
+                class="grow flex justify-center items-center rounded-lg px-4 h-8 border border-red-200 bg-white hover:bg-red-100 active:bg-red-50 *:active:text-red-300 cursor-pointer"
+                @click="logout"
+              >
+                <span
+                  class="font-semibold text-sm leading-[18px] text-red-600 text-center select-none"
+                  >Log out</span
+                >
+              </div>
+            </div>
 
             <div
               v-else
@@ -124,6 +137,8 @@
 </template>
 
 <script setup>
+import { logOut } from "../firebase/auth";
+
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 
@@ -133,6 +148,8 @@ const props = defineProps(["user", "isMobile", "isMe", "isLoggedIn"]);
 
 import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+
+import { useAlertStore } from "../stores/alert";
 
 const route = useRoute();
 const router = useRouter();
@@ -183,4 +200,17 @@ const urlDisplay = computed(() => {
 
   return trimmed;
 });
+
+const logout = async () => {
+  postStore.resetIsActedByMe();
+
+  messageStore.reset();
+
+  const alertStore = useAlertStore();
+  alertStore.reset();
+
+  await logOut();
+
+  router.push("/login");
+};
 </script>

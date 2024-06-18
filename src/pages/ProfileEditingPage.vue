@@ -1,5 +1,5 @@
 <template>
-  <div class="py-7 px-12 w-screen max-w-[706px]">
+  <div class="py-7 px-3 w-screen max-w-[634px]">
     <div class="py-3 mb-4">
       <h2 class="text-xl font-bold">Edit profile</h2>
     </div>
@@ -68,22 +68,23 @@
           />
         </div>
 
-        <div class="flex justify-end">
-          <div class="mt-4 flex gap-4">
-            <TheButton
-              type="reset"
-              :height="44"
-              :width="200"
-              color="reverse"
-              @click.prevent="router.back()"
-              >Cancel
-            </TheButton>
+        <div class="flex justify-center md:justify-end">
+          <div class="mt-4 flex flex-col md:flex-row gap-4">
             <TheButton
               type="submit"
               :height="44"
-              :width="200"
+              :width="240"
               :isDisable="!isEdited || !isProfileValid"
               >Submit
+            </TheButton>
+            <TheButton
+              class="md:-order-1"
+              type="reset"
+              :height="44"
+              :width="240"
+              color="reverse"
+              @click.prevent="router.back()"
+              >Cancel
             </TheButton>
           </div>
         </div>
