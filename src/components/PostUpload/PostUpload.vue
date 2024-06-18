@@ -148,6 +148,7 @@ const handleClose = () => {
 .postContentInput {
   border: none;
   resize: none;
+  outline: none;
   padding: 8px 16px;
 }
 

@@ -37,7 +37,7 @@
               <span>Start a new message</span>
             </div>
             <div
-              class="textarea resize-none border-none shadow-none py-1 px-0 bg-transparent overflow-auto"
+              class="textArea resize-none border-none shadow-none py-1 px-0 bg-transparent overflow-auto"
               role="textbox"
               contenteditable="true"
               aria-multiline="true"
@@ -161,7 +161,7 @@ const handleEnter = (e) => {
 </script>
 
 <style scoped>
-.textarea {
+.textArea {
   display: block;
   width: 100%;
   min-height: 20px;
