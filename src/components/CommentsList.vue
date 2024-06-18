@@ -43,10 +43,10 @@
           /></span>
         </div>
 
-        <div class="inline">
-          <span class="inline text-pretty break-all">{{
-            comment.content
-          }}</span>
+        <div
+          :class="isThereLongWord(comment.content) ? '*:break-all' : 'inline'"
+        >
+          <span class="whitespace-pre-wrap">{{ comment.content }}</span>
         </div>
 
         <div class="mt-2 mb-1 w-full flex *:leading-4">
@@ -95,6 +95,13 @@ async function deleteComment(commentId) {
     postId: props.postId,
   });
 }
+
+const isThereLongWord = (str) => {
+  const longLength = 25;
+  const wordsList = str.split(" ");
+
+  return wordsList.some((word) => word.length >= longLength);
+};
 </script>
 
 <style scoped>
