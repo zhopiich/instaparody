@@ -9,6 +9,9 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
 } from "firebase/auth";
 
 export const signUp = async ({ email, username, password }) => {
@@ -86,5 +89,26 @@ export const updateUserProfile = async (profileData) => {
     })
     .catch((error) => {
       console.log("auth: ", error);
+    });
+};
+
+export const changePassword = async (email, currentPassword, newPassword) => {
+  const credential = EmailAuthProvider.credential(email, currentPassword);
+
+  try {
+    const res = await reauthenticateWithCredential(
+      auth.currentUser,
+      credential
+    );
+  } catch (err) {
+    return "incorrectPassword";
+  }
+
+  return updatePassword(auth.currentUser, newPassword)
+    .then(() => {
+      return "passwordChanged";
+    })
+    .catch((err) => {
+      return "error";
     });
 };

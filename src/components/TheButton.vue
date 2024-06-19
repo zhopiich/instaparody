@@ -5,7 +5,8 @@
     :class="[isDisable ? 'disable' : color, { 'custom-width': width }]"
   >
     <div class="size-full flex justify-center items-center">
-      <p class="buttonText select-none"><slot></slot></p>
+      <span v-if="isLoading" class="loading"></span>
+      <span v-else class="buttonText select-none"><slot></slot></span>
     </div>
   </button>
 </template>
@@ -25,6 +26,7 @@ const props = defineProps({
   height: { type: Number, default: 32 },
   width: { type: Number, default: NaN },
   isDisable: { type: Boolean, default: false },
+  isLoading: { type: Boolean, default: false },
 });
 
 // const customTextColor = (defaultColor) => {

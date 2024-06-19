@@ -1,7 +1,16 @@
 <template>
   <div class="py-7 px-3 w-screen max-w-[634px]">
-    <div class="py-3 mb-4">
+    <div class="py-3 mb-4 flex justify-between items-center">
       <h2 class="text-xl font-bold">Edit profile</h2>
+
+      <router-link
+        to="/change_password"
+        class="flex justify-center items-center rounded-lg px-4 h-9 bg-gray-100 hover:bg-neutral-200 active:bg-neutral-100 active:text-gray-400"
+        ><FontAwesomeIcon :icon="faKey" class="mr-3" /><span
+          class="font-semibold text-sm leading-[18px] text-center select-none"
+          >Change password</span
+        >
+      </router-link>
     </div>
 
     <div class="my-4">
@@ -94,6 +103,9 @@
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faKey } from "@fortawesome/free-solid-svg-icons";
+
 import TheButton from "../components/TheButton.vue";
 import GenderSelect from "../components/ProfileEditing/GenderSelect.vue";
 import IntroInput from "../components/ProfileEditing/IntroInput.vue";

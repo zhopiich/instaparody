@@ -74,7 +74,7 @@
       <div class="h-0 mb-6 md:mb-5"></div>
 
       <div class="leading-6">
-        <pre class="whitespace-pre-wrap">{{ user?.intro }}</pre>
+        <pre class="font-sans whitespace-pre-wrap">{{ user?.intro }}</pre>
       </div>
 
       <div class="flex" v-if="user?.website">

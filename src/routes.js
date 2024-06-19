@@ -95,6 +95,18 @@ const routes = [
     },
   },
   {
+    path: "/change_password",
+    name: "changePassword",
+    component: () => import("./pages/ChangePasswordPage.vue"),
+    beforeEnter: (to, from) => {
+      const userStore = useUserStore();
+
+      if (!userStore.isLoggedIn) {
+        return { name: "home" };
+      }
+    },
+  },
+  {
     path: "/login",
     name: "login",
     component: () => import("./pages/LoginPage.vue"),
