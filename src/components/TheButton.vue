@@ -2,7 +2,12 @@
   <!-- <button class="button" :class="{ primary: color === 'primary', reverse }"> -->
   <button
     class="button"
-    :class="[isDisable ? 'disable' : color, { 'custom-width': width }]"
+    :class="[
+      isFaded && isDisable ? 'disable fade' : color,
+      { 'pointer-events-none': isDisable },
+      { 'custom-width': width && typeof width === 'number' },
+      { 'w-full': width === 'full' },
+    ]"
   >
     <div class="size-full flex justify-center items-center">
       <span v-if="isLoading" class="loading"></span>
@@ -24,8 +29,9 @@ const props = defineProps({
   px: { type: Number, default: 16 },
   py: { type: Number, default: 0 },
   height: { type: Number, default: 32 },
-  width: { type: Number, default: NaN },
+  width: { default: NaN },
   isDisable: { type: Boolean, default: false },
+  isFaded: { type: Boolean, default: true },
   isLoading: { type: Boolean, default: false },
 });
 
@@ -66,9 +72,8 @@ const props = defineProps({
   }
 }
 
-.button.disable {
-  background: #aeddff;
-  pointer-events: none;
+.button.disable.fade {
+  background: #63beff;
 }
 
 .button.reverse {

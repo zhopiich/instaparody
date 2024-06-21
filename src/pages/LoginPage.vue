@@ -1,187 +1,207 @@
 <template>
-  <div class="loginPage">
-    <img src="#" alt="" class="phoneImage" />
-    <div class="loginForm">
-      <img src="../assets/logo.svg" alt="" />
-      <form @submit.prevent>
-        <input type="email" placeholder="Email" v-model="email" />
-        <input
-          v-if="!isLogin"
-          type="text"
-          placeholder="Username"
-          v-model="username"
-        />
-        <input type="password" placeholder="Password" v-model="password" />
-        <button
-          type="submit"
-          class="loginButton"
-          @click="isLogin ? login() : register()"
+  <div class="grow size-full flex flex-col justify-center items-center">
+    <div
+      v-if="true"
+      class="mt-8 w-screen sm:w-[420px] sm:border flex flex-col items-center"
+    >
+      <div class="w-full flex items-start fixed top-0 sm:static">
+        <div
+          class="m-2 flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-neutral-300/50 active:bg-neutral-300/35 active:text-neutral-500 transition-colors"
+          @click="back"
         >
-          {{ isLogin ? "Login" : "Sign Up" }}
-        </button>
-        <p v-if="isLogin">
-          New to here? <span class="info" @click="toggleLogin">Sign Up</span>
-        </p>
-        <p v-else>
-          Have been here? <span class="info" @click="toggleLogin">Login</span>
-        </p>
-        <div v-if="!isLogin" class="agreement">
-          <input type="checkbox" v-model="agreementChecked" />
-          <p>
-            Check to indicate your agreement with
-            <span class="info">Privacy Policy</span> and
-            <span class="info">Terms of Use</span>.
-          </p>
+          <FontAwesomeIcon
+            :icon="faArrowLeft"
+            class="fa-xl scale-90 pointer-events-none"
+          />
         </div>
-      </form>
+      </div>
+      <div class="my-3"><img src="../assets/logo.svg" alt="" /></div>
+
+      <div class="w-full mt-6">
+        <form @submit.prevent>
+          <div class="flex flex-col">
+            <div class="my-2 mx-9">
+              <TheLabel
+                placeholder="Email"
+                :isFocus="isEmailFocus"
+                :isOccupied="email"
+                :isError="isEmailError"
+              >
+                <input
+                  class=""
+                  type="text"
+                  name="email"
+                  @focus="isEmailFocus = true"
+                  @blur="isEmailFocus = false"
+                  @input=""
+                  v-model="email"
+                />
+              </TheLabel>
+            </div>
+            <div class="my-2 mx-9">
+              <TheLabel
+                placeholder="Password"
+                :isFocus="isPasswordFocus"
+                :isOccupied="password"
+                :isError="isPasswordError"
+              >
+                <input
+                  type="password"
+                  name="password"
+                  @focus="isPasswordFocus = true"
+                  @blur="isPasswordFocus = false"
+                  @input=""
+                  v-model="password"
+                />
+              </TheLabel>
+            </div>
+
+            <div class="my-4 mx-9">
+              <TheButton
+                :height="40"
+                width="full"
+                :isDisable="!isBothOccupied || isLoading"
+                :isLoading="isLoading"
+                @click="login"
+                >Log in</TheButton
+              >
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div
+      class="mt-4 px-9 py-[10px] w-screen sm:w-[420px] sm:border flex justify-center"
+    >
+      <div v-if="errorType" class="flex flex-col">
+        <p class="my-[15px] text-red-500">
+          <span>
+            <FontAwesomeIcon :icon="faCircleExclamation" />
+          </span>
+          {{ errorMessagesList[errorType] }}
+        </p>
+
+        <div class="w-full flex items-center">
+          <div class="grow h-0 border-t"></div>
+          <div class="mx-4"><span class="text-neutral-400">OR</span></div>
+          <div class="grow h-0 border-t"></div>
+        </div>
+
+        <div class="my-[15px] flex justify-center">
+          <router-link to="/signup"
+            ><span class="text-blue-500 font-semibold"
+              >Create a new account</span
+            ></router-link
+          >
+        </div>
+      </div>
+
+      <p v-else class="my-[15px]">
+        Don't have an account?
+        <router-link to="/signup"
+          ><span class="text-blue-500 font-semibold">Sign Up</span></router-link
+        >
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useUserStore } from "../stores/user";
+import { signIn } from "../firebase/auth";
+
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import {
+  faArrowLeft,
+  faCircleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
+
+import TheLabel from "../components/TheLabel.vue";
+import TheButton from "../components/TheButton.vue";
+
+import { ref, computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useMessageStore } from "../stores/message";
+import { useUserStore } from "../stores/user";
 
-import { signIn, signUp } from "../firebase/auth";
+const isLoading = ref(false);
 
-const isLogin = ref(true);
+const email = ref(null);
+const isEmailError = ref(false);
+const isEmailFocus = ref(false);
 
-const email = ref("");
-const username = ref("");
-const password = ref("");
-const agreementChecked = ref(false);
+const password = ref(null);
+const isPasswordError = ref(false);
+const isPasswordFocus = ref(false);
 
+const isBothOccupied = computed(() => email.value && password.value);
+
+const route = useRoute();
 const router = useRouter();
 
-const userStore = useUserStore();
-const messageStore = useMessageStore();
+const errorType = ref(null);
+const errorMessagesList = {
+  typo: "The email and password you entered did not match our records. Please double-check and try again.",
+  // tooManyRequests:
+  //   "This account has been temporarily disabled due to many failed login attempts. Please try again later.",
+};
 
-async function register() {
-  if (!agreementChecked.value) {
-    alert("Please read and agree to Privacy Policy and Terms of Use.");
-    return;
-  }
+const login = async () => {
+  if (!email.value || !password.value) return;
+  isLoading.value = true;
 
-  const { isErr, msg } = await signUp({
-    email: email.value,
-    username: username.value,
-    password: password.value,
-  });
+  const res = await signIn(email.value, password.value);
 
-  if (!isErr) {
+  if (res) {
+    // if (
+    //   res.includes("invalid") &&
+    //   (res.includes("email") || res.includes("credential"))
+    // ) {
+    errorType.value = "typo";
+    // } else if (res.includes("many") && res.includes("requests")) {
+    //   errorType.value = "tooManyRequests";
+    // }
+
+    isLoading.value = false;
+  } else {
+    const messageStore = useMessageStore();
     messageStore.loadContacts();
 
+    const userStore = useUserStore();
     await userStore.getUserDoc();
 
-    // router.push("/");
     router.replace("/");
-  } else {
-    err.value = msg;
   }
-}
+};
 
-async function login() {
-  const { isErr, msg } = await signIn(email.value, password.value);
+let prevPath;
+watch(
+  () => route.params.postId,
+  () => {
+    prevPath = router.options.history.state.back;
+  },
+  { immediate: true }
+);
 
-  if (!isErr) {
-    messageStore.loadContacts();
-
-    await userStore.getUserDoc();
-
-    // router.push("/");
-    router.replace("/");
+const back = () => {
+  if (prevPath) {
+    router.back();
   } else {
-    // err.value = msg;
-    console.log("error: ", msg);
+    router.push("/");
   }
-}
-
-const toggleLogin = () => {
-  isLogin.value = !isLogin.value;
 };
 </script>
 
 <style scoped>
-.loginPage {
-  display: grid;
-  align-items: center;
-  gap: 3vw;
-  width: 100vw;
-  height: 100dvh;
-  min-width: 370px;
-  min-height: 579px;
-  max-width: 100%;
-  background: #f8f9fb;
-  /* padding: 0 10vw; */
-  /* @apply grid-cols-1 md:grid-cols-2 h-md:grid-cols-2; */
-  @apply max-lg:grid-cols-1 max-h-md:grid-cols-1 grid-cols-2;
-}
-
-.phoneImage {
-  max-width: 350px;
-  position: relative;
-  top: 36px;
-  justify-self: end;
-  @apply max-lg:hidden max-h-md:hidden;
-}
-
-.loginForm {
-  /* justify-self: center; */
-  box-shadow: 0px 4px 48px rgba(0, 0, 0, 0.06);
-  border-radius: 32px;
-  background: white;
-  padding: 74px 45px;
-
-  display: grid;
-  place-items: center;
-  row-gap: 52px;
-  width: 360px;
-
-  /* @apply justify-self-center md:justify-self-start h-md:justify-self-start; */
-  @apply max-md:w-[370px] max-lg:justify-self-center max-h-md:justify-self-center justify-self-start;
-}
-
-.loginForm > form {
-  display: grid;
-  row-gap: 24px;
+input {
   width: 100%;
   height: 100%;
-}
-
-input {
-  background: #fafafa;
-  border-radius: 4px;
+  padding: 0px;
+  resize: none;
+  appearance: none;
+  text-align: left;
+  outline: none;
   border: none;
-}
-
-input::placeholder {
-  color: #9e9e9e;
-}
-
-.loginButton {
-  background: linear-gradient(89.93deg, #00c2ff 0.06%, #0047ff 105.68%);
-  padding: 12px 0;
-  color: white;
-  border: none;
-}
-
-.info {
-  color: #1da0ff;
-  /* text-align: center; */
-  cursor: pointer;
-}
-
-.agreement {
-  color: #a1a1a1;
-  display: flex;
-  align-items: flex-start;
-  /* align-items: start; */
-  gap: 6px;
-}
-
-.agreement > input {
-  margin-top: 5px;
+  border-radius: 0px;
 }
 </style>

@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="mt-4 pt-3 pb-2 px-2">
-        <div class="h-5 text-[17px] leading-6 uponInput">
+        <div class="h-6 text-[17px] leading-6 uponInput">
           <slot></slot>
         </div>
       </div>

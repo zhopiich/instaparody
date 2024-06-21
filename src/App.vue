@@ -22,7 +22,8 @@
         $route.name !== 'comments' &&
         $route.name !== 'likes'
       "
-      class="mb-12 md:mb-0"
+      class=""
+      :class="isMobile && $route.name !== 'login' ? 'mb-12' : 'mb-0'"
     >
       &copy; 2023INSTAGRAM FROM MEGA
     </footer>

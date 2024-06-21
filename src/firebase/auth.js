@@ -41,26 +41,14 @@ export const signUp = async ({ email, username, password }) => {
 };
 
 export const signIn = async (email, password) => {
-  const err = {
-    isErr: false,
-    msg: null,
-  };
+  try {
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+    // console.log(credential);
+  } catch (err) {
+    // console.log(err.message);
 
-  await signInWithEmailAndPassword(auth, email, password)
-    .then((credential) => {
-      //
-      // console.log("Signed In!");
-      // console.log(credential.user);
-    })
-    .catch((error) => {
-      console.log("err code: ", error.code);
-      console.log(error.message);
-
-      err.isErr = true;
-      err.msg = error.message;
-    });
-
-  return err;
+    return err.code;
+  }
 };
 
 export const logOut = async () => {
