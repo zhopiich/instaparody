@@ -39,7 +39,11 @@
           />
           <Transition name="menu">
             <ProfileIconMenu
-              v-if="isShowDropdown"
+              v-if="
+                isShowDropdown &&
+                (!direction || navbarPosition === 'expanded') &&
+                navbarPosition !== 'folded'
+              "
               :profilePageURL="profilePageURL"
               :avatar="avatarIcon"
               @close="isShowDropdown = false"
@@ -198,7 +202,7 @@ const changePosition = (position) => {
 
 .menu-enter-active,
 .menu-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.15s ease;
 }
 
 .menu-enter-from,

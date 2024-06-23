@@ -1,6 +1,6 @@
 <template>
   <div
-    class="profileMenu absolute right-0 w-32 bg-white py-2 rounded-lg flex flex-col hover:*:bg-slate-100 *:transition-colors"
+    class="profileMenu absolute right-0 w-48 bg-white pt-2 rounded-lg flex flex-col hover:*:bg-slate-100 *:transition-colors select-none"
     ref="menu"
   >
     <router-link
@@ -9,7 +9,12 @@
       @click="emits('close')"
       >{{ link.name }}</router-link
     >
-    <div @click="emits('logout')">Log Out</div>
+
+    <div class="divider h-0 m-0 border-t border-neutral-200/75"></div>
+
+    <div class="m-2 text-center rounded-lg" @click="emits('logout')">
+      <span class="text-red-600 font-semibold">Log Out</span>
+    </div>
   </div>
 </template>
 
@@ -24,6 +29,8 @@ const menu = ref(null);
 const linksList = [
   { name: "My Page", to: props.profilePageURL },
   { name: "Messages", to: "/messages" },
+  { name: "Edit profile", to: "/profile/edit" },
+  { name: "Change password", to: "/change_password" },
 ];
 
 const onClick = (event) => {
@@ -67,9 +74,14 @@ onBeforeUnmount(() => {
   filter: drop-shadow(rgb(207, 217, 222) 1px -1px 1px);
 }
 
-.profileMenu > * {
+.profileMenu > :not(div.divider) {
   text-decoration: none;
   cursor: pointer;
   padding: 10px 16px;
+}
+
+.divider::before,
+.divider::after {
+  display: none;
 }
 </style>
