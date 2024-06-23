@@ -1,6 +1,6 @@
 <template>
   <div class="globalFlex">
-    <template v-if="$route.name !== 'login'">
+    <template v-if="$route.name !== 'login' && $route.name !== 'signup'">
       <!-- <header class="header"> -->
       <NavBar :isMobile="isMobile" />
       <!-- </header> -->
@@ -23,7 +23,11 @@
         $route.name !== 'likes'
       "
       class=""
-      :class="isMobile && $route.name !== 'login' ? 'mb-12' : 'mb-0'"
+      :class="
+        isMobile && $route.name !== 'login' && $route.name !== 'signup'
+          ? 'mb-12'
+          : 'mb-0'
+      "
     >
       &copy; 2023INSTAGRAM FROM MEGA
     </footer>

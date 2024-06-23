@@ -90,13 +90,17 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  const getOtherUserDoc = async (_username) => {
+  const findUserByName = async (_username) => {
     const q = query(
       collection(db, "users"),
       where("username", "==", _username)
     );
 
-    const querySnap = await getDocs(q);
+    return await getDocs(q);
+  };
+
+  const getOtherUserDoc = async (username) => {
+    const querySnap = await findUserByName(username);
 
     if (querySnap.docs.length === 0) {
       // console.log("No Such User");
@@ -164,6 +168,7 @@ export const useUserStore = defineStore("user", () => {
     userDoc,
     otherUserDoc,
     getUserDoc,
+    findUserByName,
     getOtherUserDoc,
     initializeAuthListener,
     initializeUser,

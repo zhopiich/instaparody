@@ -1,7 +1,6 @@
 <template>
   <div class="grow size-full flex flex-col justify-center items-center">
     <div
-      v-if="true"
       class="mt-8 w-screen sm:w-[420px] sm:border flex flex-col items-center"
     >
       <div class="w-full flex items-start fixed top-0 sm:static">
@@ -25,7 +24,6 @@
                 placeholder="Email"
                 :isFocus="isEmailFocus"
                 :isOccupied="email"
-                :isError="isEmailError"
               >
                 <input
                   class=""
@@ -43,7 +41,6 @@
                 placeholder="Password"
                 :isFocus="isPasswordFocus"
                 :isOccupied="password"
-                :isError="isPasswordError"
               >
                 <input
                   type="password"
@@ -127,11 +124,9 @@ import { useUserStore } from "../stores/user";
 const isLoading = ref(false);
 
 const email = ref(null);
-const isEmailError = ref(false);
 const isEmailFocus = ref(false);
 
 const password = ref(null);
-const isPasswordError = ref(false);
 const isPasswordFocus = ref(false);
 
 const isBothOccupied = computed(() => email.value && password.value);
@@ -147,7 +142,7 @@ const errorMessagesList = {
 };
 
 const login = async () => {
-  if (!email.value || !password.value) return;
+  if (!isBothOccupied.value) return;
   isLoading.value = true;
 
   const res = await signIn(email.value, password.value);
@@ -184,7 +179,10 @@ watch(
 );
 
 const back = () => {
-  if (prevPath) {
+  if (
+    prevPath &&
+    (prevPath.endsWith("/") ? prevPath.slice(0, -1) : prevPath) !== "/signup"
+  ) {
     router.back();
   } else {
     router.push("/");

@@ -119,6 +119,18 @@ const routes = [
     },
   },
   {
+    path: "/signup",
+    name: "signup",
+    component: () => import("./pages/SignUpPage.vue"),
+    beforeEnter: (to, from) => {
+      const userStore = useUserStore();
+
+      if (userStore.isLoggedIn) {
+        return { name: "home" };
+      }
+    },
+  },
+  {
     path: "/:username/:tab?",
     name: "profile",
     component: () => import("./pages/ProfilePage.vue"),

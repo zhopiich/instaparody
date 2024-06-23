@@ -19,6 +19,15 @@
         >
           <span>{{ placeholder }}</span>
         </div>
+
+        <div
+          v-if="isLengthShown && isFocus"
+          class="px-2 pt-2 grow flex justify-end self-start"
+        >
+          <span class="text-sm" style="color: rgb(113, 118, 123)"
+            >{{ currentLength }} / {{ maxLength }}</span
+          >
+        </div>
       </div>
       <div class="mt-4 pt-3 pb-2 px-2">
         <div class="h-6 text-[17px] leading-6 uponInput">
@@ -30,7 +39,15 @@
 </template>
 
 <script setup>
-const props = defineProps(["placeholder", "isFocus", "isOccupied", "isError"]);
+const props = defineProps([
+  "placeholder",
+  "isFocus",
+  "isOccupied",
+  "isError",
+  "isLengthShown",
+  "currentLength",
+  "maxLength",
+]);
 
 const labelClicked = (e) => {
   if (!props.isFocus) return;

@@ -15,29 +15,17 @@ import {
 } from "firebase/auth";
 
 export const signUp = async ({ email, username, password }) => {
-  const err = {
-    isErr: false,
-    msg: null,
-  };
-  let uid;
-
-  await createUserWithEmailAndPassword(auth, email, password)
-    .then((credential) => {
-      //
-      console.log("Signed Up!");
-      uid = credential.user.uid;
-    })
-    .catch((error) => {
-      console.log("err code: ", error.code);
-      console.log(error.message);
-
-      err.isErr = true;
-      err.msg = error.message;
-    });
-
-  await addUserDoc({ uid, username });
-
-  return err;
+  try {
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const uid = credential.user.uid;
+    await addUserDoc({ uid, username });
+  } catch (err) {
+    return err.code;
+  }
 };
 
 export const signIn = async (email, password) => {
