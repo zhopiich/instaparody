@@ -1,93 +1,97 @@
 <template>
   <TheModal @close="$emit('close')">
-    <div class="bg-white rounded-lg overflow-hidden">
-      <div class="w-[400px] aspect-square flex flex-col">
-        <div class="h-14 px-4 flex justify-start items-center">
-          <h1 class="text-xl font-bold">New message</h1>
-        </div>
-
-        <div class="grow flex flex-col">
-          <div class="flex items-center h-12 border-b">
-            <label
-              for="searchPeople"
-              class="h-full w-full flex items-stretch *:h-full"
-            >
-              <div class="pl-4 flex items-center">
-                <FontAwesomeIcon
-                  :icon="faMagnifyingGlass"
-                  class="fa-lg pointer-events-none"
-                />
-              </div>
-              <input
-                type="text"
-                class="p-4 outline-none border-0"
-                placeholder="Search people"
-                v-model="searchTerm"
-                ref="input"
-                @keydown.esc.stop="handleEscKey"
-              />
-            </label>
+    <div class="max-h-dvh overflow-y-auto">
+      <div class="bg-white rounded-lg overflow-hidden">
+        <div
+          class="min-w-[336px] w-[calc(100dvw_-_8px)] max-w-[400px] aspect-square flex flex-col"
+        >
+          <div class="h-14 px-4 flex justify-start items-center">
+            <h1 class="text-xl font-bold">New message</h1>
           </div>
 
-          <div
-            v-if="searchTerm.trim().length > 0"
-            class="grow h-0 overflow-auto"
-          >
-            <div
-              v-if="!results"
-              class="flex flex-col justify-center items-center"
-            >
-              <UserSkeletonLoader :count="3" />
-            </div>
-            <div
-              v-else-if="results.length === 0"
-              class="h-full flex justify-center items-center"
-            >
-              <p class="text-neutral-500">No results found.</p>
-            </div>
-            <div v-else v-for="user in results" :key="user.userId">
-              <div
-                class="flex px-4 py-3 hover:bg-neutral-200/60 transition-colors"
+          <div class="grow flex flex-col">
+            <div class="flex items-center h-12 border-b">
+              <label
+                for="searchPeople"
+                class="h-full w-full flex items-stretch *:h-full"
               >
-                <div class="grow">
-                  <UserPlate
-                    :isShowCard="false"
-                    :user="{
-                      username: user.username,
-                      avatar: user.avatar,
-                      displayName: user.displayName,
-                      userId: user.userId,
-                    }"
-                    :widthAvatar="14"
-                    :isLink="true"
-                    @linkClicked="$emit('close')"
+                <div class="pl-4 flex items-center">
+                  <FontAwesomeIcon
+                    :icon="faMagnifyingGlass"
+                    class="fa-lg pointer-events-none"
                   />
                 </div>
+                <input
+                  type="text"
+                  class="p-4 outline-none border-0"
+                  placeholder="Search people"
+                  v-model="searchTerm"
+                  ref="input"
+                  @keydown.esc.stop="handleEscKey"
+                />
+              </label>
+            </div>
+
+            <div
+              v-if="searchTerm.trim().length > 0"
+              class="grow h-0 overflow-auto"
+            >
+              <div
+                v-if="!results"
+                class="flex flex-col justify-center items-center"
+              >
+                <UserSkeletonLoader :count="3" />
+              </div>
+              <div
+                v-else-if="results.length === 0"
+                class="h-full flex justify-center items-center"
+              >
+                <p class="text-neutral-500">No results found.</p>
+              </div>
+              <div v-else v-for="user in results" :key="user.userId">
                 <div
-                  v-if="user.userId !== userStore.user.uid"
-                  class="flex items-center"
+                  class="flex px-4 py-3 hover:bg-neutral-200/60 transition-colors"
                 >
-                  <div
-                    class="h-9 w-24 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-600 active:bg-blue-400 transition-colors flex justify-center *:flex *:items-center *:select-none *:text-white"
-                    :class="{
-                      'bg-sky-200 pointer-events-none': !userStore.isLoggedIn,
-                    }"
-                    @click.stop="
-                      contact({
+                  <div class="grow">
+                    <UserPlate
+                      :isShowCard="false"
+                      :user="{
                         username: user.username,
                         avatar: user.avatar,
                         displayName: user.displayName,
                         userId: user.userId,
-                      })
-                    "
+                      }"
+                      :widthAvatar="14"
+                      :isLink="true"
+                      @linkClicked="$emit('close')"
+                    />
+                  </div>
+                  <div
+                    v-if="user.userId !== userStore.user.uid"
+                    class="flex items-center"
                   >
-                    <div v-if="addingSpin"><span class="loading"></span></div>
-                    <div v-else class="gap-2">
-                      <FontAwesomeIcon
-                        :icon="faPaperPlane"
-                        class="fa-lg pointer-events-none"
-                      />
-                      <p class="font-bold leading-9">Chat</p>
+                    <div
+                      class="h-9 w-24 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-600 active:bg-blue-400 transition-colors flex justify-center *:flex *:items-center *:select-none *:text-white"
+                      :class="{
+                        'bg-sky-200 pointer-events-none': !userStore.isLoggedIn,
+                      }"
+                      @click.stop="
+                        contact({
+                          username: user.username,
+                          avatar: user.avatar,
+                          displayName: user.displayName,
+                          userId: user.userId,
+                        })
+                      "
+                    >
+                      <div v-if="addingSpin"><span class="loading"></span></div>
+                      <div v-else class="gap-2">
+                        <FontAwesomeIcon
+                          :icon="faPaperPlane"
+                          class="fa-lg pointer-events-none"
+                        />
+                        <p class="font-bold leading-9">Chat</p>
+                      </div>
                     </div>
                   </div>
                 </div>
