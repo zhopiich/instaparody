@@ -11,54 +11,73 @@
         @click="enterChat(contact.chatId)"
       >
         <div class="w-full flex gap-2 overflow-hidden">
-          <div class="avatar">
-            <div class="w-12 rounded-full">
-              <img :src="contact.avatar" />
+          <div class="shrink-0 avatar">
+            <div class="rounded-full h-12" @click.stop="">
+              <router-link :to="'/' + contact.username">
+                <img :src="contact.avatar"
+              /></router-link>
             </div>
           </div>
 
-          <div class="grow w-0 flex flex-col justify-start">
-            <div class="flex">
-              <div class="grow flex justify-start">
-                <div class="flex gap-1">
-                  <p class="font-bold">{{ contact.displayName }}</p>
-                  <p class="text-neutral-500">@{{ contact.username }}</p>
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-col">
+              <div class="w-full flex">
+                <div class="shrink min-w-0">
+                  <div class="max-w-full flex gap-1">
+                    <div
+                      class="grow min-w-0 overflow-hidden text-clip whitespace-nowrap"
+                    >
+                      <span class="font-bold">{{ contact.displayName }}</span>
+                    </div>
+
+                    <div
+                      class="shrink-[9] grow-0 min-w-10 overflow-hidden text-clip whitespace-nowrap"
+                    >
+                      <span class="text-neutral-500">
+                        @{{ contact.username }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
+
                 <div
                   v-if="lastMessagesTime[contact.chatId]"
-                  class="flex *:text-neutral-500"
+                  class="shrink-0 flex items-center *:text-neutral-500"
                 >
                   <div class="px-1"><span>·</span></div>
                   <div>
-                    <time :datetime="lastMessagesTime[contact.chatId].datetime">
+                    <time
+                      class="whitespace-nowrap text-[15px] leading-5"
+                      :datetime="lastMessagesTime[contact.chatId].datetime"
+                    >
                       {{ lastMessagesTime[contact.chatId].ago }}
                     </time>
                   </div>
                 </div>
-              </div>
-              <div
-                v-if="areThereNews[contact.chatId]"
-                class="flex items-center mr-3"
-              >
                 <div
-                  class="w-[10px] aspect-square bg-blue-400 rounded-full"
-                ></div>
+                  v-if="areThereNews[contact.chatId]"
+                  class="flex items-center mr-3"
+                >
+                  <div
+                    class="w-[10px] aspect-square bg-blue-400 rounded-full"
+                  ></div>
+                </div>
               </div>
-            </div>
 
-            <div class="w-full">
-              <p class="truncate text-base text-neutral-500">
-                {{
-                  !contact.lastMessage?.content &&
-                  contact.lastMessage?.isImageSent
-                    ? contact.lastMessage?.from === contact.userId
-                      ? `${contact.displayName} sent a picture`
-                      : "You sent a picture"
-                    : contact.lastMessage?.content
-                    ? contact.lastMessage?.content
-                    : null
-                }}
-              </p>
+              <div class="w-full">
+                <p class="truncate text-base text-neutral-500">
+                  {{
+                    !contact.lastMessage?.content &&
+                    contact.lastMessage?.isImageSent
+                      ? contact.lastMessage?.from === contact.userId
+                        ? `${contact.displayName} sent a picture`
+                        : "You sent a picture"
+                      : contact.lastMessage?.content
+                      ? contact.lastMessage?.content
+                      : null
+                  }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -104,10 +123,12 @@ const lastMessagesTime = computed(() => {
 
   for (const chatId in lastMessagesAt.value) {
     const dateStr = lastMessagesAt.value[chatId].at.seconds;
-    times[chatId] = {
-      datetime: new Date(dateStr * 1000),
-      ago: dateToRelative(dateStr, "short"),
-    };
+    if (dateStr) {
+      times[chatId] = {
+        datetime: new Date(dateStr * 1000),
+        ago: dateToRelative(dateStr, "short"),
+      };
+    }
   }
 
   return times;
