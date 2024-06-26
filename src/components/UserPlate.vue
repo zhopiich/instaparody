@@ -7,7 +7,7 @@
     @mouseleave="isShowCard ? mouseleave() : null"
   >
     <div class="avatar">
-      <div class="rounded-full" :class="`w-${widthAvatar}`">
+      <div class="rounded-full" :style="{ width: widthAvatar * 4 + 'px' }">
         <router-link
           v-if="isLink"
           :to="profilePageURL(user.username)"

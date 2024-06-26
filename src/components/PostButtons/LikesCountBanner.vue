@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-start">
     <div v-if="post.likes === 0">
-      <p class="leading-5">
+      <p v-if="userStore.isLoggedIn" class="leading-5">
         Be the first to
         <span
           class="font-bold hover:text-neutral-500 active:text-neutral-400 select-none cursor-pointer"
@@ -9,6 +9,7 @@
           >like this</span
         >
       </p>
+      <p v-else class="font-bold leading-5 select-none">0 likes</p>
     </div>
     <div v-else>
       <p
@@ -40,6 +41,9 @@ const props = defineProps({
     default: {},
   },
 });
+
+import { useUserStore } from "../../stores/user";
+const userStore = useUserStore();
 
 import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();

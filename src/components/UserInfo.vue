@@ -55,7 +55,7 @@
             <div
               v-else
               class="flex items-center rounded-lg px-4 h-8 font-semibold text-sm leading-[18px] bg-sky-500 hover:bg-blue-500 active:bg-blue-400 cursor-pointer"
-              :class="{ 'bg-blue-200 pointer-events-none': !isLoggedIn }"
+              :class="{ '!bg-sky-300 pointer-events-none': !isLoggedIn }"
               @click="
                 enterChat({
                   username: user.username,

@@ -12,28 +12,26 @@
     @mouseleave="isShowMore = false"
     ref="messageBlock"
   >
-    <div class="">
+    <div class="flex">
       <div
         class="chatBubble overflow-hidden shadow-x"
         :class="[
           isChained ? 'chained' : isFromMe ? 'fromMe  ' : 'fromOther  ',
           isFromMe ? 'bg-blue-300/90' : 'bg-gray-200',
+          { grow: isThereImage },
         ]"
         :id="messageId"
       >
         <!-- img -->
         <div
-          v-if="
-            (!message.at && messageStore.isImageSending) ||
-            (message.at && message.image)
-          "
-          class="cursor-pointer"
+          v-if="isThereImage"
+          class="cursor-pointer w-full aspect-square"
           ref="image"
           :id="messageId + '-image'"
         >
           <img
             :src="message.image"
-            class="h-full w-full"
+            class="size-full object-cover"
             @click="messageStore.openImageViewer(message.image)"
           />
         </div>
@@ -118,6 +116,12 @@ const emits = defineEmits(["lastMounted", "imageMounted"]);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
+
+const isThereImage = computed(
+  () =>
+    (!props.message.at && messageStore.isImageSending) ||
+    (props.message.at && props.message.image)
+);
 
 import { useAlertStore } from "../../stores/alert";
 const alertStore = useAlertStore();
@@ -301,14 +305,12 @@ onBeforeUnmount(() => {
   border-bottom-right-radius: 1.5rem;
 }
 
-.menu-enter-active,
-.menu-leave-active {
-  transition: scale 0.15s ease;
+.menu-enter-active {
+  transition: opacity 0.3s ease;
 }
 
-.menu-enter-from,
-.menu-leave-to {
-  scale: 0;
+.menu-enter-from {
+  opacity: 0;
 }
 
 .shadow-x {
