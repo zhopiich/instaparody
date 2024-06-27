@@ -7,7 +7,7 @@
     :zIndex="10"
   >
     <div
-      class="rounded-xl bg-white shadow-x overflow-hidden flex flex-col pointer-events-auto"
+      class="rounded-xl bg-white shadow-x overflow-hidden flex flex-col pointer-events-auto cursor-pointer *:select-none"
       ref="menu"
       id="menu"
     >

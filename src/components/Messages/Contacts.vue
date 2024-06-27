@@ -5,7 +5,7 @@
         v-for="(contact, index) in contacts"
         class="p-4 cursor-pointer hover:bg-slate-100 transition-colors"
         :class="{
-          'border-r-2 border-yellow-300 bg-neutral-100':
+          'last:*:*:-mr-0.5 border-r-2 border-yellow-300 bg-neutral-100':
             contact.chatId === route.params.chatId,
         }"
         @click="enterChat(contact.chatId)"
@@ -56,7 +56,7 @@
                 </div>
                 <div
                   v-if="areThereNews[contact.chatId]"
-                  class="flex items-center mr-3"
+                  class="flex items-center ml-auto mr-3"
                 >
                   <div
                     class="w-[10px] aspect-square bg-blue-400 rounded-full"
