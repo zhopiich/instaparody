@@ -25,15 +25,28 @@
         <!-- img -->
         <div
           v-if="isThereImage"
-          class="cursor-pointer w-full aspect-square"
-          ref="image"
+          class="image rounded-t-[inherit] cursor-pointer w-full aspect-square overflow-hidden relative"
           :id="messageId + '-image'"
+          @click="messageStore.openImageViewer(message.image)"
         >
           <img
             :src="message.image"
             class="size-full object-cover"
-            @click="messageStore.openImageViewer(message.image)"
+            alt="attached image"
           />
+
+          <div
+            class="magnifyingGlass absolute right-0 bottom-0 h-10 aspect-square rounded-full overflow-hidden backdrop-blur m-3 transition-transform duration-200"
+          >
+            <div
+              class="size-full flex justify-center items-center bg-white/25 hover:bg-white/65 *:hover:text-black active:bg-white/75 *:active:text-neutral-500 transition-colors"
+            >
+              <FontAwesomeIcon
+                :icon="faMagnifyingGlassPlus"
+                class="fa-xl text-neutral-700"
+              />
+            </div>
+          </div>
         </div>
 
         <!-- content -->
@@ -89,6 +102,9 @@
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faMagnifyingGlassPlus } from "@fortawesome/free-solid-svg-icons";
+
 import MoreButton from "./MoreButton.vue";
 import MoreMenu from "./MoreMenu.vue";
 
@@ -96,7 +112,6 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 
 const more = ref(null);
 const messageBlock = ref(null);
-const image = ref(null);
 
 const isShowMore = ref(false);
 const isShowMoreMenu = ref(false);
@@ -320,5 +335,13 @@ onBeforeUnmount(() => {
 .message-content {
   overflow-wrap: break-word;
   white-space: pre-wrap;
+}
+
+.magnifyingGlass {
+  transform: translateY(calc(100% + 12px));
+}
+
+.image:hover .magnifyingGlass {
+  transform: translateY(0);
 }
 </style>
