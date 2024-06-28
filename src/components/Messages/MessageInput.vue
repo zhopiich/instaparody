@@ -1,67 +1,71 @@
 <template>
-  <ImagePreview
-    v-if="messageStore.imagePreview"
-    :imagePreview="messageStore.imagePreview"
-    @cancel="cancelSendImage"
-  />
+  <div class="flex flex-col inputHeight">
+    <div class="grow shrink overflow-auto">
+      <ImagePreview
+        v-if="messageStore.imagePreview"
+        :imagePreview="messageStore.imagePreview"
+        @cancel="cancelSendImage"
+      />
+    </div>
 
-  <div class="border-t flex items-center *:grow">
-    <div
-      class="min-h-11 mx-3 my-1.5 p-1 rounded-xl bg-gray-200 flex items-stretch"
-    >
-      <!-- image input -->
-      <div class="shrink flex justify-start items-center">
-        <label
-          class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-blue-300/50 transition-colors"
-        >
-          <FontAwesomeIcon
-            :icon="faImage"
-            class="text-blue-500 fa-lg scale-90"
-          />
-          <input
-            id="messageImageInput"
-            type="file"
-            accept="image/*"
-            class="hidden"
-            @change="handleImagePreview"
-            ref="fileInput"
-          />
-        </label>
-      </div>
+    <div class="shrink-0 border-t flex items-center *:grow">
+      <div
+        class="min-h-11 mx-3 my-1.5 p-1 rounded-xl bg-gray-200 flex items-stretch"
+      >
+        <!-- image input -->
+        <div class="shrink flex justify-start items-center">
+          <label
+            class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-blue-300/50 transition-colors"
+          >
+            <FontAwesomeIcon
+              :icon="faImage"
+              class="text-blue-500 fa-lg scale-90"
+            />
+            <input
+              id="messageImageInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="handleImagePreview"
+              ref="fileInput"
+            />
+          </label>
+        </div>
 
-      <!-- text input -->
-      <div class="grow w-0 min-h-fit flex flex-col justify-center">
-        <label class="px-3">
-          <div class="relative">
-            <div v-if="!messageContent" class="editorPlaceHolder py-1">
-              <span>Start a new message</span>
+        <!-- text input -->
+        <div class="grow w-0 min-h-fit flex flex-col justify-center">
+          <label class="px-3">
+            <div class="relative">
+              <div v-if="!messageContent" class="editorPlaceHolder py-1">
+                <span>Start a new message</span>
+              </div>
+              <div
+                class="textArea resize-none border-none shadow-none py-1 px-0 bg-transparent overflow-auto"
+                role="textbox"
+                contenteditable="true"
+                aria-multiline="true"
+                @input="handleInput"
+                @paste="handlePaste"
+                @keypress.enter="handleEnter"
+                ref="contentEditor"
+              ></div>
             </div>
-            <div
-              class="textArea resize-none border-none shadow-none py-1 px-0 bg-transparent overflow-auto"
-              role="textbox"
-              contenteditable="true"
-              aria-multiline="true"
-              @input="handleInput"
-              @paste="handlePaste"
-              @keypress.enter="handleEnter"
-              ref="contentEditor"
-            ></div>
-          </div>
-        </label>
-      </div>
+          </label>
+        </div>
 
-      <!-- send btn -->
-      <div class="shrink flex justify-start items-center">
-        <div
-          class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-blue-300/50 transition-colors"
-          @click="sendMessage"
-          :class="{ 'pointer-events-none': !isInputValid }"
-        >
-          <FontAwesomeIcon
-            :icon="faPaperPlane"
-            class="fa-lg scale-90"
-            :class="isInputValid ? 'text-blue-500' : 'text-blue-300'"
-          />
+        <!-- send btn -->
+        <div class="shrink flex justify-start items-center">
+          <div
+            class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-blue-300/50 transition-colors"
+            @click="sendMessage"
+            :class="{ 'pointer-events-none': !isInputValid }"
+          >
+            <FontAwesomeIcon
+              :icon="faPaperPlane"
+              class="fa-lg scale-90"
+              :class="isInputValid ? 'text-blue-500' : 'text-blue-300'"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -76,6 +80,12 @@ import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import ImagePreview from "./ImagePreview.vue";
 
 import { ref, shallowRef, computed, onMounted, watch } from "vue";
+
+import { useMediaQueryStore } from "../../stores/mediaQuery";
+const mediaQueryStore = useMediaQueryStore();
+const isMobile = computed(() => mediaQueryStore.isMobile);
+
+const navbarHeight = computed(() => (isMobile.value ? "49px" : "80px"));
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
@@ -184,5 +194,9 @@ const handleEnter = (e) => {
   color: gray;
   font-size: 15px;
   line-height: 20px;
+}
+
+.inputHeight {
+  max-height: calc(100dvh - v-bind(navbarHeight));
 }
 </style>

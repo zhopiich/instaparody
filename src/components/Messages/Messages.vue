@@ -1,7 +1,7 @@
 <template>
   <MessageDragAndDrop v-slot="slotProps">
-    <div class="w-full h-full grid" id="chatRoom">
-      <div class="relative overflow-hidden" id="messagesViewport">
+    <div class="w-full h-full" id="chatRoom">
+      <div class="grow relative overflow-hidden" id="messagesViewport">
         <div class="h-full overflow-auto" ref="scrollStrip">
           <div ref="messagesFlow" class="relative min-h-full" id="messagesFlow">
             <template v-for="(message, index) in list" :key="message.id">
@@ -36,7 +36,9 @@
         <ToBottomButton :isBottom="isBottom" :messagesFlow="messagesFlow" />
       </div>
 
-      <MessageInput />
+      <div class="">
+        <MessageInput />
+      </div>
       <ImageViewer v-if="messageStore.isShowImageViewer" />
     </div>
   </MessageDragAndDrop>
@@ -234,6 +236,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 #chatRoom {
-  grid-template-rows: 1fr max-content;
+  display: flex;
+  flex-direction: column;
 }
 </style>
