@@ -4,6 +4,14 @@ import { defineStore } from "pinia";
 export const useAlertStore = defineStore("alert", () => {
   const isAlertShown = ref(false);
 
+  const variableHeight = reactive({
+    messageInput: 0,
+  });
+
+  const setVariableHeight = ({ type, val }) => {
+    variableHeight[type] = val;
+  };
+
   const alertList = reactive([]);
 
   const addAlert = ({ content, link = null } = {}) => {
@@ -69,6 +77,8 @@ export const useAlertStore = defineStore("alert", () => {
 
   return {
     isAlertShown,
+    variableHeight,
+    setVariableHeight,
     addAlert,
     alertContent,
     alertLink,

@@ -53,8 +53,10 @@ const positionBottom = computed(() => {
 
   switch (route.name) {
     case "messages":
-      if (route.params.chatId) return 49 + 57;
-      return 49;
+      return (
+        49 +
+        (route.params.chatId ? alertStore.variableHeight.messageInput + 1 : 0)
+      );
     default:
       return 49;
   }

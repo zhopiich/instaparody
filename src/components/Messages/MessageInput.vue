@@ -8,7 +8,7 @@
       />
     </div>
 
-    <div class="shrink-0 border-t flex items-center *:grow">
+    <div class="shrink-0 border-t flex items-center *:grow" ref="textArea">
       <div
         class="min-h-11 mx-3 my-1.5 p-1 rounded-xl bg-gray-200 flex items-stretch"
       >
@@ -79,13 +79,30 @@ import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 
 import ImagePreview from "./ImagePreview.vue";
 
-import { ref, shallowRef, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+import { useRoute } from "vue-router";
+const route = useRoute();
 
 import { useMediaQueryStore } from "../../stores/mediaQuery";
 const mediaQueryStore = useMediaQueryStore();
 const isMobile = computed(() => mediaQueryStore.isMobile);
 
 const navbarHeight = computed(() => (isMobile.value ? "49px" : "80px"));
+
+import { useAlertStore } from "../../stores/alert";
+const alertStore = useAlertStore();
+
+const textArea = ref(null);
+let lastTextAreaHeight;
+const heightObserver = new ResizeObserver((entries) => {
+  const entry = entries[0];
+  const { height } = entry.contentRect;
+
+  if (lastTextAreaHeight === height) return;
+  alertStore.setVariableHeight({ type: "messageInput", val: height });
+  lastTextAreaHeight = height;
+});
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
@@ -168,6 +185,18 @@ const handleEnter = (e) => {
 
   sendMessage();
 };
+
+onMounted(() => {
+  if (route.name === "messages") {
+    heightObserver.observe(textArea.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (route.name === "messages") {
+    heightObserver.disconnect();
+  }
+});
 </script>
 
 <style scoped>
