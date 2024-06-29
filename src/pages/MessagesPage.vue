@@ -73,7 +73,9 @@
 
           <div
             :class="
-              isMobile ? 'w-1/2 h-full' : 'w-full border-x max-w-[600px] shrink'
+              isMobile
+                ? 'w-1/2 h-full'
+                : 'w-full border-x max-w-[600px] shrink min-w-0'
             "
           >
             <div

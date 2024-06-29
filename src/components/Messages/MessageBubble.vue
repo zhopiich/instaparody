@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col mt-0 px-4 *:flex"
+    class="flex flex-col mt-0 px-4"
     :class="[
       // isFromMe ? '*:self-end' : '*:self-start',
       isFromMe ? '*:justify-end' : '*:justify-start',
