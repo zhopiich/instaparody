@@ -85,13 +85,13 @@
         </div>
       </div>
     </div>
-    <div class="chat-footer opacity-50 flex min-h-0">
+    <div class="chat-footer text-gray-400 flex min-h-0">
       <p>
         <time v-if="message.at && !isChained">
           {{ time }}
-          <span>{{ " · " }}</span>
         </time>
         <template v-if="isFromMe && message.at">
+          <span>{{ " · " }}</span>
           {{ isSeen ? "Seen" : "Sent" }}
         </template>
       </p>
