@@ -36,7 +36,7 @@ const likeButton = ref(null);
 
 const props = defineProps({
   post: {
-    type: Object,
+    // type: Object,
     default: {},
   },
   isDisabled: {
@@ -48,7 +48,9 @@ const props = defineProps({
 import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
-const isLikedByMe = computed(() => postStore.isLikedByMe[props.post.id]);
+const isLikedByMe = computed(() =>
+  !props.isDisabled ? postStore.isLikedByMe[props.post.id] : null
+);
 
 const removeBounce = () => {
   if (likeButton.value.classList.contains("mouseleft")) {
@@ -62,6 +64,8 @@ const addBounce = () => {
 };
 
 onMounted(() => {
+  if (props.isDisabled) return;
+
   if (!postStore.isLikedByMe[props.post.id]) {
     postStore.loadIsActedByMe({ postId: props.post.id, type: "liked" });
   }

@@ -8,49 +8,62 @@
   >
     <div class="avatar">
       <div class="rounded-full" :style="{ width: widthAvatar * 4 + 'px' }">
-        <router-link
-          v-if="isLink"
-          :to="profilePageURL(user.username)"
-          @click.stop="$emit('linkClicked')"
-        >
-          <img :src="user.avatar" class="cursor-pointer" />
-        </router-link>
+        <template v-if="user?.avatar">
+          <router-link
+            v-if="isLink"
+            :to="profilePageURL(user.username)"
+            @click.stop="$emit('linkClicked')"
+          >
+            <img :src="user.avatar" class="cursor-pointer" />
+          </router-link>
 
-        <img v-else :src="user.avatar" />
+          <img v-else :src="user.avatar" />
+        </template>
+
+        <div v-else class="size-full bg-neutral-200"></div>
       </div>
     </div>
 
     <div
       class="grow flex flex-col justify-center items-start *:whitespace-nowrap"
     >
-      <router-link
-        v-if="isLink"
-        :to="profilePageURL(user.username)"
-        @click.stop="$emit('linkClicked')"
-      >
-        <p
-          class="font-bold text-pretty break-all cursor-pointer hover:text-zinc-400"
+      <template v-if="user?.displayName">
+        <router-link
+          v-if="isLink"
+          :to="profilePageURL(user.username)"
+          @click.stop="$emit('linkClicked')"
         >
+          <p
+            class="font-bold text-pretty break-all cursor-pointer hover:text-zinc-400"
+          >
+            {{ user.displayName }}
+          </p>
+        </router-link>
+
+        <p v-else class="font-bold text-pretty break-all">
           {{ user.displayName }}
         </p>
-      </router-link>
+      </template>
+      <div v-else class="mb-2 h-4 w-32 rounded bg-neutral-200"></div>
 
-      <p v-else class="font-bold text-pretty break-all">
-        {{ user.displayName }}
-      </p>
-      <p v-if="isUsernameShown" class="text-slate-500">@{{ user.username }}</p>
+      <template v-if="isUsernameShown">
+        <p v-if="user?.username" class="text-slate-500">@{{ user.username }}</p>
+        <div v-else class="h-4 w-24 rounded bg-neutral-100"></div>
+      </template>
     </div>
 
-    <Transition>
-      <UserCard
-        v-if="isShowTooltip"
-        :isFixed="isCardFixed"
-        :bottom="bottom"
-        :right="right"
-        :dimensions="dimensions"
-        :user="user"
-      />
-    </Transition>
+    <template v-if="user">
+      <Transition>
+        <UserCard
+          v-if="isShowTooltip"
+          :isFixed="isCardFixed"
+          :bottom="bottom"
+          :right="right"
+          :dimensions="dimensions"
+          :user="user"
+        />
+      </Transition>
+    </template>
   </div>
 </template>
 
@@ -62,7 +75,9 @@ import UserCard from "./UserCard.vue";
 defineProps({
   isShowCard: { type: Boolean, default: true },
   isCardFixed: { type: Boolean, default: false },
-  user: { type: Object },
+  user: {
+    // type: Object
+  },
   isUsernameShown: { type: Boolean, default: true },
   widthAvatar: {
     type: Number,

@@ -5,7 +5,7 @@
     >
       <img
         class="h-full w-full object-contain md:object-cover cursor-pointer"
-        @click="showPostDetails(post.id)"
+        @click="handlePostDetails(post.id)"
         :src="post.image || post.images[0]"
         alt=""
       />
@@ -76,7 +76,7 @@
           <span
             v-if="post.description.length > maxDescLength"
             class="text-gray-500 cursor-pointer"
-            @click="showPostDetails(post.id)"
+            @click="handlePostDetails(post.id)"
             >more</span
           >
         </p>
@@ -115,18 +115,18 @@
     </div>
   </div>
 
-  <PostDetails
+  <!-- <PostDetails
     v-if="isShowPostDetails && post.id === postIdClicked"
     :postProps="post"
     :isMobile="isMobile"
-  />
+  /> -->
 </template>
 
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faImages } from "@fortawesome/free-solid-svg-icons";
 
-import PostDetails from "./PostDetails.vue";
+// import PostDetails from "./PostDetails.vue";
 import AvatarLink from "./AvatarLink.vue";
 import DisplayNameLink from "./DisplayNameLink.vue";
 import TimeBanner from "./PostButtons/TimeBanner.vue";
@@ -163,7 +163,7 @@ const props = defineProps({
   },
 });
 
-const showPostDetails = (postId) => {
+const handlePostDetails = (postId) => {
   if (isMobile.value) {
     router.push("/post/" + postId);
   } else {

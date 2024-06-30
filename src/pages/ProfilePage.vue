@@ -58,9 +58,8 @@
   </div>
 
   <PostDetails
-    v-if="currentTab !== 'created' && isShowPostDetails"
+    v-if="isShowPostDetails"
     :isLikedOrSaved="currentTab !== 'created'"
-    :isMobile="isMobile"
   />
 </template>
 

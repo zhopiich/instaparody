@@ -378,6 +378,13 @@ export const usePostStore = defineStore("post", () => {
     toggleShowPostDetails(false);
   }
 
+  const clickedPost = computed(() =>
+    list.value && postIdClicked.value
+      ? list.value.find((post) => post.id === postIdClicked.value) ||
+        "noSuchPost"
+      : null
+  );
+
   // loaded every time enter the page
   const loadPostDetails = (postId) => {
     loadPost(postId);
@@ -528,6 +535,7 @@ export const usePostStore = defineStore("post", () => {
     postIdClicked,
     showPostDetails,
     hidePostDetails,
+    clickedPost,
     loadPostDetails,
     resetPostDetailsPage,
     // postDetails,

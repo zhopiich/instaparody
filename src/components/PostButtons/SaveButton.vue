@@ -34,7 +34,7 @@ const likeButton = ref(null);
 
 const props = defineProps({
   post: {
-    type: Object,
+    // type: Object,
     default: {},
   },
   isDisabled: {
@@ -46,9 +46,13 @@ const props = defineProps({
 import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
-const isSavedByMe = computed(() => postStore.isSavedByMe[props.post.id]);
+const isSavedByMe = computed(() =>
+  !props.isDisabled ? postStore.isSavedByMe[props.post.id] : null
+);
 
 onMounted(() => {
+  if (props.isDisabled) return;
+
   if (!postStore.isSavedByMe[props.post.id]) {
     postStore.loadIsActedByMe({ postId: props.post.id, type: "saved" });
   }

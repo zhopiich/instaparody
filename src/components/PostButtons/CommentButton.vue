@@ -29,7 +29,7 @@ import { faComment } from "@fortawesome/free-regular-svg-icons";
 
 const props = defineProps({
   post: {
-    type: Object,
+    // type: Object,
     default: {},
   },
   isToPage: {

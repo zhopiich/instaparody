@@ -28,13 +28,20 @@
               >
                 <div :class="isMobile ? 'aspect-square' : 'size-full'">
                   <div class="size-full relative bg-black">
-                    <img
-                      v-if="post.image || post.images.length === 1"
-                      class="size-full object-cover"
-                      :src="post.image || post.images[0]"
-                      alt="Image posted"
-                    />
-                    <ImageCarousel v-else :imagesUrl="postImages" />
+                    <div
+                      v-if="post === 'noSuchPost'"
+                      class="size-full bg-neutral-50"
+                    ></div>
+
+                    <template v-else>
+                      <img
+                        v-if="post.image || post.images.length === 1"
+                        class="size-full object-cover"
+                        :src="post.image || post.images[0]"
+                        alt="Image posted"
+                      />
+                      <ImageCarousel v-else :imagesUrl="postImages" />
+                    </template>
                   </div>
                 </div>
               </div>
@@ -59,12 +66,16 @@
                     <div class="grow">
                       <UserPlate
                         :isCardFixed="true"
-                        :user="{
-                          username: post.createdBy.username,
-                          avatar: post.createdBy.avatar,
-                          displayName: post.createdBy.displayName,
-                          userId: post.createdBy.userId,
-                        }"
+                        :user="
+                          typeof post === 'object' && post !== null
+                            ? {
+                                username: post?.createdBy?.username,
+                                avatar: post?.createdBy?.avatar,
+                                displayName: post?.createdBy?.displayName,
+                                userId: post?.createdBy?.userId,
+                              }
+                            : null
+                        "
                         :widthAvatar="12"
                         :gap="2"
                       />
@@ -79,15 +90,27 @@
                     class="flex-auto border-t overflow-auto scrollbar-hidden"
                   >
                     <div class="px-4 h-full flex flex-col">
-                      <div class="py-4">
-                        <pre
-                          class="font-sans break-words whitespace-pre-wrap"
-                          >{{ post.description }}</pre
+                      <div
+                        v-if="post === 'noSuchPost'"
+                        class="size-full flex text-center items-center"
+                      >
+                        <span class="w-full"
+                          >The post has been deleted or is not visible to
+                          you.</span
                         >
                       </div>
-                      <div class="grow">
-                        <CommentsList :postId="postId" />
-                      </div>
+
+                      <template v-else>
+                        <div class="py-4">
+                          <pre
+                            class="font-sans break-words whitespace-pre-wrap"
+                            >{{ post?.description }}</pre
+                          >
+                        </div>
+                        <div class="grow">
+                          <CommentsList :postId="postId" />
+                        </div>
+                      </template>
                     </div>
                   </div>
 
@@ -99,29 +122,39 @@
                       <div class="-ml-2">
                         <LikeButton
                           :post="post"
-                          :isDisabled="!userStore.isLoggedIn"
+                          :isDisabled="
+                            !userStore.isLoggedIn || post === 'noSuchPost'
+                          "
                         />
                       </div>
                       <div class="">
                         <CommentButton
                           :post="post"
-                          :isDisabled="!userStore.isLoggedIn"
+                          :isDisabled="
+                            !userStore.isLoggedIn || post === 'noSuchPost'
+                          "
                           @focusInput="commentInput.focus()"
                         />
                       </div>
                       <div class="-mr-2.5 ml-auto">
                         <SaveButton
                           :post="post"
-                          :isDisabled="!userStore.isLoggedIn"
+                          :isDisabled="
+                            !userStore.isLoggedIn || post === 'noSuchPost'
+                          "
                         />
                       </div>
                     </div>
 
                     <div class="px-4" :class="isMobile ? 'pb-0' : 'pb-1'">
-                      <LikesCountBanner :post="post" />
+                      <div
+                        v-if="post === 'noSuchPost'"
+                        class="w-12 h-5 bg-neutral-300 rounded-md"
+                      ></div>
+                      <LikesCountBanner v-else :post="post" />
                     </div>
 
-                    <div v-if="isMobile" class="px-4">
+                    <div v-if="isMobile && post !== 'noSuchPost'" class="px-4">
                       <div
                         class="mt-1 *:text-gray-500 *:leading-5 *:cursor-pointer *:text-base flex items-center"
                       >
@@ -151,13 +184,19 @@
                       class="px-4 leading-4"
                       :class="isMobile ? 'pb-0' : 'pb-4'"
                     >
-                      <TimeBanner :timestamp="post.createdAt?.seconds" />
+                      <div v-if="post === 'noSuchPost'" class="w-8 h-5 py-1">
+                        <div class="size-full rounded bg-gray-200"></div>
+                      </div>
+                      <TimeBanner v-else :timestamp="post.createdAt?.seconds" />
                     </div>
                   </div>
 
                   <div v-if="isMobile" class="overflow-auto grow">
                     <div class="px-4 pb-1">
-                      <p class="font-sans break-words whitespace-pre-wrap">
+                      <p
+                        v-if="post !== 'noSuchPost'"
+                        class="font-sans break-words whitespace-pre-wrap"
+                      >
                         {{ descDisplay }}
                         <router-link
                           v-if="post.description.length > maxDescLength"
@@ -166,11 +205,17 @@
                           >more</router-link
                         >
                       </p>
+
+                      <span v-else>
+                        The post has been deleted or is not visible to you.
+                      </span>
                     </div>
                   </div>
 
                   <div
-                    v-if="userStore.isLoggedIn && !isMobile"
+                    v-if="
+                      userStore.isLoggedIn && !isMobile && post !== 'noSuchPost'
+                    "
                     class="shrink-0 border-t border-gray-300"
                   >
                     <CommentInput
@@ -214,16 +259,19 @@ const userStore = useUserStore();
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
 
+import { useMediaQueryStore } from "../stores/mediaQuery";
+const mediaQueryStore = useMediaQueryStore();
+const isMobile = computed(() => mediaQueryStore.isMobile);
+
 const props = defineProps({
-  postProps: {
-    type: Object,
-    default: {},
-  },
+  // postProps: {
+  //   type: Object,
+  //   default: {},
+  // },
   isLikedOrSaved: {
     type: Boolean,
     default: false,
   },
-  isMobile: { type: Boolean },
 });
 
 if (props.isLikedOrSaved) {
@@ -231,7 +279,7 @@ if (props.isLikedOrSaved) {
 }
 
 const post = computed(() =>
-  props.isLikedOrSaved ? postStore.postSnapshot : props.postProps
+  props.isLikedOrSaved ? postStore.postSnapshot : postStore.clickedPost
 );
 const isMe = computed(
   () => post.value.createdBy?.userId === userStore.user?.uid
@@ -251,7 +299,9 @@ const postImages = computed(() =>
     : null
 );
 
-const postId = computed(() => post.value.id);
+const postId = computed(() =>
+  post.value && post.value !== "noSuchPost" ? post.value.id : null
+);
 const postCreatedBy = computed(() => post.value.createdBy?.userId);
 
 // Rein in the size of the right part
@@ -273,7 +323,7 @@ const variableWidth = computed(() => {
   const squareImageWidth = remainedY.value;
   const remainedWidth = remainedX.value - squareImageWidth;
 
-  if (props.isMobile) return "100%";
+  if (isMobile.value) return "100%";
 
   return (
     (remainedWidth <= 405 ? 405 : remainedWidth <= 500 ? remainedWidth : 500) +
@@ -284,7 +334,7 @@ const variableHeight = computed(() => {
   const squareImageWidth = remainedX.value - 405;
   const squareImageHeight = remainedY.value;
 
-  if (props.isMobile) return userStore.isLoggedIn ? "220px" : "200px";
+  if (isMobile.value) return userStore.isLoggedIn ? "220px" : "200px";
 
   return (
     (squareImageWidth <= 450 || squareImageHeight <= 450
@@ -301,7 +351,7 @@ const maxTruncatedWordLength = 10;
 const descDisplay = computed(() => {
   const desc = post.value.description;
 
-  if (!props.isMobile || desc.length <= maxDescLength) return desc;
+  if (!isMobile.value || desc.length <= maxDescLength) return desc;
 
   const trimmed = desc.substring(0, maxDescLength);
 

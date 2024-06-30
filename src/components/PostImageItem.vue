@@ -32,12 +32,12 @@
     </div>
   </div>
 
-  <PostDetails
+  <!-- <PostDetails
     v-if="!isLikedOrSaved && isShowPostDetails && post.id === postIdClicked"
     :postProps="post"
     :isLikedOrSaved="isLikedOrSaved"
     :isMobile="isMobile"
-  />
+  /> -->
 </template>
 
 <script setup>
@@ -67,7 +67,7 @@ import { useMediaQueryStore } from "../stores/mediaQuery";
 const mediaQueryStore = useMediaQueryStore();
 const isMobile = computed(() => mediaQueryStore.isMobile);
 
-import PostDetails from "./PostDetails.vue";
+// import PostDetails from "./PostDetails.vue";
 
 import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
