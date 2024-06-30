@@ -142,7 +142,11 @@ import { useAlertStore } from "../../stores/alert";
 const alertStore = useAlertStore();
 
 const handleDelete = () => {
-  messageStore.deleteMessage(messageId, props.isLast);
+  messageStore.deleteMessage({
+    messageId,
+    imageUrl: props.message.image,
+    isLast: props.isLast,
+  });
 };
 
 const handleCopy = () => {

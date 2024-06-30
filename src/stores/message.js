@@ -28,7 +28,7 @@ import {
   and,
   or,
 } from "firebase/firestore";
-import { uploadFile } from "../firebase/storage.js";
+import { uploadFile, deleteFile } from "../firebase/storage.js";
 
 import { dateToRelative } from "../utils/date";
 
@@ -476,7 +476,11 @@ export const useMessageStore = defineStore("message", () => {
     }
   };
 
-  const deleteMessage = async (messageId, isLast = false) => {
+  const deleteMessage = async ({
+    messageId,
+    imageUrl = null,
+    isLast = false,
+  } = {}) => {
     if (!userStore.isLoggedIn) return;
 
     const chatRef = doc(db, "messages", currentChatId.value);
@@ -484,6 +488,10 @@ export const useMessageStore = defineStore("message", () => {
     const messageDocRef = doc(chatRef, "chat", messageId);
 
     await deleteDoc(messageDocRef);
+
+    if (imageUrl) {
+      await deleteFile(imageUrl);
+    }
 
     // Update last message if the last message was deleted
     if (isLast) {
