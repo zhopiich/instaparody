@@ -14,7 +14,10 @@ export const uploadFile = async (file, path = "images/") => {
 
   const { name, type } = file;
 
-  const storageRef = ref(storage, path + name);
+  const getUUID = () => window.crypto.randomUUID();
+  const randomName = getUUID() + "_" + name;
+
+  const storageRef = ref(storage, path + randomName);
   const uploadTask = uploadBytesResumable(storageRef, file, {
     contentType: type,
   });
