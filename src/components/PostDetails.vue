@@ -56,17 +56,23 @@
                     class="grow-0 px-4 flex"
                     :class="isMobile ? 'pt-2.5' : 'py-2.5'"
                   >
-                    <UserPlate
-                      :isCardFixed="true"
-                      :user="{
-                        username: post.createdBy.username,
-                        avatar: post.createdBy.avatar,
-                        displayName: post.createdBy.displayName,
-                        userId: post.createdBy.userId,
-                      }"
-                      :widthAvatar="12"
-                      :gap="2"
-                    />
+                    <div class="grow">
+                      <UserPlate
+                        :isCardFixed="true"
+                        :user="{
+                          username: post.createdBy.username,
+                          avatar: post.createdBy.avatar,
+                          displayName: post.createdBy.displayName,
+                          userId: post.createdBy.userId,
+                        }"
+                        :widthAvatar="12"
+                        :gap="2"
+                      />
+                    </div>
+
+                    <div v-if="isMe" class="flex items-center">
+                      <postMoreButton :postId="postId" :images="post.images" />
+                    </div>
                   </div>
                   <div
                     v-if="!isMobile"
@@ -169,6 +175,7 @@
                   >
                     <CommentInput
                       :postId="postId"
+                      :postCreatedBy="postCreatedBy"
                       @setInputRef="setInputRef"
                       @focus="commentInput.focus()"
                     />
@@ -196,6 +203,7 @@ import CommentButton from "./PostButtons/CommentButton.vue";
 import SaveButton from "./PostButtons/SaveButton.vue";
 import LikesCountBanner from "./PostButtons/LikesCountBanner.vue";
 import TimeBanner from "./PostButtons/TimeBanner.vue";
+import postMoreButton from "./PostButtons/postMoreButton.vue";
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
@@ -225,6 +233,9 @@ if (props.isLikedOrSaved) {
 const post = computed(() =>
   props.isLikedOrSaved ? postStore.postSnapshot : props.postProps
 );
+const isMe = computed(
+  () => post.value.createdBy?.userId === userStore.user?.uid
+);
 
 const commentInput = ref(null);
 const setInputRef = (val) => {
@@ -241,6 +252,7 @@ const postImages = computed(() =>
 );
 
 const postId = computed(() => post.value.id);
+const postCreatedBy = computed(() => post.value.createdBy?.userId);
 
 // Rein in the size of the right part
 

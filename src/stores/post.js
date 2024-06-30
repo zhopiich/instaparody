@@ -33,7 +33,7 @@ import {
   startAt,
   endAt,
 } from "firebase/firestore";
-import { uploadFile } from "../firebase/storage.js";
+import { uploadFile, deleteFile } from "../firebase/storage.js";
 //
 
 export const usePostStore = defineStore("post", () => {
@@ -472,6 +472,39 @@ export const usePostStore = defineStore("post", () => {
     postsCount.value = postsSnap.docs.length;
   };
 
+  const deletePost = async ({ postId, images }) => {
+    try {
+      ["likes", "comments", "saves"].forEach(async (coll) => {
+        const q = query(
+          ...[
+            collection(db, coll),
+            where("postId", "==", postId),
+            coll === "saves" &&
+              // Required by the security rules
+              where("createdBy.userId", "==", userStore.user.uid),
+          ].filter((bool) => bool)
+        );
+        const querySnapshot = await getDocs(q);
+
+        const involvedList = [];
+
+        querySnapshot.forEach((doc) => {
+          involvedList.push(doc.id);
+        });
+
+        await Promise.all(
+          involvedList.map((id) => deleteDoc(doc(db, coll, id)))
+        );
+      });
+
+      await Promise.all(images.map((url) => deleteFile(url)));
+
+      await deleteDoc(doc(db, "posts", postId));
+    } catch (err) {
+      return err.code;
+    }
+  };
+
   return {
     isShowPostUpload,
     toggleShowPostUpload,
@@ -511,5 +544,6 @@ export const usePostStore = defineStore("post", () => {
     getPostsByUser,
     getPostsCount,
     postsCount,
+    deletePost,
   };
 });

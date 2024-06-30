@@ -5,11 +5,11 @@
         <div class="flex flex-col">
           <div class="mx-8 mt-8 mb-4 flex flex-col">
             <span class="h-[15px] text-xl leading-[25px] text-center"
-              >Discard post?</span
+              >Delete post?</span
             >
             <span
               class="pt-4 text-sm leading-[18px] text-center text-neutral-500"
-              >If you leave, your edits won't be saved.</span
+              >Are you sure you want to delete this post?</span
             >
           </div>
 
@@ -18,14 +18,14 @@
           >
             <div
               class="h-12 border-t flex justify-center items-center cursor-pointer"
-              @click="postStore.toggleShowPostUpload(false)"
+              @click="emits('delete')"
             >
-              <span class="text-sm font-bold text-red-600">Discard</span>
+              <span class="text-sm font-bold text-red-600">Delete</span>
             </div>
 
             <div
               class="h-12 border-t flex justify-center items-center cursor-pointer"
-              @click="$emit('close')"
+              @click="emits('close')"
             >
               <span class="text-sm">Cancel</span>
             </div>
@@ -39,10 +39,7 @@
 <script setup>
 import TheModal from "../TheModal.vue";
 
-import { usePostStore } from "../../stores/post";
-const postStore = usePostStore();
-
-const emit = defineEmits(["close"]);
+const emits = defineEmits(["close", "delete"]);
 </script>
 
 <style scoped>

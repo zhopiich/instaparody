@@ -52,7 +52,7 @@ const postStore = usePostStore();
 
 const contentEditor = ref(null);
 
-const props = defineProps(["postId"]);
+const props = defineProps(["postId", "postCreatedBy"]);
 
 const emits = defineEmits(["setInputRef", "focus"]);
 
@@ -87,6 +87,7 @@ const postComment = async () => {
   await commentStore.uploadComment({
     content: commentContent.value,
     postId: props.postId,
+    postCreatedBy: props.postCreatedBy,
   });
 
   commentContent.value = "";

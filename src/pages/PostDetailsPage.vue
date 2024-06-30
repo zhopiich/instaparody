@@ -33,18 +33,28 @@
       <div
         class="w-full h-full flex flex-col md:flex-row relative *:pointer-events-auto"
       >
-        <div v-if="isMobile" class="grow-0 px-4 py-2.5 flex">
-          <UserPlate
-            :isCardFixed="true"
-            :user="{
-              username: post.createdBy.username,
-              avatar: post.createdBy.avatar,
-              displayName: post.createdBy.displayName,
-              userId: post.createdBy.userId,
-            }"
-            :widthAvatar="12"
-            :gap="2"
-          />
+        <div v-if="isMobile" class="grow-0 px-4 py-2.5 flex" id="@aaa">
+          <div class="grow">
+            <UserPlate
+              :isCardFixed="true"
+              :user="{
+                username: post.createdBy.username,
+                avatar: post.createdBy.avatar,
+                displayName: post.createdBy.displayName,
+                userId: post.createdBy.userId,
+              }"
+              :widthAvatar="12"
+              :gap="2"
+            />
+          </div>
+
+          <div v-if="isMe" class="flex items-center">
+            <postMoreButton
+              :postId="postId"
+              :images="post.images"
+              :prevPath="prevPath"
+            />
+          </div>
         </div>
 
         <div
@@ -71,17 +81,27 @@
         >
           <div class="h-full bg-white flex flex-col">
             <div v-if="!isMobile" class="grow-0 px-4 py-2.5 flex">
-              <UserPlate
-                :isCardFixed="true"
-                :user="{
-                  username: post.createdBy.username,
-                  avatar: post.createdBy.avatar,
-                  displayName: post.createdBy.displayName,
-                  userId: post.createdBy.userId,
-                }"
-                :widthAvatar="12"
-                :gap="2"
-              />
+              <div class="grow">
+                <UserPlate
+                  :isCardFixed="true"
+                  :user="{
+                    username: post.createdBy.username,
+                    avatar: post.createdBy.avatar,
+                    displayName: post.createdBy.displayName,
+                    userId: post.createdBy.userId,
+                  }"
+                  :widthAvatar="12"
+                  :gap="2"
+                />
+              </div>
+
+              <div v-if="isMe" class="flex items-center">
+                <postMoreButton
+                  :postId="postId"
+                  :images="post.images"
+                  :prevPath="prevPath"
+                />
+              </div>
             </div>
 
             <div v-if="!isMobile" class="flex-auto border-t overflow-auto">
@@ -184,6 +204,7 @@
             >
               <CommentInput
                 :postId="postId"
+                :postCreatedBy="postCreatedBy"
                 @setInputRef="setInputRef"
                 @focus="commentInput.focus()"
               />
@@ -215,6 +236,7 @@ import SaveButton from "../components/PostButtons/SaveButton.vue";
 import LikesCountBanner from "../components/PostButtons/LikesCountBanner.vue";
 import TimeBanner from "../components/PostButtons/TimeBanner.vue";
 import NoSuchPost from "../components/NoSuchPost.vue";
+import postMoreButton from "../components/PostButtons/postMoreButton.vue";
 
 import { ref, computed, watch } from "vue";
 import {
@@ -238,6 +260,9 @@ import { usePostStore } from "../stores/post";
 const postStore = usePostStore();
 
 const post = computed(() => postStore.postSnapshot);
+const isMe = computed(
+  () => post.value.createdBy?.userId === userStore.user?.uid
+);
 
 const commentInput = ref(null);
 const setInputRef = (val) => {
@@ -254,6 +279,7 @@ const postImages = computed(() =>
 );
 
 const postId = computed(() => route.params.postId);
+const postCreatedBy = computed(() => post.value?.createdBy?.userId);
 
 const maxDescLength = 90;
 const maxTruncatedWordLength = 10;
@@ -279,19 +305,21 @@ const commentsLink = computed(
   () => "/post/" + route.params.postId + "/comments"
 );
 
-let prevPath;
+const prevPath = ref(null);
 watch(
   () => route.params.postId,
   () => {
-    prevPath = router.options.history.state.back;
+    prevPath.value = router.options.history.state.back;
   },
   { immediate: true }
 );
 
 const back = () => {
   if (
-    prevPath &&
-    (prevPath.endsWith("/") ? prevPath.slice(0, -1) : prevPath) !==
+    prevPath.value &&
+    (prevPath.value.endsWith("/")
+      ? prevPath.value.slice(0, -1)
+      : prevPath.value) !==
       "/post/" + route.params.postId + "/comments"
   ) {
     router.back();

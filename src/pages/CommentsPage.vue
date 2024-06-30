@@ -76,7 +76,7 @@
     </div>
 
     <div v-if="userStore.isLoggedIn" class="shrink-0 border-t bg-white">
-      <CommentInput :postId="postId" />
+      <CommentInput :postId="postId" :postCreatedBy="postCreatedBy" />
     </div>
   </div>
 
@@ -119,6 +119,7 @@ const postStore = usePostStore();
 const post = computed(() => postStore.postSnapshot);
 
 const postId = computed(() => route.params.postId);
+const postCreatedBy = computed(() => post.value?.createdBy?.userId);
 
 const maxDescLength = 60;
 const maxTruncatedWordLength = 10;

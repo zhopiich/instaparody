@@ -50,6 +50,8 @@ export const useCommentStore = defineStore("comment", () => {
   };
 
   async function loadComments(_postId) {
+    triggerUnSub();
+
     const colRef = collection(db, "comments");
 
     const q = query(colRef, where("postId", "==", _postId));
@@ -89,13 +91,14 @@ export const useCommentStore = defineStore("comment", () => {
 
   const userStore = useUserStore();
 
-  async function uploadComment({ content, postId }) {
+  async function uploadComment({ content, postId, postCreatedBy }) {
     if (!userStore.isLoggedIn) return;
 
     await Promise.all([
       addComment({
         content,
         postId,
+        postCreatedBy,
         createdBy: {
           displayName: userStore.user.displayName,
           avatar: userStore.user.photoURL,
