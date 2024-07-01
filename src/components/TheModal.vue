@@ -3,7 +3,7 @@
     <div
       class="fixed top-0 left-0 w-screen max-w-full h-dvh z-[60]"
       :class="customClass.join(' ')"
-      @click.self="$emit('close')"
+      @mouseup.self="handleClose"
     >
       <Transition name="fade">
         <div
@@ -38,6 +38,8 @@
           v-if="isBraced"
           class="relative pointer-events-none"
           :class="{ '*:pointer-events-auto': isPointerEventsAuto }"
+          @mousedown="isMouseDownInside = true"
+          @mouseup="isMouseDownInside = false"
         >
           <slot></slot>
         </div>
@@ -85,6 +87,18 @@ onUnmounted(() => {
     body.classList.remove("modalOpen");
   }
 });
+
+const isMouseDownInside = ref(false);
+const handleClose = (e) => {
+  e.preventDefault();
+
+  if (isMouseDownInside.value) {
+    isMouseDownInside.value = false;
+    return;
+  }
+
+  emits("close");
+};
 </script>
 
 <style>
