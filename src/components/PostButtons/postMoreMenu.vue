@@ -15,6 +15,18 @@
 
             <div
               class="h-12 flex justify-center items-center cursor-pointer"
+              @click="
+                () => {
+                  emits('close');
+                  emits('edit');
+                }
+              "
+            >
+              <span class="text-sm">Edit</span>
+            </div>
+
+            <div
+              class="h-12 flex justify-center items-center cursor-pointer"
               @click="emits('close')"
             >
               <span class="text-sm">Cancel</span>
@@ -25,16 +37,17 @@
     </div>
   </TheModal>
 
-  <ConfirmDeletePost
+  <ConfirmModal
     v-if="isShowConfirm"
-    @delete="handleDeletePost"
+    type="delete"
+    @confirm="handleDeletePost"
     @close="isShowConfirm = false"
   />
 </template>
 
 <script setup>
 import TheModal from "../TheModal.vue";
-import ConfirmDeletePost from "./ConfirmDeletePost.vue";
+import ConfirmModal from "./ConfirmModal.vue";
 
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
@@ -48,7 +61,7 @@ const postStore = usePostStore();
 
 const props = defineProps(["postId", "images", "prevPath"]);
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits(["edit", "close"]);
 
 import { ref, computed, onMounted, toRefs, onBeforeMount } from "vue";
 
@@ -75,7 +88,9 @@ const handleDeletePost = async () => {
   });
 
   if (res) {
-    //
+    alertStore.addAlert({
+      content: "Sorry, something went wrong.",
+    });
   } else {
     alertStore.addAlert({
       content: "Your post was deleted.",

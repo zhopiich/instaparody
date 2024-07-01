@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed bottom-0 transition-transform z-[2] w-full overflow-hidden flex justify-center pointer-events-none"
+    class="fixed bottom-0 transition-transform z-[99] w-full overflow-hidden flex justify-center pointer-events-none"
     :style="{ transform: `translateY(${-positionBottom}px)` }"
   >
     <div

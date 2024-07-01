@@ -34,13 +34,13 @@
                     ></div>
 
                     <template v-else>
-                      <img
+                      <!-- <img
                         v-if="post.image || post.images.length === 1"
                         class="size-full object-cover"
                         :src="post.image || post.images[0]"
                         alt="Image posted"
-                      />
-                      <ImageCarousel v-else :imagesUrl="postImages" />
+                      /> -->
+                      <ImageCarousel :imagesUrl="post.images" />
                     </template>
                   </div>
                 </div>
@@ -82,7 +82,11 @@
                     </div>
 
                     <div v-if="isMe" class="flex items-center">
-                      <postMoreButton :postId="postId" :images="post.images" />
+                      <postMoreButton
+                        :postId="postId"
+                        :desc="post.description"
+                        :images="post.images"
+                      />
                     </div>
                   </div>
                   <div
@@ -236,7 +240,7 @@
 </template>
 
 <script setup>
-const getUUID = () => window.crypto.randomUUID();
+// const getUUID = () => window.crypto.randomUUID();
 
 import TheModal from "./TheModal.vue";
 import ImageCarousel from "./ImageCarousel.vue";
@@ -290,14 +294,14 @@ const setInputRef = (val) => {
   commentInput.value = val;
 };
 
-const postImages = computed(() =>
-  post.value.images && post.value.images.length > 1
-    ? post.value.images.map((image) => ({
-        url: image,
-        id: getUUID(),
-      }))
-    : null
-);
+// const postImages = computed(() =>
+//   post.value.images && post.value.images.length > 1
+//     ? post.value.images.map((image) => ({
+//         url: image,
+//         id: getUUID(),
+//       }))
+//     : null
+// );
 
 const postId = computed(() =>
   post.value && post.value !== "noSuchPost" ? post.value.id : null

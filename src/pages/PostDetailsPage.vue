@@ -51,6 +51,7 @@
           <div v-if="isMe" class="flex items-center">
             <postMoreButton
               :postId="postId"
+              :desc="post.description"
               :images="post.images"
               :prevPath="prevPath"
             />
@@ -62,13 +63,13 @@
           :class="isMobile ? 'w-full' : 'h-full'"
         >
           <div class="size-full relative bg-black">
-            <img
+            <!-- <img
               v-if="post.image || post.images.length === 1"
               class="size-full object-cover"
               :src="post.image || post.images[0]"
               alt="Image posted"
-            />
-            <ImageCarousel v-else :imagesUrl="postImages" />
+            /> -->
+            <ImageCarousel :imagesUrl="post.images" />
           </div>
         </div>
 
@@ -98,6 +99,7 @@
               <div v-if="isMe" class="flex items-center">
                 <postMoreButton
                   :postId="postId"
+                  :desc="post.description"
                   :images="post.images"
                   :prevPath="prevPath"
                 />
@@ -221,7 +223,7 @@
 </template>
 
 <script setup>
-const getUUID = () => window.crypto.randomUUID();
+// const getUUID = () => window.crypto.randomUUID();
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -269,14 +271,14 @@ const setInputRef = (val) => {
   commentInput.value = val;
 };
 
-const postImages = computed(() =>
-  post.value.images && post.value.images.length > 1
-    ? post.value.images.map((image) => ({
-        url: image,
-        id: getUUID(),
-      }))
-    : null
-);
+// const postImages = computed(() =>
+//   post.value.images && post.value.images.length > 1
+//     ? post.value.images.map((image) => ({
+//         url: image,
+//         id: getUUID(),
+//       }))
+//     : null
+// );
 
 const postId = computed(() => route.params.postId);
 const postCreatedBy = computed(() => post.value?.createdBy?.userId);

@@ -1,17 +1,16 @@
 <template>
-  <div class="size-full overflow-hidden" ref="imageViewport" id="imageViewport">
-    <div class="" id="images">
+  <div class="size-full overflow-hidden" ref="imageViewport">
+    <div class="imagesList">
       <Transition>
         <div :class="[movement % 2 === 0 ? 'movementEven' : 'movementOdd']">
           <TransitionGroup name="slide" tag="ul">
             <div
               v-for="(image, index) in images"
-              class="relative inline-block"
-              :key="image.id"
-              id="image"
+              class="imageItem relative inline-block"
+              :key="image?.id || image"
             >
               <img
-                :src="image.url"
+                :src="image?.url || image"
                 alt=""
                 class="h-full w-full object-cover"
                 :class="{ 'drag-none': !isDraggable }"
@@ -143,11 +142,11 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-#images {
+.imagesList {
   width: v-bind(widthImage * lengthimages + "px");
 }
 
-#image {
+.imageItem {
   width: v-bind(widthImage + "px");
   height: v-bind(heightImage + "px");
 }

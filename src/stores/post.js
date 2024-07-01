@@ -508,7 +508,40 @@ export const usePostStore = defineStore("post", () => {
 
       await deleteDoc(doc(db, "posts", postId));
     } catch (err) {
-      return err.code;
+      console.log(err);
+      return err;
+    }
+  };
+
+  const updateDescription = async ({ postId, newDesc }) => {
+    const postRef = doc(db, "posts", postId);
+
+    try {
+      await updateDoc(postRef, {
+        description: newDesc,
+      });
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  };
+
+  const deleteImage = async ({ postId, allImages, leftImages }) => {
+    const discardedImages = allImages.filter(
+      (image) => !leftImages.includes(image)
+    );
+
+    const postRef = doc(db, "posts", postId);
+
+    try {
+      await Promise.all(discardedImages.map((url) => deleteFile(url)));
+
+      await updateDoc(postRef, {
+        images: leftImages,
+      });
+    } catch (err) {
+      console.log(err);
+      return err;
     }
   };
 
@@ -553,5 +586,7 @@ export const usePostStore = defineStore("post", () => {
     getPostsCount,
     postsCount,
     deletePost,
+    updateDescription,
+    deleteImage,
   };
 });
