@@ -616,6 +616,7 @@ export const useMessageStore = defineStore("message", () => {
   // Reset all states when log out
   const reset = () => {
     triggerUnSubContacts();
+    triggerUnSubMessages();
 
     isExtended.value = false;
     contactsList.value = null;
