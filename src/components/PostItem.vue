@@ -71,7 +71,7 @@
       </div>
 
       <div class="my-2 min-h-10 grow">
-        <p class="whitespace-pre-line leading-5">
+        <span class="break-words whitespace-pre-line leading-5">
           {{ descriptionDisplay }}
           <span
             v-if="post.description.length > maxDescLength"
@@ -79,7 +79,7 @@
             @click="handlePostDetails(post.id)"
             >more</span
           >
-        </p>
+        </span>
       </div>
 
       <div

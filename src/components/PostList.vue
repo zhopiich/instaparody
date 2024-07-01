@@ -30,7 +30,8 @@ defineProps({
   /* display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px; */
-  width: fit-content;
+  /* width: fit-content; */
+  max-width: 100dvw;
   @apply flex flex-col gap-y-8 md:grid md:grid-cols-2 md:gap-8 2xl:grid-cols-3;
 }
 </style>
