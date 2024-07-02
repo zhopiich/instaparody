@@ -379,9 +379,10 @@ export const usePostStore = defineStore("post", () => {
   }
 
   const clickedPost = computed(() =>
-    list.value && postIdClicked.value
-      ? list.value.find((post) => post.id === postIdClicked.value) ||
-        "noSuchPost"
+    postIdClicked.value && (list.value || postsFiltered.created.value)
+      ? (list.value || postsFiltered.created.value).find(
+          (post) => post.id === postIdClicked.value
+        ) || "noSuchPost"
       : null
   );
 

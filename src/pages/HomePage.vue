@@ -100,6 +100,7 @@ const userStore = useUserStore();
 
 onBeforeRouteLeave(() => {
   postStore.triggerUnSub();
+  postStore.cleanPostsAll();
 });
 </script>
 
