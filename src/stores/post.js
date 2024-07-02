@@ -97,7 +97,7 @@ export const usePostStore = defineStore("post", () => {
         colRef,
         filter,
         // ...search,
-        orderBy("createdAt", "desc"),
+        orderBy(filtered ? `${filtered}At` : "createdAt", "desc"),
       ].filter((i) => i)
     );
 
@@ -292,10 +292,10 @@ export const usePostStore = defineStore("post", () => {
 
       const docRef = await addDoc(collection(db, col), {
         postId: post.id,
-        images: post.images,
-        description: post.description,
-        createdBy: post.createdBy,
-        createdAt: post.createdAt,
+        // images: post.images,
+        // description: post.description,
+        createdBy: { userId: post.createdBy.userId },
+        // createdAt: post.createdAt,
         [actedBy]: {
           avatar: userStore.user.photoURL,
           userId: userStore.user.uid,
@@ -546,6 +546,13 @@ export const usePostStore = defineStore("post", () => {
     }
   };
 
+  const getPostById = async (postId) => {
+    const postRef = doc(db, "posts", postId);
+    const postSnap = await getDoc(postRef);
+
+    return postSnap.exists() ? postSnap.data() : "NoSuchPost";
+  };
+
   return {
     isShowPostUpload,
     toggleShowPostUpload,
@@ -589,5 +596,6 @@ export const usePostStore = defineStore("post", () => {
     deletePost,
     updateDescription,
     deleteImage,
+    getPostById,
   };
 });
