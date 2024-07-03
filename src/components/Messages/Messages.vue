@@ -231,6 +231,8 @@ onBeforeUnmount(() => {
   observerScrollbar.disconnect();
 
   observerBottom.disconnect();
+
+  messageStore.resetReplied();
 });
 </script>
 

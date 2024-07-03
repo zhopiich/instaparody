@@ -6,6 +6,7 @@
         :imagePreview="messageStore.imagePreview"
         @cancel="cancelSendImage"
       />
+      <ReplyPreview v-if="messageStore.isThereReplied" />
     </div>
 
     <div class="shrink-0 border-t flex items-center *:grow" ref="textArea">
@@ -78,6 +79,7 @@ import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 
 import ImagePreview from "./ImagePreview.vue";
+import ReplyPreview from "./ReplyPreview.vue";
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
@@ -187,6 +189,8 @@ const handleEnter = (e) => {
 };
 
 onMounted(() => {
+  messageStore.setInput(contentEditor.value);
+
   if (route.name === "messages") {
     heightObserver.observe(textArea.value);
   }

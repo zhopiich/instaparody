@@ -11,39 +11,57 @@
       ref="menu"
       id="menu"
     >
-      <div class="px-4 py-3 hover:bg-slate-100" @click="$emit('copy')">
-        <p class="leading-5 font-bold text-nowrap">Copy message</p>
-      </div>
-      <div
-        v-if="isFromMe"
-        class="px-4 py-3 hover:bg-slate-100"
-        @click="$emit('delete')"
-      >
-        <p class="leading-5 font-bold text-nowrap">Delete</p>
-      </div>
+      <template v-for="action in menuList">
+        <div
+          v-if="action.isShow"
+          class="px-4 py-3 hover:bg-slate-100 active:bg-neutral-200 flex items-center"
+          @click="action.handler"
+        >
+          <div class="pr-3">
+            <FontAwesomeIcon :icon="action.icon" class="text-neutral-800" />
+          </div>
+          <span class="leading-5 font-bold text-nowrap">{{ action.name }}</span>
+        </div>
+      </template>
     </div>
   </TheTooltip>
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faReply, faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+
 import TheTooltip from "../TheTooltip.vue";
 
-import {
-  ref,
-  shallowRef,
-  computed,
-  onMounted,
-  onBeforeUnmount,
-  watch,
-  watchEffect,
-  toRef,
-} from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
-const props = defineProps(["more", "isFromMe"]);
-const emits = defineEmits(["close", "copy", "delete"]);
+const props = defineProps(["more", "isFromMe", "isSent"]);
+const emits = defineEmits(["close", "reply", "copy", "delete"]);
+
+const menuList = [
+  {
+    isShow: props.isSent,
+    handler: () => emits("reply"),
+    icon: faReply,
+    name: "Reply",
+  },
+  {
+    isShow: true,
+    handler: () => emits("copy"),
+    icon: faCopy,
+    name: "Copy message",
+  },
+  {
+    isShow: props.isFromMe,
+    handler: () => emits("delete"),
+    icon: faTrashCan,
+    name: "Delete",
+  },
+];
 
 const distance = ref({ right: 0, bottom: 0 });
 

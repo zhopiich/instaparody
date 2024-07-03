@@ -14,55 +14,72 @@
   >
     <div class="flex">
       <div
-        class="chatBubble overflow-hidden shadow-x"
+        class="shrink min-w-0 flex flex-col *:max-w-full"
         :class="[
-          isChained ? 'chained' : isFromMe ? 'fromMe  ' : 'fromOther  ',
-          isFromMe ? 'bg-blue-300/90' : 'bg-gray-200',
+          isFromMe ? '*:self-end' : '*:self-start',
           { grow: isThereImage },
         ]"
-        :id="messageId"
       >
-        <!-- img -->
-        <div
-          v-if="isThereImage"
-          class="image rounded-t-[inherit] cursor-pointer w-full aspect-square overflow-hidden relative"
-          :id="messageId + '-image'"
-          @click="messageStore.openImageViewer(message.image)"
-        >
-          <img
-            :src="message.image"
-            class="size-full object-cover"
-            alt="attached image"
-          />
+        <RepliedBubble
+          v-if="message.replyTo"
+          :message="message"
+          :isFromMe="isFromMe"
+        />
 
+        <!-- main bubble -->
+        <div
+          class="chatBubble overflow-hidden shadow-x relative"
+          :class="[
+            isChained ? 'chained' : isFromMe ? 'fromMe  ' : 'fromOther  ',
+            isFromMe ? 'bg-blue-400' : 'bg-gray-200',
+            { 'w-full': isThereImage },
+          ]"
+          :id="messageId"
+        >
+          <!-- img -->
           <div
-            class="magnifyingGlass absolute right-0 bottom-0 h-10 aspect-square rounded-full overflow-hidden backdrop-blur m-3 transition-transform duration-200"
+            v-if="isThereImage"
+            class="messageImage rounded-t-[inherit] cursor-pointer w-full aspect-square overflow-hidden relative"
+            :class="{ 'rounded-b-[inherit]': !message.content }"
+            :id="messageId + '-image'"
+            @click="messageStore.openImageViewer(message.image)"
           >
+            <img
+              :src="message.image"
+              class="size-full object-cover"
+              alt="attached image"
+            />
+
             <div
-              class="size-full flex justify-center items-center bg-white/25 hover:bg-white/65 *:hover:text-black active:bg-white/75 *:active:text-neutral-500 transition-colors"
+              class="magnifyingGlass absolute right-0 bottom-0 h-10 aspect-square rounded-full overflow-hidden backdrop-blur m-3 transition-transform duration-200"
             >
-              <FontAwesomeIcon
-                :icon="faMagnifyingGlassPlus"
-                class="fa-xl text-neutral-700"
-              />
+              <div
+                class="size-full flex justify-center items-center bg-white/25 hover:bg-white/65 *:hover:text-black active:bg-white/75 *:active:text-neutral-500 transition-colors"
+              >
+                <FontAwesomeIcon
+                  :icon="faMagnifyingGlassPlus"
+                  class="fa-xl text-neutral-700"
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- content -->
-        <div v-if="message.content" class="py-3 px-4">
-          <pre class="font-sans message-content leading-5">{{
-            message.content
-          }}</pre>
+          <!-- content -->
+          <div v-if="message.content" class="py-3 px-4">
+            <pre
+              class="font-sans leading-5 break-words whitespace-pre-line"
+              :class="[isFromMe ? 'text-white' : 'text-black']"
+              >{{ message.content }}</pre
+            >
+          </div>
         </div>
-
-        <!-- <div
-        class="absolute h-0 top-1/2 pointer-events-none"
-        id="seenBeacon"
-      ></div> -->
       </div>
 
-      <div class="self-center" :class="isFromMe ? 'pr-1 -order-1' : 'pl-1'">
+      <!-- more button -->
+      <div
+        class="shrink-0 self-center"
+        :class="isFromMe ? 'pr-1 -order-1' : 'pl-1'"
+      >
         <div class="relative" ref="more">
           <MoreButton
             @click="isShowMoreMenu = true"
@@ -77,7 +94,9 @@
               v-if="isShowMoreMenu"
               :more="more"
               :isFromMe="isFromMe"
+              :isSent="message.at"
               @close="isShowMoreMenu = false"
+              @reply="handleReply"
               @delete="handleDelete"
               @copy="handleCopy"
             />
@@ -85,6 +104,7 @@
         </div>
       </div>
     </div>
+
     <div class="chat-footer text-gray-400 flex min-h-0">
       <p>
         <time v-if="message.at && !isChained">
@@ -107,6 +127,7 @@ import { faMagnifyingGlassPlus } from "@fortawesome/free-solid-svg-icons";
 
 import MoreButton from "./MoreButton.vue";
 import MoreMenu from "./MoreMenu.vue";
+import RepliedBubble from "./RepliedBubble.vue";
 
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 
@@ -149,8 +170,28 @@ const handleDelete = () => {
   });
 };
 
+const handleReply = () => {
+  isShowMoreMenu.value = false;
+
+  // No reply to a message that has not been fully sent
+  if (!props.message.at) return;
+
+  messageStore.replyToMessage(
+    {
+      content: props.message.content || null,
+      image: props.message.image || null,
+    },
+    props.isFromMe
+  );
+
+  messageStore.input.focus();
+};
+
 const handleCopy = () => {
-  const copied = [props.message.image, props.message.content]
+  const copied = [
+    props.message.at ? props.message.image : null,
+    props.message.content,
+  ]
     .filter((i) => i)
     .join(" ");
 
@@ -345,7 +386,7 @@ onBeforeUnmount(() => {
   transform: translateY(calc(100% + 12px));
 }
 
-.image:hover .magnifyingGlass {
+.messageImage:hover .magnifyingGlass {
   transform: translateY(0);
 }
 </style>

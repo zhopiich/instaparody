@@ -204,6 +204,7 @@ const isThereNewFromOther = computed(
 );
 
 onBeforeRouteUpdate((to) => {
+  messageStore.resetReplied();
   messageStore.triggerUnSubMessages();
   messageStore.cleanChat();
   messageStore.resetNewMessages();
@@ -214,6 +215,7 @@ onBeforeRouteUpdate((to) => {
 });
 
 onBeforeRouteLeave(() => {
+  // messageStore.resetReplied();
   messageStore.triggerUnSubMessages();
   messageStore.cleanChat();
   messageStore.resetNewMessages();

@@ -403,36 +403,53 @@ export const useMessageStore = defineStore("message", () => {
     unSubMessages = messagesListener(chatId);
   };
 
+  const initialReplied = { content: null, image: null };
+  const repliedMessage = reactive({ ...initialReplied });
+
+  const isThereReplied = computed(() =>
+    ["content", "image"].some((type) => repliedMessage[type] !== null)
+  );
+
+  const replyToWho = ref(null);
+
+  const replyToMessage = ({ content = null, image = null } = {}, isFromMe) => {
+    if (!content && !image) return;
+
+    Object.assign(repliedMessage, { content, image });
+
+    replyToWho.value = isFromMe
+      ? userStore.user.displayName
+      : currentContact.value.displayName;
+  };
+
+  const resetReplied = () => {
+    if (isThereReplied.value) {
+      Object.assign(repliedMessage, initialReplied);
+    }
+
+    replyToWho.value = null;
+  };
+
   const sendMessage = async (content, image = null) => {
     if (!userStore.isLoggedIn) return;
 
-    let imageUrl = null;
-    if (image) {
-      imageUrl = await uploadFile(image, "messageImages/");
-    }
+    const imageUrl = image ? await uploadFile(image, "messageImages/") : null;
 
     const data = {
       from: userStore.user.uid,
       content,
-      image: imageUrl,
+      ...(imageUrl ? { image: imageUrl } : {}),
+      ...(isThereReplied.value ? { replyTo: { ...repliedMessage } } : {}),
       at: serverTimestamp(),
     };
 
-    const removeNullValue = (obj) => {
-      const result = {};
-      for (const key in obj) {
-        if (obj[key]) {
-          result[key] = obj[key];
-        }
-      }
-      return result;
-    };
+    resetReplied();
 
     const messagesRef = collection(db, "messages");
 
     return await addDoc(
       collection(messagesRef, currentChatId.value, "chat"),
-      removeNullValue(data)
+      data
     );
   };
 
@@ -613,10 +630,18 @@ export const useMessageStore = defineStore("message", () => {
     scrollbarWidth.value = width;
   };
 
+  const input = ref(null);
+  const setInput = (ele) => {
+    if (input.value === ele) return;
+    input.value = ele;
+  };
+
   // Reset all states when log out
   const reset = () => {
     triggerUnSubContacts();
     triggerUnSubMessages();
+
+    resetReplied();
 
     isExtended.value = false;
     contactsList.value = null;
@@ -661,6 +686,11 @@ export const useMessageStore = defineStore("message", () => {
     messagesListener,
     loadMessages,
     triggerUnSubMessages,
+    repliedMessage,
+    isThereReplied,
+    replyToWho,
+    replyToMessage,
+    resetReplied,
     sendMessage,
     updateLastMessage,
     appendLocalList,
@@ -691,6 +721,8 @@ export const useMessageStore = defineStore("message", () => {
     scrollbarWidth,
     setScrollbarWidth,
     lastMessagesAt,
+    input,
+    setInput,
     reset,
   };
 });
