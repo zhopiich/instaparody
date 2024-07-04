@@ -1,12 +1,30 @@
 <template>
   <div class="py-16">
-    <!-- <PostList :isError="!posts" :isPostsEmpty="posts?.length === 0"> -->
-    <PostList :postsStatus="postsStatus">
-      <PostItem v-for="post in posts" :post="post" :key="post.id" />
+    <div
+      v-if="['error', 'empty'].some((status) => postsStatus === status)"
+      class="font-sans text-lg text-zinc-500"
+    >
+      {{
+        {
+          error: "Sorry, something went wrong...",
+          empty: "No posts",
+        }[postsStatus]
+      }}
+    </div>
+
+    <PostList v-else>
+      <template v-if="postsStatus === 'loading'">
+        <PostItemLoader v-for="n in 3" :key="n" />
+      </template>
+
+      <template v-else>
+        <PostItem v-for="post in posts" :post="post" :key="post.id" />
+      </template>
     </PostList>
-    <PostDetails v-if="isShowPostDetails" />
-    <!-- <PostUpload v-if="isShowPostUpload" /> -->
   </div>
+
+  <PostDetails v-if="isShowPostDetails" />
+  <!-- <PostUpload v-if="isShowPostUpload" /> -->
 </template>
 
 <script setup>
@@ -16,6 +34,7 @@ import PostList from "../components/PostList.vue";
 import PostItem from "../components/PostItem.vue";
 import PostDetails from "../components/PostDetails.vue";
 // import PostUpload from "../components/PostUpload.vue";
+import PostItemLoader from "../components/PostItemLoader.vue";
 
 import { usePostStore } from "../stores/post";
 import { useUserStore } from "../stores/user";

@@ -1,11 +1,7 @@
 <template>
-  <div v-if="postsStatus === 'loading'" class="loading loading-dots loading-md">
-    <!-- Loading... -->
-  </div>
-  <div v-else-if="postsStatus === 'error'" class="error">Error</div>
-  <div v-else-if="postsStatus === 'empty'" class="nopost">No post</div>
-  <!-- <div v-else-if="isResultEmpty" class="noresult">No result</div> -->
-  <div v-else class="postList">
+  <div
+    class="postList flex flex-col gap-y-8 md:grid md:grid-cols-2 md:gap-8 2xl:grid-cols-3"
+  >
     <slot></slot>
   </div>
 </template>
@@ -15,23 +11,13 @@ defineProps({
   // isError: { type: Boolean, default: false },
   // isPostsEmpty: { type: Boolean, default: false },
   // isResultEmpty: { type: Boolean, default: false },
-  postsStatus: { type: String },
+  // postsStatus: { type: String },
 });
 </script>
 
 <style scoped>
-/* .loading, */
-.error,
-.nopost,
-.noresult {
-  @apply font-sans text-lg text-zinc-400;
-}
 .postList {
-  /* display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px; */
   /* width: fit-content; */
   max-width: 100dvw;
-  @apply flex flex-col gap-y-8 md:grid md:grid-cols-2 md:gap-8 2xl:grid-cols-3;
 }
 </style>
