@@ -158,6 +158,15 @@ const back = () => {
   }
 };
 
+watch(
+  () => postStore.documentTitle,
+  (newVal) => {
+    if (!newVal) return;
+    document.title = newVal;
+  },
+  { immediate: true }
+);
+
 onBeforeRouteUpdate((to) => {
   postStore.resetPostDetailsPage();
 

@@ -40,6 +40,7 @@ const routes = [
         // messageStore.enterChat(true);
       }
     },
+    meta: { title: "Messages" },
   },
   {
     path: "/post/:postId?",
@@ -81,6 +82,7 @@ const routes = [
       const postStore = usePostStore();
       postStore.getUsersLike(to.params.postId, { isToBeChecked: true });
     },
+    meta: { title: "Likes" },
   },
   {
     path: "/profile/edit",
@@ -93,6 +95,7 @@ const routes = [
         return { name: "home" };
       }
     },
+    meta: { title: "Edit profile" },
   },
   {
     path: "/change_password",
@@ -105,6 +108,7 @@ const routes = [
         return { name: "home" };
       }
     },
+    meta: { title: "Change password" },
   },
   {
     path: "/login",
@@ -117,6 +121,7 @@ const routes = [
         return { name: "home" };
       }
     },
+    meta: { title: "Login" },
   },
   {
     path: "/signup",
@@ -129,6 +134,7 @@ const routes = [
         return { name: "home" };
       }
     },
+    meta: { title: "Sign up" },
   },
   {
     path: "/:username/:tab?",
@@ -148,6 +154,7 @@ const routes = [
     path: "/:pathMatch(.*)*",
     name: "NotAvailable",
     component: () => import("./pages/NotAvailablePage.vue"),
+    meta: { title: "Page not found" },
   },
 ];
 
@@ -163,7 +170,28 @@ const router = createRouter({
   },
 });
 
+const name = "Instaparody";
+const getTitle = (route) => route + " • " + name;
+
 router.beforeEach(async (to, from) => {
+  if (to.name === "home") {
+    document.title = name;
+  }
+
+  if (to.meta.title) {
+    switch (to.name) {
+      case "messages":
+        if (!to.params.chatId) document.title = getTitle(to.meta.title);
+        break;
+      default:
+        document.title = getTitle(to.meta.title);
+    }
+  }
+
+  if (to.params.username) {
+    document.title = getTitle("@" + to.params.username);
+  }
+
   if (to.name === "profile" && to.params.username === "profile") {
     return {
       name: "NotAvailable",

@@ -203,13 +203,28 @@ const isThereNewFromOther = computed(
   () => isThereAnyNew.value && !areThereNews.value[currentContact.value.chatId]
 );
 
+watch(
+  () => currentContact.value,
+  (newVal) => {
+    if (newVal && newVal !== {}) {
+      document.title =
+        newVal.displayName + " @" + newVal.username + " • " + "Instaparody";
+    }
+  },
+  { immediate: true }
+);
+
 onBeforeRouteUpdate((to) => {
   messageStore.resetReplied();
   messageStore.triggerUnSubMessages();
   messageStore.cleanChat();
   messageStore.resetNewMessages();
 
-  if (!to.params.chatId) return;
+  if (!to.params.chatId) {
+    messageStore.setCurrentChat(null);
+    return;
+  }
+
   messageStore.setCurrentChat(to.params.chatId);
   messageStore.loadMessages(to.params.chatId);
 });
@@ -219,7 +234,7 @@ onBeforeRouteLeave(() => {
   messageStore.triggerUnSubMessages();
   messageStore.cleanChat();
   messageStore.resetNewMessages();
-  // messageStore.setCurrentChat(null);
+  messageStore.setCurrentChat(null);
 });
 </script>
 

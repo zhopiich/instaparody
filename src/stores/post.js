@@ -553,6 +553,18 @@ export const usePostStore = defineStore("post", () => {
     return postSnap.exists() ? postSnap.data() : "NoSuchPost";
   };
 
+  const documentTitle = computed(() => {
+    if (!postSnapshot.value) return;
+
+    return postSnapshot.value === "noSuchPost"
+      ? "Post not found" + " • " + "Instaparody"
+      : postSnapshot.value?.createdBy?.displayName +
+          " | " +
+          postSnapshot.value?.description +
+          " | " +
+          "Instaparody";
+  });
+
   return {
     isShowPostUpload,
     toggleShowPostUpload,
@@ -597,5 +609,6 @@ export const usePostStore = defineStore("post", () => {
     updateDescription,
     deleteImage,
     getPostById,
+    documentTitle,
   };
 });
