@@ -22,14 +22,16 @@
         $route.name !== 'comments' &&
         $route.name !== 'likes'
       "
-      class=""
+      class="mt-6 mb-2 flex justify-center z-0"
       :class="
         isMobile && $route.name !== 'login' && $route.name !== 'signup'
           ? 'mb-12'
           : 'mb-0'
       "
     >
-      &copy; 2023INSTAGRAM FROM MEGA
+      <span class="text-xs text-neutral-500"
+        >&copy; 2024 Instaparody from Mega</span
+      >
     </footer>
   </div>
 </template>
@@ -85,16 +87,4 @@ body {
   height: fit-content;
   box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.08);
 } */
-
-footer {
-  text-align: center;
-  margin-top: 24px;
-  padding-bottom: 8px;
-  color: #828282;
-  width: 100%;
-  /* position: absolute; */
-  /* bottom: 0; */
-  /* pointer-events: initial; */
-  z-index: 0;
-}
 </style>

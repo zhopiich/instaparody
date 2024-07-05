@@ -4,7 +4,7 @@
       class="sm:mt-8 w-screen sm:w-[420px] sm:border flex flex-col items-center"
     >
       <div class="mb-3 mt-14 sm:mt-16">
-        <img src="../assets/logo.svg" alt="" />
+        <Logo :fontSize="40" :lineHeight="54" />
       </div>
 
       <div class="w-full mt-6">
@@ -169,6 +169,7 @@
 import { signUp } from "../firebase/auth";
 import { isEmailValid, isUsernameValid } from "../utils/validation";
 
+import Logo from "../components/Logo.vue";
 import TheLabel from "../components/TheLabel.vue";
 import TheButton from "../components/TheButton.vue";
 

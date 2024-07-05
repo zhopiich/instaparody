@@ -14,7 +14,9 @@
           />
         </div>
       </div>
-      <div class="my-3"><img src="../assets/logo.svg" alt="" /></div>
+      <div class="my-3">
+        <Logo :fontSize="40" :lineHeight="54" />
+      </div>
 
       <div class="w-full mt-6">
         <form @submit.prevent>
@@ -113,6 +115,7 @@ import {
   faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 
+import Logo from "../components/Logo.vue";
 import TheLabel from "../components/TheLabel.vue";
 import TheButton from "../components/TheButton.vue";
 

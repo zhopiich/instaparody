@@ -11,9 +11,9 @@
       class="navbar px-4 lg:px-[10dvw] z-10"
       :class="{ '!shadow-none border-b': $route.name !== 'home' }"
     >
-      <router-link class="logo" to="/"
-        ><img src="../assets/logo.svg"
-      /></router-link>
+      <div class="flex">
+        <router-link to="/"><Logo /></router-link>
+      </div>
 
       <Search :direction="direction" :navbarPosition="navbarPosition" />
 
@@ -67,6 +67,7 @@ import { logOut } from "../firebase/auth";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
 
+import Logo from "./Logo.vue";
 import NavBarMobile from "./NavBar/NavBarMobile.vue";
 import TheAvatar from "./TheAvatar.vue";
 import NavBarSliding from "./NavBar/NavBarSliding.vue";
