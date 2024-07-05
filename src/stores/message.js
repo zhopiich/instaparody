@@ -59,7 +59,7 @@ export const useMessageStore = defineStore("message", () => {
   // };
 
   const currentContact = computed(() => {
-    if (!contactsList.value) return {};
+    if (!contactsList.value) return;
     return contactsList.value.find(
       (contact) => contact.chatId === currentChatId.value
     );

@@ -30,7 +30,7 @@
         <div
           class="chatBubble overflow-hidden shadow-x relative"
           :class="[
-            isChained ? 'chained' : isFromMe ? 'fromMe  ' : 'fromOther  ',
+            isChained ? 'chained' : isFromMe ? 'fromMe' : 'fromOther',
             isFromMe ? 'bg-blue-400' : 'bg-gray-200',
             { 'w-full': isThereImage },
           ]"
@@ -39,9 +39,10 @@
           <!-- img -->
           <div
             v-if="isThereImage"
-            class="messageImage rounded-t-[inherit] cursor-pointer w-full aspect-square overflow-hidden relative"
-            :class="{ 'rounded-b-[inherit]': !message.content }"
-            :id="messageId + '-image'"
+            class="messageImage cursor-pointer w-full aspect-square overflow-hidden relative"
+            :class="
+              message.content ? 'rounded-t-[inherit]' : 'rounded-[inherit]'
+            "
             @click="messageStore.openImageViewer(message.image)"
           >
             <img
@@ -67,7 +68,7 @@
           <!-- content -->
           <div v-if="message.content" class="py-3 px-4">
             <pre
-              class="font-sans leading-5 break-words whitespace-pre-line"
+              class="font-sans leading-6 break-words whitespace-pre-wrap"
               :class="[isFromMe ? 'text-white' : 'text-black']"
               >{{ message.content }}</pre
             >

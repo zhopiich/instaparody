@@ -19,10 +19,10 @@
       class="max-w-full rounded-3xl overflow-hidden bg-slate-100 px-4 pt-3 pb-8 mt-0.5 leading-4"
       :class="[isFromMe ? 'self-end' : 'self-start']"
     >
-      <div class="w-full flex gap-2">
+      <div class="flex gap-2">
         <div class="shrink min-w-0" v-if="message.replyTo.content">
           <span
-            class="break-words whitespace-pre-line text-neutral-700 text-sm"
+            class="break-words whitespace-pre-wrap text-neutral-700 text-sm"
             >{{ message.replyTo.content }}</span
           >
         </div>

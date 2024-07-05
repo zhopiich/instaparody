@@ -206,9 +206,13 @@ const isThereNewFromOther = computed(
 watch(
   () => currentContact.value,
   (newVal) => {
-    if (newVal && newVal !== {}) {
+    if (newVal) {
       document.title =
-        newVal.displayName + " @" + newVal.username + " • " + "Instaparody";
+        (newVal?.displayName ? newVal.displayName + " " : "") +
+        "@" +
+        newVal.username +
+        " • " +
+        "Instaparody";
     }
   },
   { immediate: true }
