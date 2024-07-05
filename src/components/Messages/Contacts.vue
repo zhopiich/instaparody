@@ -104,6 +104,8 @@ import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
 const enterChat = (chatId) => {
+  messageStore.noNeedToCheckChat();
+
   if (route.name === "messages") {
     router.push("/messages/" + chatId);
     return;

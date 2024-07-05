@@ -107,6 +107,7 @@ const intro = computed(() => postStore.infoUserCard.intro);
 
 const enterChat = async ({ ...userInfo }) => {
   const chatId = await messageStore.addContact({ ...userInfo });
+  messageStore.noNeedToCheckChat();
 
   router.push("/messages/" + chatId);
 };

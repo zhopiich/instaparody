@@ -337,8 +337,18 @@ export const useMessageStore = defineStore("message", () => {
       : null
   );
 
-  const isChatExists = async (chatId) => {
+  const isChatMine = ref(false);
+  const noNeedToCheckChat = () => {
+    isChatMine.value = true;
+  };
+
+  const isChatAvailable = async (chatId) => {
     if (!userStore.isLoggedIn) return false;
+
+    if (isChatMine.value) {
+      isChatMine.value = false;
+      return true;
+    }
 
     const chatRef = doc(db, "messages", chatId);
 
@@ -395,8 +405,8 @@ export const useMessageStore = defineStore("message", () => {
       triggerUnSubMessages();
     }
 
-    if (!(await isChatExists(chatId))) {
-      messagesList.value = "noSuchChat";
+    if (!(await isChatAvailable(chatId))) {
+      messagesList.value = "chatNotAvailable";
       return;
     }
 
@@ -683,6 +693,7 @@ export const useMessageStore = defineStore("message", () => {
     removeNewMessage,
     resetNewMessages,
     firstNewMessageId,
+    noNeedToCheckChat,
     messagesListener,
     loadMessages,
     triggerUnSubMessages,

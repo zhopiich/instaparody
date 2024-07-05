@@ -179,6 +179,7 @@ const addingSpin = ref(false);
 const contact = async ({ ...userInfo }) => {
   addingSpin.value = true;
   const chatId = await messageStore.addContact({ ...userInfo });
+  messageStore.noNeedToCheckChat();
 
   if (route.name === "messages") {
     router.push("/messages/" + chatId);

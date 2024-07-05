@@ -186,7 +186,7 @@ const messagesList = computed(() => messageStore.messagesList);
 watch(
   messagesList,
   (newVal) => {
-    if (newVal === "noSuchChat") {
+    if (newVal === "chatNotAvailable") {
       router.push("/messages");
     }
   },

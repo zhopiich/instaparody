@@ -166,6 +166,7 @@ const messageStore = useMessageStore();
 
 const enterChat = async ({ ...userInfo }) => {
   const chatId = await messageStore.addContact({ ...userInfo });
+  messageStore.noNeedToCheckChat();
 
   router.push("/messages/" + chatId);
 };
