@@ -1,7 +1,7 @@
 <template>
-  <div class="max-w-[468px] rounded-lg border flex flex-col">
+  <div class="w-full rounded-lg border flex flex-col">
     <div
-      class="animate-pulse shrink-0 rounded-t-[inherit] overflow-hidden w-screen aspect-square max-w-full flex"
+      class="animate-pulse shrink-0 rounded-t-[inherit] overflow-hidden w-full aspect-square"
     >
       <div class="bg-slate-200 size-full"></div>
     </div>

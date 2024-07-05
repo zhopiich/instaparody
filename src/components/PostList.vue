@@ -1,6 +1,6 @@
 <template>
   <div
-    class="postList flex flex-col gap-y-8 md:grid md:grid-cols-2 md:gap-8 2xl:grid-cols-3"
+    class="w-[min(470px,_100dvw)] md:w-fit flex flex-col gap-8 md:grid md:grid-cols-[repeat(2,_minmax(0,_470px))] 2xl:grid-cols-[repeat(3,_minmax(0,_470px))]"
   >
     <slot></slot>
   </div>
@@ -15,9 +15,4 @@ defineProps({
 });
 </script>
 
-<style scoped>
-.postList {
-  /* width: fit-content; */
-  max-width: 100dvw;
-}
-</style>
+<style scoped></style>

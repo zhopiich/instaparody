@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-[468px] rounded-lg shadow-custom flex flex-col">
+  <div class="w-full rounded-lg shadow-custom flex flex-col">
     <div
       class="shrink-0 w-full max-h-[585px] md:aspect-square rounded-t-[inherit] overflow-hidden relative"
     >
