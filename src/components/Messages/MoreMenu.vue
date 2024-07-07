@@ -34,7 +34,7 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 import TheTooltip from "../TheTooltip.vue";
 
-import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, onMounted, onBeforeMount, onBeforeUnmount } from "vue";
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
@@ -104,8 +104,11 @@ const onClick = (event) => {
   }
 };
 
-onMounted(() => {
+onBeforeMount(() => {
   distance.value = getDistance();
+});
+
+onMounted(() => {
   window.addEventListener("click", onClick);
 });
 
