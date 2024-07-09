@@ -26,7 +26,9 @@
                 :prevMessage="index > 0 ? list[index - 1] : null"
                 :nextMessage="index + 1 < list.length ? list[index + 1] : null"
                 :isBottom="isBottom"
+                :isThereNew="isThereNew"
                 @last-mounted.once="scrollDrivedByMessage"
+                @replied-mounted.once="scrollDrivedByReplied"
               />
             </template>
 
@@ -55,8 +57,16 @@ import MessageDragAndDrop from "./MessageDragAndDrop.vue";
 
 // const props = defineProps(["chatId"]);
 
-import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  reactive,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
+// import { storeToRefs } from "pinia";
 
 const route = useRoute();
 const router = useRouter();
@@ -180,8 +190,9 @@ const scrollDrivedByMessage = (isFromMe) => {
     scrollToBottom(firstElement(), firstPosition());
   }
 };
+const scrollDrivedByReplied = (toWhere) => {};
 const scrollDrivedByIndicator = () => {
-  if (isBottom.value) scrollToBottom();
+  // if (isBottom.value) scrollToBottom();
 };
 
 const setBottomObserver = () => {

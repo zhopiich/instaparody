@@ -73,9 +73,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const props = defineProps(["message", "isFromMe"]);
+// const emits = defineEmits(["mounted"]);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
+
+// import { onMounted } from "vue";
+
+// onMounted(() => {
+//   emits("mounted");
+// });
 </script>
 
 <style scoped>

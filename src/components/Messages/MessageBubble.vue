@@ -24,6 +24,7 @@
           v-if="message.replyTo"
           :message="message"
           :isFromMe="isFromMe"
+          @mounted="onRepliedMounted"
         />
 
         <!-- main bubble -->
@@ -126,11 +127,20 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlassPlus } from "@fortawesome/free-solid-svg-icons";
 
+import {
+  defineAsyncComponent,
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
+
 import MoreButton from "./MoreButton.vue";
-import MoreMenu from "./MoreMenu.vue";
 import RepliedBubble from "./RepliedBubble.vue";
 
-import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
+// const RepliedBubble = defineAsyncComponent(() => import("./RepliedBubble.vue"));
+const MoreMenu = defineAsyncComponent(() => import("./MoreMenu.vue"));
 
 const more = ref(null);
 const messageBlock = ref(null);
@@ -146,10 +156,12 @@ const props = defineProps([
   "prevMessage",
   "nextMessage",
   "isBottom",
+  // "isThereNew",
 ]);
+
 const messageId = props.message.id;
 
-const emits = defineEmits(["lastMounted", "imageMounted"]);
+const emits = defineEmits(["lastMounted", "repliedMounted"]);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
@@ -231,10 +243,10 @@ if (!props.message.at) {
   time = getTime(props.message.at.seconds);
 }
 
-let observer;
+let observer = null;
 const setObserver = (el) => {
   observer = new IntersectionObserver(
-    (entries, observer) => {
+    (entries) => {
       if (entries[0].isIntersecting) {
         if (messageStore.messagesReading.length > 0) {
           const count = messageStore.messagesReading.length;
@@ -251,7 +263,8 @@ const setObserver = (el) => {
             messageStore.updateAndReset();
           }
 
-          observer.unobserve(el);
+          observer.disconnect();
+          observer = null;
         }, 500);
       }
     },
@@ -289,6 +302,8 @@ const isChained = computed(() => setIsChained(props.nextMessage));
 const isNew = computed(() =>
   messageStore.newMessages.some((message) => message.id === messageId)
 );
+
+const onRepliedMounted = () => {};
 
 onMounted(() => {
   if (!props.isFromMe) {
@@ -331,12 +346,10 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  // if (observer) {
-  //   // observer.unobserve(bubble);
-  //   // console.log("obs exists");
-  //   observer.disconnect();
-  //   observer = null;
-  // }
+  if (observer !== null) {
+    observer.disconnect();
+    observer = null;
+  }
 
   // When the contact delete his/her message which is new to the user
   if (isNew.value && messageStore.isEnterChat) {
