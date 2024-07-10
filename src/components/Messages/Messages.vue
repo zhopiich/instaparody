@@ -26,7 +26,6 @@
                 :prevMessage="index > 0 ? list[index - 1] : null"
                 :nextMessage="index + 1 < list.length ? list[index + 1] : null"
                 :isBottom="isBottom"
-                :isThereNew="isThereNew"
                 @last-mounted.once="scrollDrivedByMessage"
                 @replied-mounted.once="scrollDrivedByReplied"
               />
@@ -35,7 +34,11 @@
             <div class="w-full h-2 absolute bottom-0" ref="bottomBeacon"></div>
           </div>
         </div>
-        <ToBottomButton :isBottom="isBottom" :messagesFlow="messagesFlow" />
+        <ToBottomButton
+          :isBottom="isBottom"
+          :messagesFlow="messagesFlow"
+          :isThereNew="isThereNew"
+        />
       </div>
 
       <div class="">

@@ -156,7 +156,6 @@ const props = defineProps([
   "prevMessage",
   "nextMessage",
   "isBottom",
-  // "isThereNew",
 ]);
 
 const messageId = props.message.id;
