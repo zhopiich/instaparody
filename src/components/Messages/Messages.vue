@@ -7,6 +7,7 @@
             <template v-for="(message, index) in list" :key="message.id">
               <DateTag
                 v-if="message.at"
+                :messageId="message.id"
                 :prevMessageAt="list[index - 1]?.at.seconds"
                 :messageAt="message.at.seconds"
                 :isFromMe="message.from === me"
@@ -25,9 +26,12 @@
                 :isLast="index + 1 === list.length"
                 :prevMessage="index > 0 ? list[index - 1] : null"
                 :nextMessage="index + 1 < list.length ? list[index + 1] : null"
+                :me="me"
                 :isBottom="isBottom"
+                :focusId="focusId"
                 @last-mounted.once="scrollDrivedByMessage"
                 @replied-mounted.once="scrollDrivedByReplied"
+                @focus-bubble="setFocus"
               />
             </template>
 
@@ -73,6 +77,11 @@ import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
+
+const focusId = ref(null);
+const setFocus = (messageId) => {
+  focusId.value = focusId.value !== messageId ? messageId : null;
+};
 
 // Width of the scrollbar
 const scrollStrip = ref(null);
@@ -228,6 +237,8 @@ if (route.name === "messages") {
       observerBottom.disconnect();
       //  Remains false
       isBottom.value = false;
+
+      focusId.value = null;
 
       setConditions();
       setBottomObserver();

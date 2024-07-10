@@ -1,18 +1,18 @@
 <template>
   <div
-    class="flex flex-col mt-0 px-4"
+    class="flex flex-col mt-0 px-4 *:cursor-pointer"
     :class="[
       // isFromMe ? '*:self-end' : '*:self-start',
       isFromMe ? '*:justify-end' : '*:justify-start',
       // { lastMessage: isLast },
-      isChained ? (isFromMe ? 'pb-0' : 'pb-1.5') : 'pb-6',
-      { 'bg-slate-100': isNew },
+      isChained ? 'pb-1.5' : 'pb-6',
+      { 'bg-slate-100/60': isNew },
     ]"
     @mouseenter="isShowMore = true"
     @mouseleave="isShowMore = false"
     ref="messageBlock"
   >
-    <div class="flex">
+    <div class="flex" @click="emits('focusBubble', messageId)">
       <div
         class="shrink min-w-0 flex flex-col *:max-w-full"
         :class="[
@@ -29,11 +29,15 @@
 
         <!-- main bubble -->
         <div
-          class="chatBubble overflow-hidden shadow-x relative"
+          class="chatBubble overflow-hidden shadow-x relative transition-colors"
           :class="[
             isChained ? 'chained' : isFromMe ? 'fromMe' : 'fromOther',
-            isFromMe ? 'bg-blue-400' : 'bg-gray-200',
+            isFromMe
+              ? 'bg-blue-400 hover:bg-[rgb(0,_131,_235)] active:bg-sky-700'
+              : 'bg-gray-200 hover:bg-neutral-300 active:bg-neutral-400',
             { 'w-full': isThereImage },
+            { 'bg-[rgb(0,_131,_235)]': isFocus && isFromMe },
+            { 'bg-neutral-300': isFocus && !isFromMe },
           ]"
           :id="messageId"
         >
@@ -44,7 +48,7 @@
             :class="
               message.content ? 'rounded-t-[inherit]' : 'rounded-[inherit]'
             "
-            @click="messageStore.openImageViewer(message.image)"
+            @click.stop="messageStore.openImageViewer(message.image)"
           >
             <img
               :src="message.image"
@@ -84,7 +88,7 @@
       >
         <div class="relative" ref="more">
           <MoreButton
-            @click="isShowMoreMenu = true"
+            @click.stop="isShowMoreMenu = true"
             class="transition-opacity"
             :class="[
               { 'pointer-events-none': isShowMoreMenu },
@@ -107,18 +111,21 @@
       </div>
     </div>
 
-    <div class="chat-footer text-gray-400 flex min-h-0">
-      <p>
-        <time v-if="message.at && !isChained">
+    <div
+      v-if="!isChained || isFocus"
+      class="chat-footer text-gray-500 mt-1.5 flex min-h-0"
+      @click="emits('focusBubble', messageId)"
+    >
+      <span v-if="isFromMe && !message.at">Sending...</span>
+      <span v-else>
+        <time v-if="message.at">
           {{ time }}
         </time>
-        <template v-if="isFromMe && message.at">
+        <template v-if="isFromMe && message.at && (!isSameState || isFocus)">
           <span>{{ " · " }}</span>
           {{ isSeen ? "Seen" : "Sent" }}
         </template>
-      </p>
-
-      <div v-if="isFromMe && !message.at">Sending...</div>
+      </span>
     </div>
   </div>
 </template>
@@ -155,12 +162,16 @@ const props = defineProps([
   "messagesViewport",
   "prevMessage",
   "nextMessage",
+  "me",
   "isBottom",
+  "focusId",
 ]);
 
 const messageId = props.message.id;
 
-const emits = defineEmits(["lastMounted", "repliedMounted"]);
+const isFocus = computed(() => props.focusId === messageId);
+
+const emits = defineEmits(["lastMounted", "repliedMounted", "focusBubble"]);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
@@ -213,9 +224,22 @@ const handleCopy = () => {
   });
 };
 
-const isSeen = computed(() => {
-  const byWho = !props.isFromMe ? "me" : "other";
+const isNextSeen = computed(() => {
+  if (!props.nextMessage) return;
+  if (props.nextMessage.from !== props.me) return;
+  if (!props.nextMessage.at || !messageStore.currentContact.lastSeeAt.other)
+    return;
 
+  return (
+    messageStore.currentContact.lastSeeAt.other.seconds >=
+    props.nextMessage.at.seconds
+  );
+});
+
+const isSeen = computed(() => {
+  if (isNextSeen.value) return true;
+
+  const byWho = !props.isFromMe ? "me" : "other";
   if (!props.message.at || !messageStore.currentContact.lastSeeAt[byWho])
     return;
 
@@ -278,25 +302,36 @@ const setObserver = (el) => {
 
 const getDate = (dateStr) => new Date(dateStr * 1000);
 
-// Group together the bubbles from the same user within the same minute
+// Group together the bubbles from the same user within the same minute,
+// and in the same state
 
-const setIsChained = (nextMessage) => {
-  if (
-    nextMessage &&
-    nextMessage.from === props.message.from &&
-    nextMessage.at
-  ) {
-    return (
-      messageStore.firstNewMessageId !== nextMessage.id &&
-      nextMessage.at.seconds - props.message.at.seconds < 60000 &&
-      getDate(props.message.at.seconds).getMinutes() ===
-        getDate(nextMessage.at.seconds).getMinutes()
-    );
-  }
+const isSameMinute = computed(
+  () =>
+    props.nextMessage &&
+    props.nextMessage.from === props.message.from &&
+    props.nextMessage.at &&
+    messageStore.firstNewMessageId !== props.nextMessage.id &&
+    props.nextMessage.at.seconds - props.message.at.seconds < 60000 &&
+    getDate(props.message.at.seconds).getMinutes() ===
+      getDate(props.nextMessage.at.seconds).getMinutes()
+);
 
-  return false;
-};
-const isChained = computed(() => setIsChained(props.nextMessage));
+const isSameState = computed(() => {
+  if (!props.isFromMe || props.nextMessage?.from !== props.me) return;
+
+  return (
+    (!props.message.at && !props.nextMessage.at) ||
+    isNextSeen.value ||
+    (!isSeen.value && !isNextSeen.value)
+  );
+});
+
+const isChained = computed(
+  () =>
+    isSameMinute.value &&
+    ((!props.isFromMe && props.nextMessage.from !== props.me) ||
+      isSameState.value)
+);
 
 const isNew = computed(() =>
   messageStore.newMessages.some((message) => message.id === messageId)

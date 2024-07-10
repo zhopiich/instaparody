@@ -1,6 +1,9 @@
 <template>
-  <!-- <div class="flex justify-center mb-2"> -->
-  <div v-if="!isSameAsPrev" class="flex justify-center mb-2">
+  <div
+    v-if="!isSameAsPrev"
+    class="flex justify-center pb-2"
+    :class="{ 'bg-slate-100/60': isNew && !isFirstNew }"
+  >
     <div
       class="rounded-full bg-yellow-300 w-fit h-6 px-3 flex justify-center items-center"
     >
@@ -21,11 +24,28 @@ import {
   toRef,
 } from "vue";
 
-const props = defineProps(["prevMessageAt", "messageAt", "isFromMe", "isLast"]);
+import { useMessageStore } from "../../stores/message";
+const messageStore = useMessageStore();
+
+const props = defineProps([
+  "messageId",
+  "prevMessageAt",
+  "messageAt",
+  "isFromMe",
+  "isLast",
+]);
 const thisTime = toRef(props.messageAt);
 const prevTime = computed(() => props.prevMessageAt);
 
 const emit = defineEmits(["lastMounted"]);
+
+const isNew = computed(() =>
+  messageStore.newMessages.some((message) => message.id === props.messageId)
+);
+
+const isFirstNew = computed(
+  () => messageStore.firstNewMessageId === props.messageId
+);
 
 const toDate = (time) => new Date(time * 1000);
 
