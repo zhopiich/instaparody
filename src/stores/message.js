@@ -79,13 +79,6 @@ export const useMessageStore = defineStore("message", () => {
   // Contact a user
 
   const userStore = useUserStore();
-  const getUserInfo = (allUserInfo, userId) => {
-    const { gender, intro, mobilePhone, website, ...userInfo } = {
-      ...allUserInfo,
-      userId,
-    };
-    return userInfo;
-  };
 
   const findChat = async ({ userId1, userId2 }) => {
     if (!userStore.isLoggedIn) return;
@@ -107,36 +100,17 @@ export const useMessageStore = defineStore("message", () => {
     return { isChatExists: list.length !== 0, chatId: list[0] };
   };
 
-  const addContact = async ({
-    username = null,
-    userId = null,
-    avatar = null,
-    displayName = null,
-  } = {}) => {
+  const addContact = async ({ username = null, userId = null } = {}) => {
     if (!userStore.isLoggedIn) return "";
 
-    const me = getUserInfo(userStore.userDoc, userStore.user.uid);
+    const me = {
+      username: userStore.userDoc.username,
+      userId: userStore.user.uid,
+    };
 
     if (username === me.username || userId === me.userId) return;
 
-    let contact;
-    if (!avatar || !displayName) {
-      const q = query(
-        collection(db, "users"),
-        where("username", "==", username)
-      );
-
-      const querySnap = await getDocs(q);
-
-      if (querySnap.docs.length === 0) {
-        console.log("No Such User");
-        return;
-      }
-
-      contact = getUserInfo(querySnap.docs[0].data(), querySnap.docs[0].id);
-    } else {
-      contact = { username, userId, avatar, displayName };
-    }
+    const contact = { username, userId };
 
     //
     const { isChatExists, chatId } = await findChat({
@@ -280,6 +254,34 @@ export const useMessageStore = defineStore("message", () => {
       console.log("**Contacts unsubbed");
     }
   };
+
+  watch(
+    () => contactsList.value,
+    (newVal, oldVal) => {
+      if (!newVal || !newVal?.length) return;
+      if (oldVal?.length && newVal.length === oldVal.length) return;
+
+      const getUserById = async (userId) => {
+        const docSnap = await getDoc(doc(db, "users", userId));
+
+        return docSnap.data();
+      };
+
+      const getContactsInfo = async () => {
+        const contactsInfo = await Promise.all(
+          newVal.map((user) => getUserById(user.userId))
+        );
+
+        contactsInfo.forEach((info, index) => {
+          ["avatar", "displayName"].forEach((item) => {
+            contactsList.value[index][item] = info[item];
+          });
+        });
+      };
+
+      getContactsInfo();
+    }
+  );
 
   const areThereNews = computed(() => {
     if (!contactsList.value) return {};
