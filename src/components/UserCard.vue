@@ -12,7 +12,7 @@
         <div class="avatar">
           <div class="w-16 rounded-full">
             <router-link :to="'/' + user.username">
-              <img :src="user.avatar" class="cursor-pointer" />
+              <TheAvatar :src="user?.avatar" />
             </router-link>
           </div>
         </div>
@@ -20,14 +20,16 @@
           class="grow flex flex-col justify-center items-start *:cursor-pointer"
         >
           <router-link :to="'/' + user.username">
-            <p class="font-bold">{{ user.displayName }}</p>
+            <p class="font-bold">{{ user.displayName || user.username }}</p>
             <p class="text-slate-500">@{{ user.username }}</p>
           </router-link>
         </div>
       </div>
 
-      <div class="px-4 pb-2 min-h-6 flex w-full items-center">
-        <pre class="whitespace-pre-wrap leading-5">{{ intro }}</pre>
+      <div class="px-4 pb-2 min-h-6 w-full">
+        <pre class="break-words whitespace-pre-wrap leading-5 font-sans">{{
+          intro
+        }}</pre>
       </div>
 
       <div class="flex items-center px-4 pb-4">
@@ -81,6 +83,7 @@
 
 <script setup>
 import TheTooltip from "./TheTooltip.vue";
+import TheAvatar from "./TheAvatar.vue";
 
 import { ref, computed, onMounted, toRefs, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";

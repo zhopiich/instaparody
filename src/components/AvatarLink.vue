@@ -6,10 +6,7 @@
         @mouseenter="mouseenter"
       >
         <router-link :to="'/' + user.username">
-          <img
-            :src="user.avatar"
-            class="cursor-pointer w-full h-full object-cover"
-          />
+          <TheAvatar :src="user?.avatar" />
         </router-link>
       </div>
       <Transition>
@@ -30,6 +27,7 @@
 import { getPosition } from "../modules/position.js";
 
 import UserCard from "./UserCard.vue";
+import TheAvatar from "./TheAvatar.vue";
 
 const props = defineProps({
   isShowCard: { type: Boolean, default: true },

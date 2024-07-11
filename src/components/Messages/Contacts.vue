@@ -14,8 +14,8 @@
           <div class="shrink-0 avatar">
             <div class="rounded-full h-12" @click.stop="">
               <router-link :to="'/' + contact.username">
-                <img :src="contact.avatar"
-              /></router-link>
+                <TheAvatar :src="contact?.avatar" />
+              </router-link>
             </div>
           </div>
 
@@ -88,6 +88,8 @@
 
 <script setup>
 import { dateToRelative } from "../../utils/date.js";
+
+import TheAvatar from "../TheAvatar.vue";
 
 import { ref, computed, onMounted } from "vue";
 import {

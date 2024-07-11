@@ -8,16 +8,16 @@
   >
     <div class="avatar">
       <div class="rounded-full" :style="{ width: widthAvatar * 4 + 'px' }">
-        <template v-if="user?.avatar">
+        <template v-if="user?.username">
           <router-link
             v-if="isLink"
             :to="profilePageURL(user.username)"
             @click.stop="$emit('linkClicked')"
           >
-            <img :src="user.avatar" class="cursor-pointer" />
+            <TheAvatar :src="user?.avatar" />
           </router-link>
 
-          <img v-else :src="user.avatar" />
+          <TheAvatar :src="user?.avatar" />
         </template>
 
         <div v-else class="size-full bg-neutral-200"></div>
@@ -27,7 +27,7 @@
     <div
       class="grow flex flex-col justify-center items-start *:whitespace-nowrap"
     >
-      <template v-if="user?.displayName">
+      <template v-if="user?.username">
         <router-link
           v-if="isLink"
           :to="profilePageURL(user.username)"
@@ -36,12 +36,12 @@
           <p
             class="font-bold text-pretty break-all cursor-pointer hover:text-zinc-400"
           >
-            {{ user.displayName }}
+            {{ user.displayName || user.username }}
           </p>
         </router-link>
 
         <p v-else class="font-bold text-pretty break-all">
-          {{ user.displayName }}
+          {{ user.displayName || user.username }}
         </p>
       </template>
       <div v-else class="mb-2 h-4 w-32 rounded bg-neutral-200"></div>
@@ -71,6 +71,7 @@
 import { getPosition } from "../modules/position.js";
 
 import UserCard from "./UserCard.vue";
+import TheAvatar from "./TheAvatar.vue";
 
 defineProps({
   isShowCard: { type: Boolean, default: true },

@@ -12,7 +12,7 @@
 
     <section
       v-if="user && user !== 'noSuchUser'"
-      class="shrink grow basis-0 md:grow-[2] md:basis-[30px] flex flex-col items-stretch"
+      class="shrink min-w-0 grow basis-0 md:grow-[2] md:basis-[30px] flex flex-col items-stretch"
     >
       <Teleport
         to="header > .avatar-row"
@@ -73,8 +73,10 @@
 
       <div class="h-0 mb-6 md:mb-5"></div>
 
-      <div class="leading-6">
-        <pre class="font-sans whitespace-pre-wrap">{{ user?.intro }}</pre>
+      <div class="">
+        <pre class="break-words whitespace-pre-wrap font-sans leading-6">{{
+          user?.intro
+        }}</pre>
       </div>
 
       <div class="flex" v-if="user?.website">

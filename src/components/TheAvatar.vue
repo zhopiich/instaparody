@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div class="flex" :class="{ '*:size-full': !width && !responsiveWidth }">
     <img
       v-if="src"
       :src="src"

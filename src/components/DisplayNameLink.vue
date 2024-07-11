@@ -10,7 +10,7 @@
           class="font-bold cursor-pointer select-none text-pretty break-all"
           :class="{ 'hover:text-zinc-400': isHoverHighlight }"
         >
-          {{ user.displayName }}
+          {{ user.displayName || user.username }}
         </p>
       </router-link>
 
