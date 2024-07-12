@@ -90,27 +90,36 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  const findUserByName = async (_username) => {
-    const q = query(
-      collection(db, "users"),
-      where("username", "==", _username)
-    );
+  const getUserInfo = async ({ username, userId }) => {
+    try {
+      if (username) {
+        const q = query(
+          collection(db, "users"),
+          where("username", "==", username)
+        );
+        const querySnap = await getDocs(q);
 
-    return await getDocs(q);
+        if (querySnap.docs.length === 1) {
+          return { ...querySnap.docs[0].data(), userId: querySnap.docs[0].id };
+        }
+      }
+
+      if (userId) {
+        const docSnap = await getDoc(doc(db, "users", userId));
+
+        if (docSnap.exists()) {
+          return { ...docSnap.data(), userId };
+        }
+      }
+
+      return "noSuchUser";
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const getOtherUserDoc = async (username) => {
-    const querySnap = await findUserByName(username);
-
-    if (querySnap.docs.length === 0) {
-      // console.log("No Such User");
-      otherUserDoc.value = "noSuchUser";
-    } else {
-      otherUserDoc.value = {
-        ...querySnap.docs[0].data(),
-        userId: querySnap.docs[0].id,
-      };
-    }
+    otherUserDoc.value = await getUserInfo({ username });
   };
 
   const initializeUser = async () => {
@@ -168,7 +177,8 @@ export const useUserStore = defineStore("user", () => {
     userDoc,
     otherUserDoc,
     getUserDoc,
-    findUserByName,
+    // findUserByName,
+    getUserInfo,
     getOtherUserDoc,
     initializeAuthListener,
     initializeUser,

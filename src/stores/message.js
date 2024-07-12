@@ -159,12 +159,84 @@ export const useMessageStore = defineStore("message", () => {
   //   }));
   // };
 
+  const getContactsInfo = async (newContactsList) => {
+    let contactsInfo;
+
+    try {
+      contactsInfo = await Promise.all(
+        newContactsList.map((user) =>
+          userStore.getUserInfo({ userId: user.userId })
+        )
+      );
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+
+    contactsInfo.forEach((info, index) => {
+      ["avatar", "displayName"].forEach((item) => {
+        contactsList.value[index][item] = info[item];
+      });
+    });
+  };
+
   const lastMessagesAt = ref({});
 
   const contactsListener = () => {
     if (!userStore.isLoggedIn) return;
 
     console.log("**Contacts Listening...");
+
+    const contactFormat = (chat) => {
+      const isMeFirst = chat.usersInfo[0].userId === userStore.user.uid;
+
+      return {
+        ...chat.usersInfo[isMeFirst ? 1 : 0],
+        // index: isMeFirst ? 1 : 0,
+        lastSeeAt: {
+          me: chat.lastSeeAt[chat.usersInfo[!isMeFirst ? 1 : 0].userId],
+          other: chat.lastSeeAt[chat.usersInfo[isMeFirst ? 1 : 0].userId],
+        },
+        lastMessage: chat.lastMessage,
+        chatId: chat.id,
+      };
+    };
+
+    const sortByLastSee = (contacts) => {
+      // get the last time the users saw the messages in each chat
+      const lastTime = (lastSeeAt) => {
+        let lastTimeList = [];
+        for (let user in lastSeeAt) {
+          lastTimeList.push(lastSeeAt[user]);
+        }
+
+        return lastTimeList.sort((a, b) => b - a)[0];
+      };
+
+      return contacts.sort(
+        (a, b) => lastTime(b.lastSeeAt) - lastTime(a.lastSeeAt)
+      );
+    };
+
+    const getLastAt = async (contact) => {
+      if (!contact.lastMessage) {
+        lastMessagesAt.value[contact.chatId] = "noMessages";
+        return;
+      }
+
+      if (
+        !lastMessagesAt.value[contact.chatId] ||
+        lastMessagesAt.value[contact.chatId].messageId !==
+          contact.lastMessage.id
+      ) {
+        const lastMessageRef = await getDoc(contact.lastMessage.docRef);
+
+        lastMessagesAt.value[contact.chatId] = {
+          messageId: contact.lastMessage.id,
+          at: lastMessageRef.data().at,
+        };
+      }
+    };
 
     const messagesRef = collection(db, "messages");
     const q = query(
@@ -177,60 +249,113 @@ export const useMessageStore = defineStore("message", () => {
       q,
       (snapshot) => {
         console.log("contacts listener triggered! ");
-        const results = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
 
-        contactsList.value = results.map((chat) => ({
-          ...(chat.usersInfo[0].userId === userStore.user.uid
-            ? {
-                ...chat.usersInfo[1],
-                index: 1,
-                lastSeeAt: {
-                  me: chat.lastSeeAt[chat.usersInfo[0].userId],
-                  other: chat.lastSeeAt[chat.usersInfo[1].userId],
-                },
+        if (contactsList.value === null) {
+          const results = snapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+          }));
+
+          const unsorted = results.map((contact) => contactFormat(contact));
+          contactsList.value = sortByLastSee(unsorted);
+
+          getContactsInfo(contactsList.value);
+
+          // Update lastMessagesAt if there's new
+          contactsList.value.forEach((contact) => {
+            getLastAt(contact);
+          });
+        } else {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+              const added = contactFormat(change.doc.data());
+              added.chatId = change.doc.id;
+
+              contactsList.value.unshift(added);
+              getContactsInfo([added]);
+              getLastAt(added);
+            }
+            if (change.type === "modified") {
+              const modified = change.doc.data();
+
+              const modifiedIndex = contactsList.value.findIndex(
+                (contact) => contact.chatId === change.doc.id
+              );
+
+              const oldLastAt =
+                lastMessagesAt.value[change.doc.id] === "noMessages"
+                  ? "noOldMessages"
+                  : lastMessagesAt.value[change.doc.id].at;
+              const oldLastMessageId = !contactsList.value[modifiedIndex]
+                .lastMessage
+                ? "noOldMessages"
+                : contactsList.value[modifiedIndex].lastMessage.id;
+
+              if (
+                oldLastMessageId === "noOldMessages" ||
+                !modified.lastMessage ||
+                oldLastMessageId !== modified.lastMessage.id
+              ) {
+                contactsList.value[modifiedIndex].lastMessage =
+                  modified.lastMessage;
               }
-            : {
-                ...chat.usersInfo[0],
-                index: 0,
-                lastSeeAt: {
-                  me: chat.lastSeeAt[chat.usersInfo[1].userId],
-                  other: chat.lastSeeAt[chat.usersInfo[0].userId],
-                },
-              }),
-          lastMessage: chat.lastMessage,
-          chatId: chat.id,
-        }));
 
-        // Update lastMessagesAt if there's new
-        contactsList.value.forEach(async (contact) => {
-          if (!contact.lastMessage) {
-            lastMessagesAt.value[contact.chatId] = "noMessages";
-            return;
-          }
+              contactsList.value[modifiedIndex].lastSeeAt = {
+                me: modified.lastSeeAt[userStore.user.uid],
+                other:
+                  modified.lastSeeAt[contactsList.value[modifiedIndex].userId],
+              };
 
-          // if (!lastMessagesAt.value[contact.chatId]) {
-          //   lastMessagesAt.value[contact.chatId] = {
-          //     messageId: null,
-          //     at: null,
-          //   };
-          // }
+              const raiseNewFromContact = () => {
+                if (
+                  !modified.lastMessage ||
+                  (modified.lastMessage &&
+                    oldLastMessageId === modified.lastMessage.id)
+                )
+                  return;
 
-          if (
-            !lastMessagesAt.value[contact.chatId] ||
-            lastMessagesAt.value[contact.chatId].messageId !==
-              contact.lastMessage.id
-          ) {
-            const lastMessageRef = await getDoc(contact.lastMessage.docRef);
+                const newLastAt =
+                  lastMessagesAt.value[change.doc.id] === "noMessages"
+                    ? "noNewMessages"
+                    : lastMessagesAt.value[change.doc.id].at;
 
-            lastMessagesAt.value[contact.chatId] = {
-              messageId: contact.lastMessage.id,
-              at: lastMessageRef.data().at,
-            };
-          }
-        });
+                const isNewFromContact =
+                  modified.lastMessage.from !== userStore.user.uid &&
+                  (oldLastAt === "noOldMessages" ||
+                    (newLastAt !== "noNewMessages" &&
+                      oldLastAt.seconds <= newLastAt.seconds));
+
+                if (isNewFromContact) {
+                  contactsList.value.unshift(
+                    contactsList.value.splice(modifiedIndex, 1)[0]
+                  );
+                }
+              };
+
+              const getLastBeforeRaise = async () => {
+                // if there's new or the last had been deleted
+                await getLastAt(contactsList.value[modifiedIndex]);
+                raiseNewFromContact();
+              };
+
+              getLastBeforeRaise();
+            }
+            if (change.type === "removed") {
+              // to be completed
+
+              enterChat(false);
+              resetNewMessages();
+              resetReplied();
+              triggerUnSubMessages();
+              cleanChat();
+              setCurrentChat(null);
+
+              contactsList.value = contactsList.value.filter(
+                (contact) => contact.chatId !== change.doc.id
+              );
+            }
+          });
+        }
       },
       (err) => {
         console.log(err.message);
@@ -254,34 +379,6 @@ export const useMessageStore = defineStore("message", () => {
       console.log("**Contacts unsubbed");
     }
   };
-
-  watch(
-    () => contactsList.value,
-    (newVal, oldVal) => {
-      if (!newVal || !newVal?.length) return;
-      if (oldVal?.length && newVal.length === oldVal.length) return;
-
-      const getUserById = async (userId) => {
-        const docSnap = await getDoc(doc(db, "users", userId));
-
-        return docSnap.data();
-      };
-
-      const getContactsInfo = async () => {
-        const contactsInfo = await Promise.all(
-          newVal.map((user) => getUserById(user.userId))
-        );
-
-        contactsInfo.forEach((info, index) => {
-          ["avatar", "displayName"].forEach((item) => {
-            contactsList.value[index][item] = info[item];
-          });
-        });
-      };
-
-      getContactsInfo();
-    }
-  );
 
   const areThereNews = computed(() => {
     if (!contactsList.value) return {};

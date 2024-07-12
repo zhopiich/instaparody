@@ -45,7 +45,7 @@
     <div v-else class="grow flex flex-col justify-center">
       <div class="flex">
         <div class="font-bold text-[20px] leading-6">
-          {{ currentContact.displayName }}
+          {{ currentContact?.displayName }}
         </div>
         <div class="ml-1.5 flex items-center pointer-events-none">
           <div
@@ -58,7 +58,7 @@
           ></div>
         </div>
       </div>
-      <div class="text-[13px] leading-4">@{{ currentContact.username }}</div>
+      <div class="text-[13px] leading-4">@{{ currentContact?.username }}</div>
     </div>
 
     <div v-if="!isEnterChat" class="flex items-center">
