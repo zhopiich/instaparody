@@ -73,6 +73,8 @@ const drop = (e) => {
   let imagesFile = [];
   imagesFile.push(...e.dataTransfer.files);
 
+  if (imagesFile.length === 0) return;
+
   if (imagesFile.length > 1 || messageStore.imagePreview) {
     alertStore.addAlert({ content: "Only 1 photo could be uploaded." });
     return;
