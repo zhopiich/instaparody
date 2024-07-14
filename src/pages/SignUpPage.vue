@@ -302,10 +302,9 @@ const handleSignUp = async () => {
   isLoading.value = true;
 
   const userStore = useUserStore();
-  const querySnap = await userStore.findUserByName(username.value);
-  const doesUserExist = querySnap.docs.length !== 0;
+  const userSnap = await userStore.getUserInfo({ username: username.value });
 
-  if (doesUserExist) {
+  if (userSnap !== "noSuchUser") {
     usernameErrorType.value = "inUse";
     isLoading.value = false;
     return;
