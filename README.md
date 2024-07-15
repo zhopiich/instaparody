@@ -4,37 +4,42 @@ An Instagram clone integrated with a clone of Twitter's direct messages
 
 ## Overview
 
-Create new posts with attached photos, and like, save, or comment on posts just like on Instagram. Send private messages to your contacts just as on Twitter.
+Create new posts with attached photos, and like, save, or comment on posts just like on Instagram.
+Send private messages to your contacts just as on Twitter.
+
+![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fhome.jpeg?alt=media&token=d10173ec-3d14-43b7-9951-0b7c64de9223)
+
+![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fmobiles.png?alt=media&token=cae753d2-010b-4d02-b94f-13a29fd00528)
 
 ### Live demo: https://
 
 ## Features
 
-### Drag and drop photos to include them in your post
+#### Drag and drop photos to include them in your post
 
-![](gif)
+![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fpost.gif?alt=media&token=7e00e841-a638-4a20-a68b-bbc98a794196)
 
-### Edit or delete your posts
+#### Edit or delete your posts
 
-![](gif)
+![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fedit.gif?alt=media&token=8a66441c-1ffc-4cbc-b484-67a7fa6b2d7f)
 
-### Like, save, or leave comments on any posts
+#### Like, save, or leave comments on any post
 
-![](gif)
+![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fcomment.gif?alt=media&token=231667af-4530-4ac7-8497-6c16cda5c2fa)
 
-### Make contact with other users through their posts, profile page, or by searching for them
+#### Make contact with other users through their posts, profile page, or by searching for them
 
-![](gif)
+![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fcontact.gif?alt=media&token=7a4d453e-dbf1-477e-89aa-7867e20b40d1)
 
-### Drag and drop a photo to send it with a message to your contacts
+#### Drag and drop a photo to send it with a message to your contacts
 
-![](gif)
+![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fsendphoto.gif?alt=media&token=bd35d167-68cb-4bcb-ac67-3b06159279f6)
 
-### Customize your profile by adding a profile photo, updating your introduction, and selecting your preferences
+#### Customize your profile by adding a profile photo, updating your introduction, and selecting your preferences
 
-![](gif)
+![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fprofile.gif?alt=media&token=0e1ad974-a644-4c86-a796-cd2c206985e7)
 
-### Others
+#### Others
 
 - All pages and modals are designed to be responsive across all screen sizes.
 - Each profile page, chat with contacts, and post has a unique route path.
@@ -45,26 +50,26 @@ Create new posts with attached photos, and like, save, or comment on posts just 
 
 ## Technique
 
-#### Core
+### Core
 
 - Vue 3
 - Vue Router
 - Pinia
 
-#### Appearance
+### Appearance
 
 - Tailwind CSS
 - Font Awesome
 
-#### Backend Database
+### Backend Database
 
-##### Firebase 10
+#### Firebase 10
 
 - Firestore
 - Storage
 - Authentication
 
-#### Build tool
+### Build tool
 
 Vite
 
