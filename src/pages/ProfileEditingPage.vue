@@ -121,6 +121,9 @@ import { updateUserDoc } from "../firebase/firestore.js";
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 
+import { useAlertStore } from "../stores/alert";
+const alertStore = useAlertStore();
+
 const userDoc = computed(() => userStore.userDoc);
 const user = computed(() => userStore.user);
 
@@ -269,8 +272,17 @@ const handleUpdateUser = async () => {
   const trimmedProfile = trimProfile(profileData);
   const updatedProfile = filterUpdated(trimmedProfile);
 
-  await updateUserDoc(userStore.user.uid, updatedProfile);
-  await userStore.getUserDoc();
+  try {
+    await updateUserDoc(userStore.user.uid, updatedProfile);
+    await userStore.getUserDoc();
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+
+  alertStore.addAlert({
+    content: "Your profile has been updated.",
+  });
 
   router.push("/" + userDoc.value.username);
 };

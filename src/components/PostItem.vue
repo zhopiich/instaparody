@@ -100,13 +100,7 @@
         <p v-else @click="showComments(post.id)">
           {{
             "View " +
-            `${
-              post.comments === 1
-                ? "the "
-                : post.comments === 2
-                ? "both "
-                : "all " + post.comments + " "
-            }` +
+            `${post.comments === 1 ? "the " : "all " + post.comments + " "}` +
             "comment" +
             `${post.comments > 1 ? "s" : ""}`
           }}

@@ -180,8 +180,6 @@
                         `${
                           post.comments === 1
                             ? "the "
-                            : post.comments === 2
-                            ? "both "
                             : "all " + post.comments + " "
                         }` +
                         "comment" +
