@@ -7,37 +7,53 @@ An Instagram clone integrated with a clone of Twitter's direct messages
 Create new posts with attached photos, and like, save, or comment on posts just like on Instagram.
 Send private messages to your contacts just as on Twitter.
 
-![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fhome.jpeg?alt=media&token=d10173ec-3d14-43b7-9951-0b7c64de9223)
+![](/public/readme/home.png)
 
-![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fmobiles.png?alt=media&token=cae753d2-010b-4d02-b94f-13a29fd00528)
+![](/public/readme/mobiless.png)
 
 ### Live demo: https://
+
+The demo accounts:
+
+```
+demo_01@email.com
+demo_02@email.com
+demo_03@email.com
+```
+
+The password for each account:
+
+```
+00000000
+```
+
+or register with an email address without the need for verification.
 
 ## Features
 
 #### Drag and drop photos to include them in your post
 
-![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fpost.gif?alt=media&token=7e00e841-a638-4a20-a68b-bbc98a794196)
+![](/public/readme/post.gif)
 
 #### Edit or delete your posts
 
-![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fedit.gif?alt=media&token=8a66441c-1ffc-4cbc-b484-67a7fa6b2d7f)
+![](/public/readme/edit.gif)
 
 #### Like, save, or leave comments on any post
 
-![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fcomment.gif?alt=media&token=231667af-4530-4ac7-8497-6c16cda5c2fa)
+![](/public/readme/comment.gif)
 
 #### Make contact with other users through their posts, profile page, or by searching for them
 
-![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fcontact.gif?alt=media&token=7a4d453e-dbf1-477e-89aa-7867e20b40d1)
+![](/public/readme/contact.gif)
 
 #### Drag and drop a photo to send it with a message to your contacts
 
-![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fsendphoto.gif?alt=media&token=bd35d167-68cb-4bcb-ac67-3b06159279f6)
+![](/public/readme/sendphoto.gif)
 
 #### Customize your profile by adding a profile photo, updating your introduction, and selecting your preferences
 
-![](https://firebasestorage.googleapis.com/v0/b/instagram-clone-d67da.appspot.com/o/readme%2Fprofile.gif?alt=media&token=0e1ad974-a644-4c86-a796-cd2c206985e7)
+![](/public/readme/profile.gif)
 
 #### Others
 
