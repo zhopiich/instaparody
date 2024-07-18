@@ -12,7 +12,7 @@
     @mouseleave="isShowMore = false"
     ref="messageBlock"
   >
-    <div class="flex" @click="emits('focusBubble', messageId)">
+    <div class="flex" @click.self="emits('focusBubble', messageId)">
       <div
         class="shrink min-w-0 flex flex-col *:max-w-full"
         :class="[
@@ -36,10 +36,11 @@
               ? 'bg-blue-400 hover:bg-[rgb(0,_131,_235)] active:bg-sky-700'
               : 'bg-gray-200 hover:bg-neutral-300 active:bg-neutral-400',
             { 'w-full': isThereImage },
-            { 'bg-[rgb(0,_131,_235)]': isFocus && isFromMe },
+            { '!bg-[rgb(0,_131,_235)]': isFocus && isFromMe },
             { 'bg-neutral-300': isFocus && !isFromMe },
           ]"
           :id="messageId"
+          @click="emits('focusBubble', messageId)"
         >
           <!-- img -->
           <div
@@ -88,7 +89,7 @@
       >
         <div class="relative" ref="more">
           <MoreButton
-            @click.stop="isShowMoreMenu = true"
+            @click="isShowMoreMenu = true"
             class="transition-opacity"
             :class="[
               { 'pointer-events-none': isShowMoreMenu },
