@@ -13,6 +13,7 @@
           <div
             v-for="item in menuList"
             class="h-full aspect-square flex justify-center items-center *:select-none"
+            :class="{ relative: item.name === 'Messages' }"
           >
             <div
               class="h-9 aspect-square rounded-full overflow-hidden"
@@ -39,6 +40,18 @@
                   class="text-lg"
                   :class="item.isActive ? 'text-black' : 'text-neutral-400'"
                 />
+              </div>
+
+              <div
+                v-if="item.name === 'Messages'"
+                class="absolute top-1.5 right-1.5 pointer-events-none"
+              >
+                <Transition>
+                  <div
+                    v-show="route.name !== 'messages' && isThereNewMessage"
+                    class="w-2 aspect-square bg-blue-400 rounded-full"
+                  ></div>
+                </Transition>
               </div>
             </div>
           </div>
@@ -92,9 +105,16 @@ const route = useRoute();
 import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
+import { useMessageStore } from "../../stores/message";
+const messageStore = useMessageStore();
+
 const props = defineProps(["avatar", "profilePageURL", "isLoggedIn"]);
 
 import { ref, computed } from "vue";
+
+const isThereNewMessage = computed(() =>
+  Object.values(messageStore.areThereNews).some((bool) => bool)
+);
 
 const navbarHeight = ref(48);
 
@@ -154,5 +174,15 @@ body {
 
 .full-platform {
   height: calc(100dvh - v-bind(navbarHeight + "px") - 1px);
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: scale 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v-enter-from,
+.v-leave-to {
+  scale: 0;
 }
 </style>

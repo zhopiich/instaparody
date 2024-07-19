@@ -54,13 +54,13 @@
                     </time>
                   </div>
                 </div>
-                <div
-                  v-if="areThereNews[contact.chatId]"
-                  class="flex items-center ml-auto mr-3"
-                >
-                  <div
-                    class="w-[10px] aspect-square bg-blue-400 rounded-full"
-                  ></div>
+                <div class="flex items-center ml-auto">
+                  <Transition>
+                    <div
+                      v-show="areThereNews[contact.chatId]"
+                      class="w-[10px] aspect-square bg-blue-400 rounded-full mx-3"
+                    ></div>
+                  </Transition>
                 </div>
               </div>
 
@@ -143,4 +143,14 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: scale 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v-enter-from,
+.v-leave-to {
+  scale: 0;
+}
+</style>

@@ -100,10 +100,13 @@
                           class="fa-lg scale-90"
                         />
                       </div>
-                      <div
-                        v-if="isThereNewFromOther"
-                        class="absolute top-1 right-1 h-[9px] aspect-square bg-blue-400 rounded-full border border-white pointer-events-none"
-                      ></div>
+
+                      <Transition>
+                        <div
+                          v-if="isThereNewFromOther"
+                          class="absolute top-1 right-1 h-[9px] aspect-square bg-blue-400 rounded-full border border-white pointer-events-none"
+                        ></div>
+                      </Transition>
                     </div>
                   </div>
 
@@ -257,5 +260,15 @@ onBeforeRouteLeave(() => {
 
 :deep(#messagesFlow) {
   padding-top: 53px;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: scale 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v-enter-from,
+.v-leave-to {
+  scale: 0;
 }
 </style>

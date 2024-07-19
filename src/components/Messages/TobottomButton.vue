@@ -1,5 +1,5 @@
 <template>
-  <Transition>
+  <Transition name="button">
     <div
       v-if="isShow"
       class="absolute w-full bottom-0 mb-2 flex justify-center pointer-events-none *:pointer-events-auto"
@@ -13,10 +13,12 @@
           class="fa-lg scale-95 text-blue-500 pointer-events-none"
         />
 
-        <div
-          v-if="isThereNew"
-          class="absolute top-0 right-0 h-2 aspect-square rounded-full bg-blue-400 pointer-events-none"
-        ></div>
+        <Transition name="dot">
+          <div
+            v-if="isThereNew"
+            class="absolute top-0 right-0 h-2 aspect-square rounded-full bg-blue-400 pointer-events-none"
+          ></div>
+        </Transition>
       </div>
     </div>
   </Transition>
@@ -54,26 +56,36 @@ const goToBottom = () => {
 </script>
 
 <style scoped>
-.v-enter-active {
+.button-enter-active {
   transition: opacity 0.3s ease;
 }
 
-.v-leave-active {
+.button-leave-active {
   transition: opacity 0.2s ease;
 }
 
-.v-enter-from,
-.v-leave-to {
+.button-enter-from,
+.button-leave-to {
   opacity: 0;
 }
 
-.v-enter-to,
-.v-leave-from {
+.button-enter-to,
+.button-leave-from {
   opacity: 1;
 }
 
 .shadow-x {
   box-shadow: rgba(101, 119, 134, 0.15) 0px 0px 8px,
     rgba(101, 119, 134, 0.1) 0px 1px 3px 1px;
+}
+
+.dot-enter-active,
+.dot-leave-active {
+  transition: scale 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dot-enter-from,
+.dot-leave-to {
+  scale: 0;
 }
 </style>
