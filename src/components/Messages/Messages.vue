@@ -32,6 +32,7 @@
                 @last-mounted.once="scrollDrivedByMessage"
                 @replied-mounted.once="scrollDrivedByReplied"
                 @focus-bubble="setFocus"
+                @delete="confirmDelete"
               />
             </template>
 
@@ -51,6 +52,12 @@
       <ImageViewer v-if="messageStore.isShowImageViewer" />
     </div>
   </MessageDragAndDrop>
+
+  <ConfirmDelete
+    v-if="isShowConfirmDelete"
+    @delete="handleDelete"
+    @close="isShowConfirmDelete = false"
+  />
 </template>
 
 <script setup>
@@ -71,7 +78,13 @@ import {
   onBeforeUnmount,
   watch,
   reactive,
+  defineAsyncComponent,
 } from "vue";
+
+const ConfirmDelete = defineAsyncComponent(() =>
+  import("./ConfirmDeleteMessage.vue")
+);
+
 import { useRoute, useRouter } from "vue-router";
 // import { storeToRefs } from "pinia";
 
@@ -81,6 +94,19 @@ const router = useRouter();
 const focusId = ref(null);
 const setFocus = (messageId) => {
   focusId.value = focusId.value !== messageId ? messageId : null;
+};
+
+const isShowConfirmDelete = ref(false);
+const toBeDeleted = ref(null);
+
+const confirmDelete = ({ messageId, imageUrl, isLast }) => {
+  toBeDeleted.value = { messageId, imageUrl, isLast };
+  isShowConfirmDelete.value = true;
+};
+
+const handleDelete = () => {
+  messageStore.deleteMessage(toBeDeleted.value);
+  isShowConfirmDelete.value = false;
 };
 
 // Width of the scrollbar

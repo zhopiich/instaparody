@@ -118,8 +118,13 @@ import {
 import TheModal from "../TheModal.vue";
 import TheIcon from "../TheIcon.vue";
 import TheButton from "../TheButton.vue";
-import ConfirmModal from "./ConfirmModal.vue";
 import ImageCarousel from "../ImageCarousel.vue";
+
+import { ref, computed, defineAsyncComponent } from "vue";
+
+const ConfirmModal = defineAsyncComponent(() =>
+  import("./ConfirmDeleteOrDiscard.vue")
+);
 
 const props = defineProps(["postId", "desc", "images"]);
 
@@ -130,8 +135,6 @@ const postStore = usePostStore();
 
 import { useAlertStore } from "../../stores/alert";
 const alertStore = useAlertStore();
-
-import { ref, computed } from "vue";
 
 const isUploading = ref(false);
 const isUploadFailed = ref(false);

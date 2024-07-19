@@ -46,8 +46,20 @@
 </template>
 
 <script setup>
+import {
+  ref,
+  computed,
+  onMounted,
+  toRefs,
+  onBeforeMount,
+  defineAsyncComponent,
+} from "vue";
+
 import TheModal from "../TheModal.vue";
-import ConfirmModal from "./ConfirmModal.vue";
+
+const ConfirmModal = defineAsyncComponent(() =>
+  import("./ConfirmDeleteOrDiscard.vue")
+);
 
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
@@ -62,8 +74,6 @@ const postStore = usePostStore();
 const props = defineProps(["postId", "images", "prevPath"]);
 
 const emits = defineEmits(["edit", "close"]);
-
-import { ref, computed, onMounted, toRefs, onBeforeMount } from "vue";
 
 const isShowConfirm = ref(false);
 

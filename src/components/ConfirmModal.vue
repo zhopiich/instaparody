@@ -4,13 +4,13 @@
       <div class="menuFrame">
         <div class="flex flex-col">
           <div class="mx-8 mt-8 mb-4 flex flex-col">
-            <span class="h-[15px] text-xl leading-[25px] text-center">{{
-              display.header
-            }}</span>
+            <span class="h-[15px] text-xl leading-[25px] text-center"
+              ><slot name="header"></slot
+            ></span>
             <span
               class="pt-4 text-sm leading-[18px] text-center text-neutral-500"
-              >{{ display.content }}</span
-            >
+              ><slot name="content"></slot
+            ></span>
           </div>
 
           <div
@@ -18,11 +18,11 @@
           >
             <div
               class="h-12 border-t flex justify-center items-center cursor-pointer"
-              @click="emits('confirm')"
+              @click="emits('action')"
             >
-              <span class="text-sm font-bold text-red-600">{{
-                display.action
-              }}</span>
+              <span class="text-sm font-bold text-red-600"
+                ><slot name="action"></slot
+              ></span>
             </div>
 
             <div
@@ -39,27 +39,12 @@
 </template>
 
 <script setup>
-import TheModal from "../TheModal.vue";
+import TheModal from "./TheModal.vue";
 
 const props = defineProps(["type"]);
-const emits = defineEmits(["close", "confirm"]);
+const emits = defineEmits(["action", "close"]);
 
 import { ref, computed } from "vue";
-
-const typeList = {
-  delete: {
-    header: "Delete post?",
-    content: "Are you sure you want to delete this post?",
-    action: "Delete",
-  },
-  discard: {
-    header: "Discard changes?",
-    content: "If you leave, your edits won't be saved.",
-    action: "Discard",
-  },
-};
-
-const display = computed(() => typeList[props.type]);
 </script>
 
 <style scoped>

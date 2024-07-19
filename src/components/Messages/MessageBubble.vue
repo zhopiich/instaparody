@@ -172,7 +172,12 @@ const messageId = props.message.id;
 
 const isFocus = computed(() => props.focusId === messageId);
 
-const emits = defineEmits(["lastMounted", "repliedMounted", "focusBubble"]);
+const emits = defineEmits([
+  "lastMounted",
+  "repliedMounted",
+  "focusBubble",
+  "delete",
+]);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
@@ -187,7 +192,9 @@ import { useAlertStore } from "../../stores/alert";
 const alertStore = useAlertStore();
 
 const handleDelete = () => {
-  messageStore.deleteMessage({
+  isShowMoreMenu.value = false;
+
+  emits("delete", {
     messageId,
     imageUrl: props.message.image,
     isLast: props.isLast,
