@@ -235,7 +235,9 @@ export const usePostStore = defineStore("post", () => {
     }
 
     const imagesUrl = await Promise.all(
-      images.map((image) => uploadFile(image))
+      images.map((image) =>
+        uploadFile(image, "images/" + userStore.userDoc.username + "/")
+      )
     );
 
     const docRef = await addPost({

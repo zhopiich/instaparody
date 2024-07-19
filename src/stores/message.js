@@ -542,7 +542,12 @@ export const useMessageStore = defineStore("message", () => {
   const sendMessage = async (content, image = null) => {
     if (!userStore.isLoggedIn) return;
 
-    const imageUrl = image ? await uploadFile(image, "messageImages/") : null;
+    const imageUrl = image
+      ? await uploadFile(
+          image,
+          "messageImages/" + userStore.userDoc.username + "/"
+        )
+      : null;
 
     const data = {
       from: userStore.user.uid,

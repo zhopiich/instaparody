@@ -84,7 +84,10 @@ const uploadAvatar = async (e) => {
 
   if (isShowMenu.value) isShowMenu.value = false;
 
-  const avatarUrl = await uploadFile(imageFile, "avatars/");
+  const avatarUrl = await uploadFile(
+    imageFile,
+    "avatars/" + userStore.userDoc.username + "/"
+  );
 
   await Promise.all(
     [
