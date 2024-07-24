@@ -57,6 +57,8 @@ const mouseenter = () => {
   if (!props.isShowCard) return;
 
   delay = setTimeout(function () {
+    if (!target.value) return;
+
     const position = getPosition(target.value);
     bottom.value = position.bottom;
     right.value = position.right;

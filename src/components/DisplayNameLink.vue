@@ -53,6 +53,8 @@ let delay;
 
 const mouseenter = () => {
   delay = setTimeout(function () {
+    if (!target.value) return;
+
     const position = getPosition(target.value);
     bottom.value = position.bottom;
     right.value = position.right;
