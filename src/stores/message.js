@@ -775,6 +775,18 @@ export const useMessageStore = defineStore("message", () => {
     isShowSearch.value = false;
   };
 
+  // emoji picker data
+  const emojiIndex = ref(null);
+
+  const importEmojiData = async () => {
+    const [data, { EmojiIndex }] = await Promise.all([
+      import("emoji-mart-vue-fast/data/twitter.json"),
+      import("emoji-mart-vue-fast/src"),
+    ]);
+
+    emojiIndex.value = new EmojiIndex(data.default);
+  };
+
   return {
     isExtended,
     toggle,
@@ -839,5 +851,7 @@ export const useMessageStore = defineStore("message", () => {
     input,
     setInput,
     reset,
+    emojiIndex,
+    importEmojiData,
   };
 });

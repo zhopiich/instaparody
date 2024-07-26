@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col inputHeight">
+  <div class="flex flex-col inputHeight relative">
     <div class="grow shrink overflow-auto">
       <ImagePreview
         v-if="messageStore.imagePreview"
@@ -16,7 +16,7 @@
         <!-- image input -->
         <div class="shrink flex justify-start items-center">
           <label
-            class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-blue-300/50 transition-colors"
+            class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-blue-300/30 active:bg-blue-300/70 transition-colors"
           >
             <FontAwesomeIcon
               :icon="faImage"
@@ -33,6 +33,20 @@
           </label>
         </div>
 
+        <!-- emoji btn -->
+        <div v-if="!isMobile" class="shrink flex justify-start items-center">
+          <div
+            class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-blue-300/30 active:bg-blue-300/70 transition-colors"
+            @click="togglePicker"
+            ref="emojiButton"
+          >
+            <FontAwesomeIcon
+              :icon="faFaceSmile"
+              class="fa-lg scale-95 text-blue-500"
+            />
+          </div>
+        </div>
+
         <!-- text input -->
         <div class="grow w-0 min-h-fit flex flex-col justify-center">
           <label class="px-3">
@@ -47,7 +61,8 @@
                 aria-multiline="true"
                 @input="handleInput"
                 @paste="handlePaste"
-                @keypress.enter="handleEnter"
+                @blur="handleBlur"
+                @keydown.enter="handleEnter"
                 ref="contentEditor"
               ></div>
             </div>
@@ -57,7 +72,7 @@
         <!-- send btn -->
         <div class="shrink flex justify-start items-center">
           <div
-            class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-blue-300/50 transition-colors"
+            class="flex items-center justify-center h-9 aspect-square rounded-full cursor-pointer hover:bg-blue-300/30 active:bg-blue-300/70 transition-colors"
             @click="sendMessage"
             :class="{ 'pointer-events-none': !isInputValid }"
           >
@@ -70,18 +85,45 @@
         </div>
       </div>
     </div>
+
+    <Transition name="picker">
+      <div
+        v-if="isShowPicker && !isMobile"
+        class="absolute top-0 left-0 -translate-y-full px-4"
+      >
+        <EmojiPicker
+          :emojiButton="emojiButton"
+          @select="insertEmoji"
+          @close="isShowPicker = false"
+        />
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
-import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
+import {
+  faImage,
+  faFaceSmile,
+  faPaperPlane,
+} from "@fortawesome/free-regular-svg-icons";
 
 import ImagePreview from "./ImagePreview.vue";
 import ReplyPreview from "./ReplyPreview.vue";
 
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  defineAsyncComponent,
+} from "vue";
+
+const EmojiPicker = defineAsyncComponent(() => import("./EmojiPicker.vue"));
+
+const emojiButton = ref(null);
+const isShowPicker = ref(false);
 
 import { useRoute } from "vue-router";
 const route = useRoute();
@@ -133,6 +175,53 @@ const handlePaste = (e) => {
   selection.collapseToEnd();
 
   handleInput(e);
+};
+
+let cursorPosition = 0;
+
+const setCursorPosition = () => {
+  if (
+    window.getSelection().focusNode !== contentEditor.value &&
+    window.getSelection().focusNode?.parentElement !== contentEditor.value
+  )
+    return;
+
+  const selection = window.getSelection();
+  const range = selection.getRangeAt(0);
+  const clonedRange = range.cloneRange();
+
+  clonedRange.selectNodeContents(contentEditor.value);
+  clonedRange.setEnd(range.endContainer, range.endOffset);
+
+  cursorPosition = clonedRange.toString().length;
+
+  // console.log(cursorPosition);
+};
+
+const handleBlur = (e) => {
+  setCursorPosition();
+};
+
+let indexInsertEmoji;
+
+const togglePicker = () => {
+  isShowPicker.value = !isShowPicker.value;
+
+  if (isShowPicker.value) {
+    indexInsertEmoji = cursorPosition;
+  }
+};
+
+const insertEmoji = (emoji) => {
+  const getNewContent = (content) =>
+    content.substring(0, indexInsertEmoji) +
+    emoji +
+    content.substring(indexInsertEmoji);
+
+  contentEditor.value.innerText = getNewContent(contentEditor.value.innerText);
+  messageContent.value = getNewContent(messageContent.value);
+
+  indexInsertEmoji += emoji.length;
 };
 
 const contentEditor = ref(null);
@@ -191,12 +280,16 @@ const handleEnter = (e) => {
 onMounted(() => {
   messageStore.setInput(contentEditor.value);
 
+  document.addEventListener("selectionchange", setCursorPosition);
+
   if (route.name === "messages") {
     heightObserver.observe(textArea.value);
   }
 });
 
 onBeforeUnmount(() => {
+  document.removeEventListener("selectionchange", setCursorPosition);
+
   if (route.name === "messages") {
     heightObserver.disconnect();
   }
@@ -231,5 +324,15 @@ onBeforeUnmount(() => {
 
 .inputHeight {
   max-height: calc(100dvh - v-bind(navbarHeight));
+}
+
+.picker-enter-active,
+.picker-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.picker-enter-from,
+.picker-leave-to {
+  opacity: 0;
 }
 </style>
