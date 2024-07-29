@@ -6,7 +6,7 @@
         @mouseenter="mouseenter"
       >
         <router-link :to="'/' + user.username">
-          <TheAvatar :src="user?.avatar" />
+          <TheAvatar :src="userInfo?.avatar" />
         </router-link>
       </div>
       <Transition>
@@ -16,7 +16,11 @@
           :bottom="bottom"
           :right="right"
           :dimensions="dimensions"
-          :user="user"
+          :user="{
+            ...user,
+            avatar: userInfo?.avatar,
+            displayName: userInfo?.displayName || user.username,
+          }"
         />
       </Transition>
     </div>
@@ -40,6 +44,12 @@ const props = defineProps({
 });
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
+
+userStore.addUserInfo(props.user.userId);
+const userInfo = computed(() => userStore.userInfoList[props.user.userId]);
 
 const widthAvatar = computed(() => props.widthAvatar * 4 + "px");
 

@@ -114,8 +114,9 @@
                     <AvatarLink
                       :isShowCard="false"
                       :user="{
+                        userId: currentContact.userId,
                         username: currentContact.username,
-                        avatar: currentContact.avatar,
+                        // avatar: currentContact.avatar,
                       }"
                       :widthAvatar="12"
                     />
@@ -123,7 +124,7 @@
 
                   <div class="grow flex items-center">
                     <div class="font-bold text-[18px] leading-5">
-                      {{ currentContact.displayName }}
+                      {{ currentContactInfo?.displayName }}
                     </div>
                   </div>
                 </div>
@@ -181,6 +182,9 @@ const scrollbarWidth = computed(() => messageStore.scrollbarWidth + "px");
 const isEnterChat = computed(() => messageStore.isEnterChat);
 
 const currentContact = computed(() => messageStore.currentContact);
+const currentContactInfo = computed(
+  () => userStore.userInfoList[currentContact.value.userId]
+);
 
 // Hold <Messages /> until contactsList in messageStore gets results
 const isBraced = computed(() => typeof messageStore.isThereNew === "boolean");
@@ -211,7 +215,10 @@ watch(
   (newVal) => {
     if (newVal) {
       document.title =
-        (newVal?.displayName ? newVal.displayName + " " : "") +
+        (currentContactInfo.value?.displayName &&
+        currentContactInfo.value.displayName !== newVal.username
+          ? currentContactInfo.value.displayName + " "
+          : "") +
         "@" +
         newVal.username +
         " • " +

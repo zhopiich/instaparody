@@ -14,10 +14,10 @@
             :to="profilePageURL(user.username)"
             @click.stop="$emit('linkClicked')"
           >
-            <TheAvatar :src="user?.avatar" />
+            <TheAvatar :src="userInfo?.avatar" />
           </router-link>
 
-          <TheAvatar :src="user?.avatar" />
+          <TheAvatar :src="userInfo?.avatar" />
         </template>
 
         <div v-else class="size-full bg-neutral-200"></div>
@@ -36,12 +36,12 @@
           <p
             class="font-bold text-pretty break-all cursor-pointer hover:text-zinc-400"
           >
-            {{ user.displayName || user.username }}
+            {{ userInfo?.displayName || user.username }}
           </p>
         </router-link>
 
         <p v-else class="font-bold text-pretty break-all">
-          {{ user.displayName || user.username }}
+          {{ userInfo?.displayName || user.username }}
         </p>
       </template>
       <div v-else class="mb-2 h-4 w-32 rounded bg-neutral-200"></div>
@@ -60,7 +60,11 @@
           :bottom="bottom"
           :right="right"
           :dimensions="dimensions"
-          :user="user"
+          :user="{
+            ...user,
+            avatar: userInfo?.avatar,
+            displayName: userInfo?.displayName || user.username,
+          }"
         />
       </Transition>
     </template>
@@ -73,7 +77,7 @@ import { getPosition } from "../modules/position.js";
 import UserCard from "./UserCard.vue";
 import TheAvatar from "./TheAvatar.vue";
 
-defineProps({
+const props = defineProps({
   isShowCard: { type: Boolean, default: true },
   isCardFixed: { type: Boolean, default: false },
   user: {
@@ -93,6 +97,12 @@ defineEmits(["linkClicked"]);
 const profilePageURL = (username) => "/" + username;
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
+
+userStore.addUserInfo(props.user.userId);
+const userInfo = computed(() => userStore.userInfoList[props.user.userId]);
 
 const target = ref(null);
 

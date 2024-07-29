@@ -23,8 +23,8 @@
           <AvatarLink
             :user="{
               username: post?.createdBy?.username,
-              avatar: post?.createdBy?.avatar,
-              displayName: post?.createdBy?.displayName,
+              // avatar: post?.createdBy?.avatar,
+              // displayName: post?.createdBy?.displayName,
               userId: post?.createdBy?.userId,
             }"
             :widthAvatar="12"
@@ -32,8 +32,8 @@
           <DisplayNameLink
             :user="{
               username: post?.createdBy?.username,
-              avatar: post?.createdBy?.avatar,
-              displayName: post?.createdBy?.displayName,
+              // avatar: post?.createdBy?.avatar,
+              // displayName: post?.createdBy?.displayName,
               userId: post?.createdBy?.userId,
             }"
             :isHoverHighlight="false"

@@ -10,6 +10,7 @@ import {
   getDoc,
   query,
   where,
+  orderBy,
   onSnapshot,
   doc,
   deleteDoc,
@@ -34,7 +35,11 @@ export const useCommentStore = defineStore("comment", () => {
     triggerUnSub();
 
     const colRef = collection(db, "comments");
-    const q = query(colRef, where("postId", "==", _postId));
+    const q = query(
+      colRef,
+      where("postId", "==", _postId),
+      orderBy("createdAt", "asc")
+    );
 
     unsubscribe = onSnapshot(
       q,
@@ -65,8 +70,8 @@ export const useCommentStore = defineStore("comment", () => {
         postId,
         postCreatedBy,
         createdBy: {
-          displayName: userStore.user.displayName,
-          avatar: userStore.user.photoURL,
+          // displayName: userStore.user.displayName,
+          // avatar: userStore.user.photoURL,
           userId: userStore.user.uid,
           username: userStore.userDoc.username,
         },

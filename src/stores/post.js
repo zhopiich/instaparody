@@ -244,8 +244,8 @@ export const usePostStore = defineStore("post", () => {
       images: imagesUrl,
       description,
       createdBy: {
-        displayName: userStore.user.displayName,
-        avatar: userStore.user.photoURL,
+        // displayName: userStore.user.displayName,
+        // avatar: userStore.user.photoURL,
         userId: userStore.user.uid,
         username: userStore.userDoc.username,
       },

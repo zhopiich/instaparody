@@ -14,7 +14,9 @@
           <div class="shrink-0 avatar">
             <div class="rounded-full h-12" @click.stop="">
               <router-link :to="'/' + contact.username">
-                <TheAvatar :src="contact?.avatar" />
+                <TheAvatar
+                  :src="userStore.userInfoList[contact.userId]?.avatar"
+                />
               </router-link>
             </div>
           </div>
@@ -27,7 +29,9 @@
                     <div
                       class="grow min-w-0 overflow-hidden text-clip whitespace-nowrap"
                     >
-                      <span class="font-bold">{{ contact.displayName }}</span>
+                      <span class="font-bold">{{
+                        userStore.userInfoList[contact.userId]?.displayName
+                      }}</span>
                     </div>
 
                     <div
@@ -70,7 +74,9 @@
                     !contact.lastMessage?.content &&
                     contact.lastMessage?.isImageSent
                       ? contact.lastMessage?.from === contact.userId
-                        ? `${contact.displayName} sent a picture`
+                        ? `${
+                            userStore.userInfoList[contact.userId]?.displayName
+                          } sent a picture`
                         : "You sent a picture"
                       : contact.lastMessage?.content
                       ? contact.lastMessage?.content
@@ -105,6 +111,9 @@ const router = useRouter();
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
+import { useUserStore } from "../../stores/user";
+const userStore = useUserStore();
+
 const enterChat = (chatId) => {
   messageStore.noNeedToCheckChat();
 
@@ -119,6 +128,7 @@ const enterChat = (chatId) => {
 };
 
 const contacts = computed(() => messageStore.contactsList);
+
 const areThereNews = computed(() => messageStore.areThereNews);
 const lastMessagesAt = computed(() => messageStore.lastMessagesAt);
 

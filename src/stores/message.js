@@ -159,26 +159,26 @@ export const useMessageStore = defineStore("message", () => {
   //   }));
   // };
 
-  const getContactsInfo = async (newContactsList) => {
-    let contactsInfo;
+  // const getContactsInfo = async (newContactsList) => {
+  //   let contactsInfo;
 
-    try {
-      contactsInfo = await Promise.all(
-        newContactsList.map((user) =>
-          userStore.getUserInfo({ userId: user.userId })
-        )
-      );
-    } catch (error) {
-      console.log(error);
-      return;
-    }
+  //   try {
+  //     contactsInfo = await Promise.all(
+  //       newContactsList.map((user) =>
+  //         userStore.getUserInfo({ userId: user.userId })
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //     return;
+  //   }
 
-    contactsInfo.forEach((info, index) => {
-      ["avatar", "displayName"].forEach((item) => {
-        contactsList.value[index][item] = info[item];
-      });
-    });
-  };
+  //   contactsInfo.forEach((info, index) => {
+  //     ["avatar", "displayName"].forEach((item) => {
+  //       contactsList.value[index][item] = info[item];
+  //     });
+  //   });
+  // };
 
   const lastMessagesAt = ref({});
 
@@ -259,7 +259,10 @@ export const useMessageStore = defineStore("message", () => {
           const unsorted = results.map((contact) => contactFormat(contact));
           contactsList.value = sortByLastSee(unsorted);
 
-          getContactsInfo(contactsList.value);
+          // getContactsInfo(contactsList.value);
+          contactsList.value.forEach((contact) => {
+            userStore.addUserInfo(contact.userId);
+          });
 
           // Update lastMessagesAt if there's new
           contactsList.value.forEach((contact) => {
@@ -272,7 +275,8 @@ export const useMessageStore = defineStore("message", () => {
               added.chatId = change.doc.id;
 
               contactsList.value.unshift(added);
-              getContactsInfo([added]);
+              // getContactsInfo([added]);
+              userStore.addUserInfo(added.userId);
               getLastAt(added);
             }
             if (change.type === "modified") {

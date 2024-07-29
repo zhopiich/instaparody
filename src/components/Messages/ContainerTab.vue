@@ -45,7 +45,7 @@
     <div v-else class="grow flex flex-col justify-center">
       <div class="flex">
         <div class="font-bold text-[20px] leading-6">
-          {{ currentContact?.displayName }}
+          {{ currentContactInfo?.displayName }}
         </div>
         <div class="ml-1.5 flex items-center pointer-events-none">
           <div
@@ -108,6 +108,9 @@ import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
 const currentContact = computed(() => messageStore.currentContact);
+const currentContactInfo = computed(
+  () => userStore.userInfoList[currentContact.value.userId]
+);
 
 const leaveChat = () => {
   messageStore.enterChat(false);

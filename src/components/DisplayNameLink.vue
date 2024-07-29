@@ -10,7 +10,7 @@
           class="font-bold cursor-pointer select-none text-pretty break-all"
           :class="{ 'hover:text-zinc-400': isHoverHighlight }"
         >
-          {{ user.displayName || user.username }}
+          {{ userInfo?.displayName || user.username }}
         </p>
       </router-link>
 
@@ -21,7 +21,11 @@
           :bottom="bottom"
           :right="right"
           :dimensions="dimensions"
-          :user="user"
+          :user="{
+            ...user,
+            avatar: userInfo?.avatar,
+            displayName: userInfo?.displayName || user.username,
+          }"
         />
       </Transition>
     </div>
@@ -33,13 +37,19 @@ import { getPosition } from "../modules/position.js";
 
 import UserCard from "./UserCard.vue";
 
-defineProps({
+const props = defineProps({
   isCardFixed: { type: Boolean, default: false },
   user: { type: Object },
   isHoverHighlight: { type: Boolean, default: true },
 });
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
+
+userStore.addUserInfo(props.user.userId);
+const userInfo = computed(() => userStore.userInfoList[props.user.userId]);
 
 const target = ref(null);
 

@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref, reactive, computed } from "vue";
 import { defineStore } from "pinia";
 
 // import { getUser, login, register, logout } from "../apis/auth";
@@ -122,6 +122,17 @@ export const useUserStore = defineStore("user", () => {
     otherUserDoc.value = await getUserInfo({ username });
   };
 
+  const userInfoList = reactive({});
+
+  const addUserInfo = async (userId) => {
+    if (userInfoList[userId]) return;
+
+    userInfoList[userId] = "pending";
+
+    const { avatar, displayName } = await getUserInfo({ userId });
+    userInfoList[userId] = { avatar, displayName };
+  };
+
   const initializeUser = async () => {
     await auth.authStateReady();
 
@@ -180,6 +191,8 @@ export const useUserStore = defineStore("user", () => {
     // findUserByName,
     getUserInfo,
     getOtherUserDoc,
+    userInfoList,
+    addUserInfo,
     initializeAuthListener,
     initializeUser,
     isLoggedIn,

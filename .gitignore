@@ -28,3 +28,5 @@ jsconfig.json
 .firebaserc
 firestore.indexes.json
 *.rules
+
+.vercel

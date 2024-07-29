@@ -22,12 +22,7 @@
                   <div class="">
                     <UserPlate
                       :isCardFixed="true"
-                      :user="{
-                        username: user.username,
-                        avatar: user.avatar,
-                        displayName: user.displayName,
-                        userId: user.userId,
-                      }"
+                      :user="user"
                       :widthAvatar="12"
                     />
                   </div>
@@ -39,14 +34,7 @@
                       :class="{
                         'bg-sky-200 pointer-events-none': !userStore.isLoggedIn,
                       }"
-                      @click="
-                        enterChat({
-                          username: user.username,
-                          userId: user.userId,
-                          avatar: user.avatar,
-                          displayName: user.displayName,
-                        })
-                      "
+                      @click="enterChat(user)"
                     >
                       <p class="text-white text-sm select-none">Message</p>
                     </div>
