@@ -73,7 +73,8 @@
                     <div
                       class="h-9 w-24 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-600 active:bg-blue-400 transition-colors flex justify-center *:flex *:items-center *:select-none *:text-white"
                       :class="{
-                        'bg-sky-200 pointer-events-none': !userStore.isLoggedIn,
+                        'bg-sky-200 pointer-events-none':
+                          !userStore.isLoggedIn || clickedContact,
                       }"
                       @click.stop="
                         contact({
@@ -84,7 +85,9 @@
                         })
                       "
                     >
-                      <div v-if="addingSpin"><span class="loading"></span></div>
+                      <div v-if="clickedContact === user.userId">
+                        <span class="loading"></span>
+                      </div>
                       <div v-else class="gap-2">
                         <FontAwesomeIcon
                           :icon="faPaperPlane"
@@ -122,6 +125,9 @@ import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
+
+import { useAlertStore } from "../../stores/alert";
+const alertStore = useAlertStore();
 
 import { useUserStore } from "../../stores/user";
 const userStore = useUserStore();
@@ -174,11 +180,22 @@ const handleSearch = () => {
 
 watch(searchTerm, handleSearch);
 
-const addingSpin = ref(false);
+const clickedContact = ref(null);
 
 const contact = async ({ ...userInfo }) => {
-  addingSpin.value = true;
+  clickedContact.value = userInfo.userId;
+
   const chatId = await messageStore.addContact({ ...userInfo });
+  if (!chatId) {
+    clickedContact.value = null;
+
+    alertStore.addAlert({
+      content: "Sorry, something went wrong.",
+    });
+
+    return;
+  }
+
   messageStore.noNeedToCheckChat();
 
   if (route.name === "messages") {

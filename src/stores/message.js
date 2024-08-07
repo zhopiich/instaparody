@@ -101,7 +101,7 @@ export const useMessageStore = defineStore("message", () => {
   };
 
   const addContact = async ({ username = null, userId = null } = {}) => {
-    if (!userStore.isLoggedIn) return "";
+    if (!userStore.isLoggedIn) return;
 
     const me = {
       username: userStore.userDoc.username,
@@ -113,28 +113,38 @@ export const useMessageStore = defineStore("message", () => {
     const contact = { username, userId };
 
     //
-    const { isChatExists, chatId } = await findChat({
-      userId1: me.userId,
-      userId2: contact.userId,
-    });
+    try {
+      const { isChatExists, chatId } = await findChat({
+        userId1: me.userId,
+        userId2: contact.userId,
+      });
 
-    if (isChatExists) {
-      return chatId;
+      if (isChatExists) {
+        return chatId;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
     }
 
-    const newChatRef = await addChat({
-      // users: [me.userId, contact.userId],
-      users: { [me.userId]: true, [contact.userId]: true },
-      usersInfo: [{ ...me }, { ...contact }],
+    try {
+      const newChatRef = await addChat({
+        // users: [me.userId, contact.userId],
+        users: { [me.userId]: true, [contact.userId]: true },
+        usersInfo: [{ ...me }, { ...contact }],
 
-      lastMessage: null,
-      lastSeeAt: {
-        [me.userId]: null,
-        [contact.userId]: null,
-      },
-    });
+        lastMessage: null,
+        lastSeeAt: {
+          [me.userId]: null,
+          [contact.userId]: null,
+        },
+      });
 
-    return newChatRef.id;
+      return newChatRef.id;
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   };
 
   // const getContacts = async () => {
