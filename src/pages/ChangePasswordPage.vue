@@ -7,6 +7,13 @@
           >@{{ userStore.userDoc?.username }}</span
         >
       </div>
+
+      <div v-if="isDemoAccount" class="mt-1.5">
+        <span class="text-red-500"
+          ><FontAwesomeIcon class="mr-1.5" :icon="faCircleExclamation" />The
+          demo account password cannot be changed.</span
+        >
+      </div>
     </div>
 
     <div class="my-3 w-full">
@@ -88,7 +95,7 @@
         <TheButton
           :height="40"
           :width="180"
-          :isDisable="!isAllOccupied || isLoading"
+          :isDisable="isDemoAccount || !isAllOccupied || isLoading"
           :isLoading="isLoading"
           @click="handleChangePassword"
           >Change password</TheButton
@@ -99,6 +106,9 @@
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+
 import { changePassword } from "../firebase/auth";
 
 import TheLabel from "../components/TheLabel.vue";
@@ -149,6 +159,7 @@ const isConfirmPasswordValid = () =>
 
 const handleChangePassword = async () => {
   if (
+    isDemoAccount.value ||
     isCurrentPasswordError.value ||
     isNewPasswordError.value ||
     isConfirmPasswordError.value
@@ -193,6 +204,15 @@ const handleChangePassword = async () => {
 
   isLoading.value = false;
 };
+
+const demoAccounts = [
+  "demo_01@email.com",
+  "demo_02@email.com",
+  "demo_03@email.com",
+];
+const isDemoAccount = computed(() =>
+  demoAccounts.some((email) => email === userStore.user.email)
+);
 </script>
 
 <style scoped>
