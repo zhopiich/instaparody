@@ -6,7 +6,7 @@
     :isLoggedIn="userStore.isLoggedIn"
   />
 
-  <NavBarSliding v-else @turn="changeDirection" @scroll="changePosition">
+  <NavBarSliding v-else :isPersistent="isPersistent">
     <nav
       class="navbar px-4 lg:px-[10dvw] z-10"
       :class="{ '!shadow-none border-b': $route.name !== 'home' }"
@@ -15,7 +15,7 @@
         <router-link to="/"><Logo /></router-link>
       </div>
 
-      <Search :direction="direction" :navbarPosition="navbarPosition" />
+      <Search v-model:isResultsShown="isResultsShown" />
 
       <div v-if="userStore.isLoggedIn" class="navItems">
         <div
@@ -39,11 +39,7 @@
           />
           <Transition name="menu">
             <ProfileIconMenu
-              v-if="
-                isShowDropdown &&
-                (!direction || navbarPosition === 'expanded') &&
-                navbarPosition !== 'folded'
-              "
+              v-if="isShowDropdown"
               :profilePageURL="profilePageURL"
               :avatar="avatarIcon"
               @close="isShowDropdown = false"
@@ -83,6 +79,10 @@ const props = defineProps(["isMobile"]);
 import { ref, computed, onMounted } from "vue";
 
 const isShowDropdown = ref(false);
+const isResultsShown = ref(false);
+const isPersistent = computed(
+  () => isShowDropdown.value || isResultsShown.value
+);
 
 const avatarIcon = ref(null);
 
@@ -142,18 +142,6 @@ async function logout() {
   await logOut();
   router.push("/login");
 }
-
-const direction = ref(null);
-
-const changeDirection = (bool) => {
-  direction.value = bool;
-};
-
-const navbarPosition = ref(0);
-
-const changePosition = (position) => {
-  navbarPosition.value = position;
-};
 </script>
 
 <style scoped>

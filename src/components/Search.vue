@@ -25,11 +25,7 @@
     </div>
 
     <div
-      v-if="
-        searchTerm.trim().length > 0 &&
-        (!direction || navbarPosition === 'expanded') &&
-        navbarPosition !== 'folded'
-      "
+      v-if="isShowResults"
       class="absolute top-full w-full mt-1 rounded-xl overflow-hidden border shadow-lg max-h-[360px]"
     >
       <SearchResults :maxHeight="'inherit'" @resultClicked="cleanSearchTerm" />
@@ -53,7 +49,7 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 
-defineProps(["direction", "navbarPosition"]);
+const isResultsShown = defineModel("isResultsShown");
 
 const input = ref(null);
 
@@ -61,6 +57,15 @@ const searchTerm = ref(userStore.searchTerm);
 const cleanSearchTerm = () => {
   searchTerm.value = "";
 };
+
+const isShowResults = computed(() => searchTerm.value.trim().length > 0);
+watch(
+  isShowResults,
+  (newVal) => {
+    isResultsShown.value = newVal;
+  },
+  { immediate: true }
+);
 
 let delay;
 let lastTrimmedTerm = "";

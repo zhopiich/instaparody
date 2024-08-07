@@ -7,13 +7,12 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 
-const emits = defineEmits(["turn", "scroll"]);
+const props = defineProps(["isPersistent"]);
 
 // Select the element after mounted
 let navbar = null;
 
 let lastYPosition = 0;
-let lastDirection = false;
 
 const navbarPosition = ref(0);
 
@@ -29,7 +28,7 @@ const heightObserver = new ResizeObserver((entries) => {
 
 const isSubmerged = computed(() => navbarPosition.value === navbarHeight.value);
 
-const unwatch = watch(isSubmerged, () => {
+watch(isSubmerged, () => {
   isSubmerged.value
     ? navbar.classList.add("noShadow")
     : navbar.classList.remove("noShadow");
@@ -49,45 +48,18 @@ function onScroll() {
   // for next scrolling
   lastYPosition = currentYPosition;
 
-  if (
-    (displacement > 0 && navbarPosition.value === navbarHeight.value) ||
-    (displacement < 0 && navbarPosition.value === 0)
-  )
-    return;
+  if (displacement > 0 && props.isPersistent) return;
+  if (displacement > 0 && navbarPosition.value === navbarHeight.value) return;
+  if (displacement < 0 && navbarPosition.value === 0) return;
 
   if (navbarPosition.value + displacement >= navbarHeight.value) {
     navbarPosition.value = navbarHeight.value;
-
-    // At the moment the navbar retracts completely,
-    // remove its shadow
-    // navbar.classList.add("noShadow");
   } else if (navbarPosition.value + displacement <= 0) {
     navbarPosition.value = 0;
   } else {
-    // At the moment the navbar emerges,
-    // restore its shadow
-    // if (navbarPosition.value === navbarHeight.value) {
-    //   navbar.classList.remove("noShadow");
-    // }
     navbarPosition.value = navbarPosition.value + displacement;
-
-    const direction = displacement >= 0;
-    if (lastDirection !== direction) {
-      emits("turn", direction);
-      lastDirection = direction;
-    }
   }
 }
-
-watch(navbarPosition, (newVal, oldVal) => {
-  if (newVal === navbarHeight.value) {
-    emits("scroll", "folded");
-  } else if (newVal === 0) {
-    emits("scroll", "expanded");
-  } else if (oldVal === navbarHeight.value || oldVal === 0) {
-    emits("scroll", "transition");
-  }
-});
 
 onMounted(() => {
   // The class name is valid only after mounted
@@ -98,7 +70,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  unwatch();
   window.removeEventListener("scroll", onScroll);
   heightObserver.unobserve(navbar);
 });
