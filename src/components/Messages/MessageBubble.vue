@@ -73,11 +73,16 @@
 
           <!-- content -->
           <div v-if="message.content" class="py-3 px-4">
-            <pre
+            <div
               class="font-sans leading-6 break-words whitespace-pre-wrap"
               :class="[isFromMe ? 'text-white' : 'text-black']"
-              >{{ message.content }}</pre
             >
+              <MessageContent
+                :content="message.content"
+                :isSent="message.at !== null"
+                :isFromMe="isFromMe"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -146,6 +151,7 @@ import {
 
 import MoreButton from "./MoreButton.vue";
 import RepliedBubble from "./RepliedBubble.vue";
+import MessageContent from "./MessageContent.vue";
 
 // const RepliedBubble = defineAsyncComponent(() => import("./RepliedBubble.vue"));
 const MoreMenu = defineAsyncComponent(() => import("./MoreMenu.vue"));

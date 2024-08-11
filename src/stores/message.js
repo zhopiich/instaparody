@@ -31,6 +31,7 @@ import {
 import { uploadFile, deleteFile } from "../firebase/storage.js";
 
 import { dateToRelative } from "../utils/date";
+import { getUrlRegex } from "../utils/validation";
 
 export const useMessageStore = defineStore("message", () => {
   const isExtended = ref(false);
@@ -801,6 +802,20 @@ export const useMessageStore = defineStore("message", () => {
     emojiIndex.value = new EmojiIndex(data.default);
   };
 
+  // Url Regex
+  let urlRegex;
+
+  const getUrlsIndexes = (content) => {
+    if (!urlRegex) urlRegex = getUrlRegex();
+
+    const matches = [...content.matchAll(urlRegex)];
+
+    return matches.map((match) => ({
+      start: match.index,
+      end: match.index + match[0].length,
+    }));
+  };
+
   return {
     isExtended,
     toggle,
@@ -867,5 +882,6 @@ export const useMessageStore = defineStore("message", () => {
     reset,
     emojiIndex,
     importEmojiData,
+    getUrlsIndexes,
   };
 });
