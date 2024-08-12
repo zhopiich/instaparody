@@ -27,15 +27,18 @@ const tlds = () =>
 // https://www.freecodecamp.org/news/how-to-validate-urls-in-javascript/
 export const getUrlRegex = () =>
   new RegExp(
-    "(https?:\\/\\/)?" +
+    "(" +
+      "(https?:\\/\\/)?" +
       // "(([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+" + // Subdomain and Second-level Domain
       "([\\w]+[\\/\\-_\\.])*[\\w]+\\." +
       tlds() + // Top-level Domain
       "(\\:\\d+)?" + // port
-      "(\\/[-a-z\\d%_.~+]*)*" + // path
-      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-      "(\\#[-a-z\\d_]*)?" + // fragment locator
-      "\\/?" +
+      "(\\/)?" +
+      ")" +
+      "([-a-z\\d\\*%_.~+]*(\\/)?)*" + // path
+      "(\\?[;&a-z\\d\\*\\/%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d\\*_]*)?" + // fragment locator
+      // "\\/?" +
       "",
     "gi"
   );

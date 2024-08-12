@@ -1,5 +1,5 @@
 <template>
-  <span v-if="!isSent || !contentSegments">{{ content }}</span>
+  <span v-if="!isBraced || !isSent || !contentSegments">{{ content }}</span>
 
   <template v-else>
     <template v-for="segment in contentSegments">
@@ -22,12 +22,15 @@
 <script setup>
 const props = defineProps(["content", "isSent", "isFromMe"]);
 
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+
+const isBraced = ref(false);
 
 import { useMessageStore } from "../../stores/message";
 const messageStore = useMessageStore();
 
 const contentSegments = computed(() => {
+  if (!isBraced.value) return;
   if (!props.isSent) return;
 
   const content = props.content;
@@ -60,6 +63,10 @@ const contentSegments = computed(() => {
 });
 
 const isTherePrefix = (url) => /^https?:\/\//.test(url);
+
+onMounted(() => {
+  isBraced.value = true;
+});
 </script>
 
 <style scoped></style>

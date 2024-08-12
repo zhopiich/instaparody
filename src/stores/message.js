@@ -804,9 +804,16 @@ export const useMessageStore = defineStore("message", () => {
 
   // Url Regex
   let urlRegex;
+  let isUrlRegexInitialized = false;
+  const initializeUrlRegex = () => {
+    if (isUrlRegexInitialized) return;
+
+    urlRegex = getUrlRegex();
+    isUrlRegexInitialized = true;
+  };
 
   const getUrlsIndexes = (content) => {
-    if (!urlRegex) urlRegex = getUrlRegex();
+    initializeUrlRegex();
 
     const matches = [...content.matchAll(urlRegex)];
 
