@@ -1,6 +1,9 @@
 <h1 align="center">Instaparody</h1>
 
-<div align="center">An Instagram clone integrated with a clone of Twitter's direct messages</div>
+<div align="center">
+<p>An Instagram clone integrated with a clone of Twitter's direct messages</p>
+<br/>
+</div>
 
 ![](/public/readme/home.png)
 
