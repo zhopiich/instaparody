@@ -4,14 +4,13 @@ An Instagram clone integrated with a clone of Twitter's direct messages
 
 ## Overview
 
-Create new posts with attached photos, and like, save, or comment on posts just like on Instagram.
-Send private messages to your contacts just as on Twitter.
+Create posts with attached photos, and like, save, or comment on them, just like on Instagram, and send private messages to your contacts, just as on Twitter.
 
 ![](/public/readme/home.png)
 
 ![](/public/readme/mobiless.png)
 
-### Live demo: https://
+### Live demo: https://instaparody.vercel.app/
 
 The demo accounts:
 
@@ -57,11 +56,8 @@ or register with an email address without the need for verification.
 
 #### Others
 
-- All pages and modals are designed to be responsive across all screen sizes.
-- Each profile page, chat with contacts, and post has a unique route path.
-- What posts users have saved are kept private. Users cannot see saved posts through the route path, except for their own.
+- All pages and modals are designed to be responsive across all screen sizes. Squeeze them as you like.
 - The subscript under each message you send indicates whether it has been sent or seen by your contact.
-- Users who are not involved do not have access to the messages history.
 - The alert lasts a few seconds to inform users what was done in success or inappropriately.
 
 ## Technique
@@ -85,15 +81,30 @@ or register with an email address without the need for verification.
 - Storage
 - Authentication
 
+### Hosting
+
+Vercel
+
 ### Build tool
 
 Vite
+
+### Procedure Flowchart
+
+![](public/readme/flowchart.svg)
+
+### User Experience
+
+![](public/readme/experience.svg)
 
 ### Firestore Database Schema
 
 ![](public/readme/schema.svg)
 
 ### Directory Structure
+
+<details>
+<summary>Expand</summary>
 
 ```
 src
@@ -103,7 +114,6 @@ src
 │  style.css
 │
 ├─assets
-│  │  avatarDefault.png
 │  │  base.css
 │  │  vue.svg
 │  │
@@ -114,6 +124,7 @@ src
 │  │  AvatarLink.vue
 │  │  CommentInput.vue
 │  │  CommentsList.vue
+│  │  ConfirmModal.vue
 │  │  DisplayNameLink.vue
 │  │  ImageCarousel.vue
 │  │  LikesList.vue
@@ -143,29 +154,32 @@ src
 │  │  UserSkeletonLoader.vue
 │  │
 │  ├─Alert
-│  │  Alert.vue
-│  │  AlertContent.vue
+│  │      Alert.vue
+│  │      AlertContent.vue
 │  │
 │  ├─Messages
-│  │  │  Chat.vue
-│  │  │  Contacts.vue
-│  │  │  ContainerTab.vue
-│  │  │  DateTag.vue
-│  │  │  DeleteButton.vue
-│  │  │  ImagePreview.vue
-│  │  │  ImageViewer.vue
-│  │  │  MessageBubble.vue
-│  │  │  MessageDragAndDrop.vue
-│  │  │  MessageInput.vue
-│  │  │  Messages.vue
-│  │  │  MessagesContainer.vue
-│  │  │  MoreButton.vue
-│  │  │  MoreMenu.vue
-│  │  │  NewMessageIndicator.vue
-│  │  │  RepliedBubble.vue
-│  │  │  ReplyPreview.vue
-│  │  │  SearchPeople.vue
-│  │  └──TobottomButton.vue
+│  │      Chat.vue
+│  │      ConfirmDeleteMessage.vue
+│  │      Contacts.vue
+│  │      ContainerTab.vue
+│  │      DateTag.vue
+│  │      DeleteButton.vue
+│  │      EmojiPicker.vue
+│  │      ImagePreview.vue
+│  │      ImageViewer.vue
+│  │      MessageBubble.vue
+│  │      MessageContent.vue
+│  │      MessageDragAndDrop.vue
+│  │      MessageInput.vue
+│  │      Messages.vue
+│  │      MessagesContainer.vue
+│  │      MoreButton.vue
+│  │      MoreMenu.vue
+│  │      NewMessageIndicator.vue
+│  │      RepliedBubble.vue
+│  │      ReplyPreview.vue
+│  │      SearchPeople.vue
+│  │      TobottomButton.vue
 │  │
 │  ├─NavBar
 │  │      LoginButton.vue
@@ -175,7 +189,7 @@ src
 │  │
 │  ├─PostButtons
 │  │      CommentButton.vue
-│  │      ConfirmModal.vue
+│  │      ConfirmDeleteOrDiscard.vue
 │  │      LikeButton.vue
 │  │      LikesCountBanner.vue
 │  │      PostEdit.vue
@@ -192,12 +206,12 @@ src
 │  │      PostUpload.vue
 │  │
 │  └─ProfileEditing
-│         ChangePhoto.vue
-│         ChangePhotoMenu.vue
-│         DropdownMenu.vue
-│         GenderSelect.vue
-│         IntroInput.vue
-│         TheUploadBtn.vue
+│          ChangePhoto.vue
+│          ChangePhotoMenu.vue
+│          DropdownMenu.vue
+│          GenderSelect.vue
+│          IntroInput.vue
+│          TheUploadBtn.vue
 │
 ├─firebase
 │      auth.js
@@ -231,7 +245,13 @@ src
 │      user.js
 │
 └─utils
-       date.js
-       request.js
-       validation.js
+        date.js
+        request.js
+        validation.js
 ```
+
+</details>
+
+## Credits
+
+[Emoji Mart (Vue)](https://github.com/serebrov/emoji-mart-vue)

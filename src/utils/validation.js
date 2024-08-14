@@ -36,7 +36,7 @@ export const getUrlRegex = () =>
       "(\\/)?" +
       ")" +
       "([-a-z\\d\\*%_.~+]*(\\/)?)*" + // path
-      "(\\?[;&a-z\\d\\*\\/%_.~+=-]*)?" + // query string
+      "((\\?)?[;&a-z\\d\\*\\/%_.~+=-]*)?" + // query string
       "(\\#[-a-z\\d\\*_]*)?" + // fragment locator
       // "\\/?" +
       "",
