@@ -1,16 +1,12 @@
-# Instaparody
+<h1 align="center">Instaparody</h1>
 
-An Instagram clone integrated with a clone of Twitter's direct messages
-
-## Overview
-
-Create posts with attached photos, and like, save, or comment on them, just like on Instagram, and send private messages to your contacts, just as on Twitter.
+<div align="center">An Instagram clone integrated with a clone of Twitter's direct messages</div>
 
 ![](/public/readme/home.png)
 
 ![](/public/readme/mobiless.png)
 
-### Live demo: https://instaparody.vercel.app/
+**Live demo: https://instaparody.vercel.app**
 
 The demo accounts:
 
