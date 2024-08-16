@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-// import { getJwtToken } from "./apis/auth";
 import { ref, computed, watch } from "vue";
 import { useUserStore } from "./stores/user.js";
 import { usePostStore } from "./stores/post.js";
@@ -15,7 +14,6 @@ const routes = [
     beforeEnter: (to, from) => {
       const postStore = usePostStore();
       postStore.loadPostsAll();
-      console.log("before Enter Home");
     },
   },
   {
@@ -88,53 +86,25 @@ const routes = [
     path: "/profile/edit",
     name: "profileEdit",
     component: () => import("./pages/ProfileEditingPage.vue"),
-    beforeEnter: (to, from) => {
-      const userStore = useUserStore();
-
-      if (!userStore.isLoggedIn) {
-        return { name: "home" };
-      }
-    },
-    meta: { title: "Edit profile" },
+    meta: { title: "Edit profile", requiresAuth: true },
   },
   {
     path: "/change_password",
     name: "changePassword",
     component: () => import("./pages/ChangePasswordPage.vue"),
-    beforeEnter: (to, from) => {
-      const userStore = useUserStore();
-
-      if (!userStore.isLoggedIn) {
-        return { name: "home" };
-      }
-    },
-    meta: { title: "Change password" },
+    meta: { title: "Change password", requiresAuth: true },
   },
   {
     path: "/login",
     name: "login",
     component: () => import("./pages/LoginPage.vue"),
-    beforeEnter: (to, from) => {
-      const userStore = useUserStore();
-
-      if (userStore.isLoggedIn) {
-        return { name: "home" };
-      }
-    },
-    meta: { title: "Login" },
+    meta: { title: "Login", requiresUnauth: true },
   },
   {
     path: "/signup",
     name: "signup",
     component: () => import("./pages/SignUpPage.vue"),
-    beforeEnter: (to, from) => {
-      const userStore = useUserStore();
-
-      if (userStore.isLoggedIn) {
-        return { name: "home" };
-      }
-    },
-    meta: { title: "Sign up" },
+    meta: { title: "Sign up", requiresUnauth: true },
   },
   {
     path: "/:username/:tab?",
@@ -174,10 +144,17 @@ const name = "Instaparody";
 const getTitle = (route) => route + " • " + name;
 
 router.beforeEach(async (to, from) => {
+  const userStore = useUserStore();
+  if (
+    (to.meta.requiresAuth && !userStore.isLoggedIn) ||
+    (to.meta.requiresUnauth && userStore.isLoggedIn)
+  ) {
+    return { name: "home" };
+  }
+
   if (to.name === "home") {
     document.title = name;
   }
-
   if (to.meta.title) {
     switch (to.name) {
       case "messages":
@@ -187,7 +164,6 @@ router.beforeEach(async (to, from) => {
         document.title = getTitle(to.meta.title);
     }
   }
-
   if (to.params.username) {
     document.title = getTitle("@" + to.params.username);
   }

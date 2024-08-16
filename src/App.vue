@@ -1,9 +1,8 @@
 <template>
   <div class="globalFlex">
     <template v-if="$route.name !== 'login' && $route.name !== 'signup'">
-      <!-- <header class="header"> -->
       <NavBar :isMobile="isMobile" />
-      <!-- </header> -->
+
       <TheLayout>
         <Alert />
         <router-view></router-view>
@@ -78,13 +77,4 @@ body {
   position: relative;
   min-height: 100dvh;
 }
-
-/* .upperContent {
-  flex-shrink: 0;
-} */
-
-/* .header {
-  height: fit-content;
-  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.08);
-} */
 </style>
