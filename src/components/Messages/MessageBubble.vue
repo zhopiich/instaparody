@@ -354,41 +354,29 @@ const isNew = computed(() =>
 const onRepliedMounted = () => {};
 
 onMounted(() => {
-  if (!props.isFromMe) {
-    // window[messageId] = document.getElementById(messageId);
-    // console.log(window[messageId]);
-
-    if (!isSeen.value) {
-      // const seenBeacon = ref(null);
-      // const seenBeacon = document.getElementById("seenBeacon");
-
-      if (!props.isBottom) {
-        // When the previous message is not new to user
-        if (
-          messageStore.newMessages.length > 0 &&
-          !messageStore.newMessages.some(
-            (message) => message.id === props.prevMessage.id
-          )
-        ) {
-          messageStore.resetNewMessages();
-        }
-
-        messageStore.appendNewMessage({
-          id: messageId,
-          at: props.message.at,
-        });
+  if (!props.isFromMe && !isSeen.value) {
+    if (!props.isBottom) {
+      // When the previous message is not new to user
+      if (
+        messageStore.newMessages.length > 0 &&
+        !messageStore.newMessages.some(
+          (message) => message.id === props.prevMessage.id
+        )
+      ) {
+        messageStore.resetNewMessages();
       }
 
-      const bubble = document.getElementById(messageId);
-      setObserver(bubble);
+      messageStore.appendNewMessage({
+        id: messageId,
+        at: props.message.at,
+      });
     }
+
+    const bubble = document.getElementById(messageId);
+    setObserver(bubble);
   }
 
   if (props.isLast) {
-    // const lastMessage = document.querySelector(".lastMessage");
-    //   scrollToBottom(lastMessage);
-    // console.log(lastMessage.innerText, "mounted");
-
     emits("lastMounted", props.isFromMe);
   }
 });
