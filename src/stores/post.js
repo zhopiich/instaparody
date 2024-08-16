@@ -1,14 +1,6 @@
 import { ref, reactive, computed, watch, toRef } from "vue";
 import { defineStore } from "pinia";
 
-// import {
-//   createPost,
-//   likePost,
-//   favorPost,
-//   loadPosts,
-//   getPostsFiltered,
-//   loadActionsCount,
-// } from "../apis/post";
 import { useCommentStore } from "./comment";
 import { useUserStore } from "./user.js";
 
@@ -21,20 +13,15 @@ import {
   query,
   where,
   orderBy,
-  limit,
   onSnapshot,
   addDoc,
-  setDoc,
   doc,
   deleteDoc,
   updateDoc,
   serverTimestamp,
   increment,
-  startAt,
-  endAt,
 } from "firebase/firestore";
 import { uploadFile, deleteFile } from "../firebase/storage.js";
-//
 
 export const usePostStore = defineStore("post", () => {
   const isShowPostUpload = ref(false);
@@ -104,7 +91,6 @@ export const usePostStore = defineStore("post", () => {
     return onSnapshot(
       q,
       (snapshot) => {
-        console.log("posts listener triggered! " + filtered);
         const results = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
@@ -130,9 +116,6 @@ export const usePostStore = defineStore("post", () => {
     if (unsubscribe) {
       unsubscribe();
       unsubscribe = null;
-      console.log("unsub! All");
-    } else {
-      console.log("No postsListener");
     }
   };
 
@@ -179,7 +162,6 @@ export const usePostStore = defineStore("post", () => {
     for (const type in unsubFiltered) {
       unsubFiltered[type]();
       delete unsubFiltered[type];
-      console.log("unsub", type);
     }
   };
 
@@ -216,9 +198,6 @@ export const usePostStore = defineStore("post", () => {
     if (unsubPost !== null) {
       unsubPost();
       unsubPost = null;
-      console.log("unsub! Post");
-    } else {
-      console.log("No postListener");
     }
 
     postSnapshot.value = null;
@@ -229,10 +208,7 @@ export const usePostStore = defineStore("post", () => {
   async function uploadPost({ images, description }) {
     if (!userStore.isLoggedIn) return;
 
-    if (!images.length) {
-      console.log("uploadPost: No images.");
-      return;
-    }
+    if (!images.length) return;
 
     const imagesUrl = await Promise.all(
       images.map((image) =>
@@ -573,10 +549,8 @@ export const usePostStore = defineStore("post", () => {
     isShowPostDetails,
     toggleShowPostDetails,
     list,
-    // loadAllPosts,
     loadPostsAll,
     cleanPostsAll,
-    // unsubscribe,
     triggerUnSub,
     cleanPostsFiltered,
     postsFiltered,
@@ -593,8 +567,6 @@ export const usePostStore = defineStore("post", () => {
     clickedPost,
     loadPostDetails,
     resetPostDetailsPage,
-    // postDetails,
-    // searchResult,
     searchPosts,
     isLikedByMe,
     isSavedByMe,

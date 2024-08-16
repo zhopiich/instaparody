@@ -15,15 +15,11 @@ import {
   query,
   where,
   orderBy,
-  limit,
   onSnapshot,
   addDoc,
-  setDoc,
   doc,
   deleteDoc,
   updateDoc,
-  arrayUnion,
-  arrayRemove,
   serverTimestamp,
   and,
   or,
@@ -37,7 +33,7 @@ export const useMessageStore = defineStore("message", () => {
   const isExtended = ref(false);
 
   const toggle = (bool = null) => {
-    if (bool !== true && bool !== false) {
+    if (typeof bool !== "boolean") {
       isExtended.value = !isExtended.value;
     } else {
       isExtended.value = bool;
@@ -54,20 +50,12 @@ export const useMessageStore = defineStore("message", () => {
     currentChatId.value = chatId;
   };
 
-  // const selectedContactIndex = ref(null);
-  // const setCurrentContact = ({ index = null, chatId = null } = {}) => {
-  //   selectedContactIndex.value = index;
-  // };
-
   const currentContact = computed(() => {
     if (!contactsList.value) return;
     return contactsList.value.find(
       (contact) => contact.chatId === currentChatId.value
     );
   });
-  // const currentContact = computed(
-  //   () => contactsList.value[selectedContactIndex.value]
-  // );
 
   const enterChat = (bool) => {
     isEnterChat.value = bool;
@@ -148,55 +136,10 @@ export const useMessageStore = defineStore("message", () => {
     }
   };
 
-  // const getContacts = async () => {
-  //   const messagesRef = collection(db, "messages");
-  //   const q = query(
-  //     messagesRef,
-  //     where(`users.${userStore.user.uid}`, "==", true)
-  //   );
-
-  //   const querySnapshot = await getDocs(q);
-  //   const results = querySnapshot.docs.map((doc) => ({
-  //     ...doc.data(),
-  //     id: doc.id,
-  //   }));
-
-  //   contactsList.value = results.map((chat) => ({
-  //     ...(chat.usersInfo[0].userId === userStore.user.uid
-  //       ? { ...chat.usersInfo[1], index: 1 }
-  //       : { ...chat.usersInfo[0], index: 0 }),
-  //     lastMessage: chat.lastMessage,
-  //     chatId: chat.id,
-  //   }));
-  // };
-
-  // const getContactsInfo = async (newContactsList) => {
-  //   let contactsInfo;
-
-  //   try {
-  //     contactsInfo = await Promise.all(
-  //       newContactsList.map((user) =>
-  //         userStore.getUserInfo({ userId: user.userId })
-  //       )
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //     return;
-  //   }
-
-  //   contactsInfo.forEach((info, index) => {
-  //     ["avatar", "displayName"].forEach((item) => {
-  //       contactsList.value[index][item] = info[item];
-  //     });
-  //   });
-  // };
-
   const lastMessagesAt = ref({});
 
   const contactsListener = () => {
     if (!userStore.isLoggedIn) return;
-
-    console.log("**Contacts Listening...");
 
     const contactFormat = (chat) => {
       const isMeFirst = chat.usersInfo[0].userId === userStore.user.uid;
@@ -252,15 +195,12 @@ export const useMessageStore = defineStore("message", () => {
     const messagesRef = collection(db, "messages");
     const q = query(
       messagesRef,
-      // where("users", "array-contains", userStore.user.uid)
       where(`users.${userStore.user.uid}`, "==", true)
     );
 
     return onSnapshot(
       q,
       (snapshot) => {
-        console.log("contacts listener triggered! ");
-
         if (contactsList.value === null) {
           const results = snapshot.docs.map((doc) => ({
             ...doc.data(),
@@ -270,7 +210,6 @@ export const useMessageStore = defineStore("message", () => {
           const unsorted = results.map((contact) => contactFormat(contact));
           contactsList.value = sortByLastSee(unsorted);
 
-          // getContactsInfo(contactsList.value);
           contactsList.value.forEach((contact) => {
             userStore.addUserInfo(contact.userId);
           });
@@ -286,7 +225,6 @@ export const useMessageStore = defineStore("message", () => {
               added.chatId = change.doc.id;
 
               contactsList.value.unshift(added);
-              // getContactsInfo([added]);
               userStore.addUserInfo(added.userId);
               getLastAt(added);
             }
@@ -391,7 +329,6 @@ export const useMessageStore = defineStore("message", () => {
     if (unSubContacts) {
       unSubContacts();
       unSubContacts = null;
-      console.log("**Contacts unsubbed");
     }
   };
 
@@ -418,9 +355,6 @@ export const useMessageStore = defineStore("message", () => {
     return obj;
   });
 
-  // const isThereNew = computed(
-  //   () => areThereNews.value[currentContact.value.chatId]
-  // );
   const isThereNew = computed(() => areThereNews.value[currentChatId.value]);
 
   // For new messages indicator line
@@ -443,11 +377,9 @@ export const useMessageStore = defineStore("message", () => {
 
   const firstNewMessageId = computed(() =>
     newMessages.value.length > 0
-      ? newMessages.value.reduce((acc, cur) => {
-          console.log("in reduce", acc.at.seconds);
-
-          return acc.at.seconds <= cur.at.seconds ? acc : cur;
-        }).id
+      ? newMessages.value.reduce((acc, cur) =>
+          acc.at.seconds <= cur.at.seconds ? acc : cur
+        ).id
       : null
   );
 
@@ -488,8 +420,6 @@ export const useMessageStore = defineStore("message", () => {
     return onSnapshot(
       q,
       (snapshot) => {
-        console.log("messages listener triggered! ");
-
         const results = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
@@ -510,7 +440,6 @@ export const useMessageStore = defineStore("message", () => {
     if (unSubMessages !== null) {
       unSubMessages();
       unSubMessages = null;
-      console.log("**messages unsubbed");
     }
   };
 
@@ -699,13 +628,9 @@ export const useMessageStore = defineStore("message", () => {
 
   // Notification
 
-  // const newMessages = ref([]);
-
   // Image
   const imagePreview = ref(null);
   const imageToBeSent = ref(null);
-
-  // const imagePost = ref(null);
 
   const isImageSending = ref(false);
 
@@ -833,11 +758,8 @@ export const useMessageStore = defineStore("message", () => {
     currentContact,
     cleanChat,
     setCurrentChat,
-    // setCurrentContact,
     enterChat,
     addContact,
-    // getContacts,
-    // contactsListener,
     loadContacts,
     triggerUnSubContacts,
     newMessages,

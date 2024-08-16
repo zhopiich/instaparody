@@ -8,9 +8,6 @@ export const useMediaQueryStore = defineStore("mediaQuery", () => {
 
   const handleChange = () => {
     isMobile.value = !mediaQueryList.matches;
-
-    //
-    console.log("**- matched!!");
   };
 
   const setListener = () => {

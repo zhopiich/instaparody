@@ -1,11 +1,6 @@
 import { ref, reactive, computed } from "vue";
 import { defineStore } from "pinia";
 
-// import { getUser, login, register, logout } from "../apis/auth";
-// import { updateProfile } from "../apis/user";
-
-//
-// import { userListener } from "../firebase/firestore.js";
 import { auth } from "../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -16,18 +11,10 @@ import {
   getDoc,
   query,
   where,
-  limit,
-  // onSnapshot,
-  addDoc,
-  setDoc,
   doc,
-  deleteDoc,
-  updateDoc,
   and,
   or,
 } from "firebase/firestore";
-
-//
 
 export const useUserStore = defineStore("user", () => {
   const user = ref(null);
@@ -44,23 +31,17 @@ export const useUserStore = defineStore("user", () => {
           if (!resolved) {
             resolved = true;
 
-            console.log("** Resolved ** (once)");
             resolve();
           }
         };
       })();
 
       onAuthStateChanged(auth, (newUser) => {
-        console.log("** Auth Listener Triggered! ** (unique everytime)");
-
         if (newUser) {
           user.value = newUser;
-          console.log("Current user is: ", newUser.email, newUser.uid);
         } else {
           user.value = "guest";
           userDoc.value = null;
-
-          console.log("***User is logged out");
         }
 
         resolveOnce();
@@ -73,8 +54,6 @@ export const useUserStore = defineStore("user", () => {
   // Or the value depending on userDoc will be edited
   const getUserDoc = async () => {
     if (user.value === "guest") {
-      console.log("userDoc: not logged in");
-      // userDoc.value = "guest";
       return;
     }
 
@@ -83,10 +62,8 @@ export const useUserStore = defineStore("user", () => {
 
     if (userSnap.exists()) {
       userDoc.value = userSnap.data();
-      // console.log("userDoc", userDoc);
     } else {
       // docSnap.data() will be undefined in this case
-      console.log("No such document!");
     }
   };
 
@@ -137,8 +114,6 @@ export const useUserStore = defineStore("user", () => {
     await auth.authStateReady();
 
     user.value = auth.currentUser;
-
-    console.log("init user ", user?.value?.uid, user?.value?.email);
   };
 
   const isLoggedIn = computed(() => user.value && user.value !== "guest");
@@ -188,7 +163,6 @@ export const useUserStore = defineStore("user", () => {
     userDoc,
     otherUserDoc,
     getUserDoc,
-    // findUserByName,
     getUserInfo,
     getOtherUserDoc,
     userInfoList,
