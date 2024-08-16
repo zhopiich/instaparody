@@ -72,11 +72,9 @@ import PostUpload from "./PostUpload/PostUpload.vue";
 import ProfileIconMenu from "./NavBar/ProfileIconMenu.vue";
 import LoginButton from "./NavBar/LoginButton.vue";
 
-// import { userListener, getUser, updateUser } from "../firebase/firestore.js";
-
 const props = defineProps(["isMobile"]);
 
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 
 const isShowDropdown = ref(false);
 const isResultsShown = ref(false);
@@ -102,13 +100,8 @@ function publishPost() {
 
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
-// const userPnia = computed(() => userStore.user);
 
-// real-time listenser only accessible in template
-// const user = userListener(userPnia.value.uid);
 const user = computed(() => userStore.user);
-
-// const userDoc = computed(() => userStore.userDoc);
 
 const profilePageURL = computed(() => {
   if (userStore.userDoc) {
@@ -123,12 +116,6 @@ const messageStore = useMessageStore();
 
 import { useAlertStore } from "../stores/alert";
 const alertStore = useAlertStore();
-
-// onMounted(async () => {
-//   // if (userPnia.value) {
-//   // await userStore.getUserDoc(userPnia.value.uid);
-//   // }
-// });
 
 async function logout() {
   postStore.resetIsActedByMe();
