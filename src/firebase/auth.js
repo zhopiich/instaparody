@@ -1,6 +1,5 @@
 import { ref } from "vue";
 
-// firebase imports
 import { auth } from "./firebase.js";
 import { addUserDoc } from "./firestore.js";
 import {
@@ -31,10 +30,7 @@ export const signUp = async ({ email, username, password }) => {
 export const signIn = async (email, password) => {
   try {
     const credential = await signInWithEmailAndPassword(auth, email, password);
-    // console.log(credential);
   } catch (err) {
-    // console.log(err.message);
-
     return err.code;
   }
 };
@@ -42,7 +38,7 @@ export const signIn = async (email, password) => {
 export const logOut = async () => {
   await signOut(auth)
     // .then(() => {
-    //   console.log("logged Out!");
+    //
     // })
     .catch((error) => {
       console.log(error);
@@ -60,9 +56,9 @@ export const updateUserProfile = async (profileData) => {
   }
 
   updateProfile(auth.currentUser, updatedProfile)
-    .then(() => {
-      console.log("auth: Profile updated!");
-    })
+    // .then(() => {
+    //
+    // })
     .catch((error) => {
       console.log("auth: ", error);
     });

@@ -1,4 +1,4 @@
-import { ref as refVue } from "vue";
+// import { ref as refVue } from "vue";
 import {
   ref,
   uploadBytesResumable,
@@ -7,7 +7,7 @@ import {
 } from "firebase/storage";
 import { storage } from "../firebase/firebase";
 
-export const progress = refVue(0);
+// export const progress = refVue(0);
 
 export const uploadFile = async (file, path = "images/") => {
   if (!file) return;
@@ -31,8 +31,8 @@ export const uploadFile = async (file, path = "images/") => {
         (snapshot) => {
           // Observe state change events such as progress, pause, and resume
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          progress.value =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          // progress.value =
+          // (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         },
         (error) => {
           console.log(error);
