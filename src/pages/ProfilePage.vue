@@ -1,5 +1,9 @@
 <template>
-  <div class="py-12 md:py-14 md:px-5 w-full max-w-[975px]">
+  <div class="pt-4 pb-12 md:pb-14 md:px-5 w-full max-w-[975px]">
+    <div class="mb-4" :class="{ 'mx-4': isMobile }">
+      <CreditPlate :isMobile="isMobile" />
+    </div>
+
     <UserInfo
       :user="user"
       :isMobile="isMobile"
@@ -72,6 +76,7 @@ import UserInfo from "../components/UserInfo.vue";
 import PostImageList from "../components/PostImageList.vue";
 import PostImageItem from "../components/PostImageItem.vue";
 import PostDetails from "../components/PostDetails.vue";
+import CreditPlate from "../components/CreditPlate.vue";
 
 import { ref, computed, watch, onBeforeMount } from "vue";
 import {
