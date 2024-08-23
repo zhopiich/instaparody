@@ -12,7 +12,7 @@
               <img
                 :src="image?.url || image"
                 alt=""
-                class="h-full w-full object-cover"
+                class="h-full w-full object-contain"
                 :class="{ 'drag-none': !isDraggable }"
               /></div
           ></TransitionGroup>
@@ -94,12 +94,7 @@ const resizeObserver = new ResizeObserver((entries) => {
 });
 
 const movement = ref(0);
-const movementOdd = computed(() => {
-  if (movement.value % 2 !== 0) return movement.value;
-});
-const movementEven = computed(() => {
-  if (movement.value % 2 === 0) return movement.value;
-});
+
 const next = () => {
   movement.value++;
 };
@@ -151,12 +146,9 @@ onUnmounted(() => {
   height: v-bind(heightImage + "px");
 }
 
-.movementOdd {
-  transform: translateX(v-bind(-widthImage * movementOdd + "px"));
-}
-
+.movementOdd,
 .movementEven {
-  transform: translateX(v-bind(-widthImage * movementEven + "px"));
+  transform: translateX(v-bind(-widthImage * movement + "px"));
 }
 
 .slide-move {

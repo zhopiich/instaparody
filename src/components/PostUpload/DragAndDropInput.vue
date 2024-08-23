@@ -49,7 +49,7 @@
 
     <div
       v-if="imageFiles.length > 0"
-      class="size-full absolute top-0"
+      class="size-full absolute top-0 bg-black"
       :class="{ 'pointer-events-none': isDraggingOver }"
     >
       <ImageCarousel
