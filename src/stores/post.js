@@ -24,6 +24,9 @@ import {
 import { uploadFile, deleteFile } from "../firebase/storage.js";
 
 export const usePostStore = defineStore("post", () => {
+  const commentStore = useCommentStore();
+  const userStore = useUserStore();
+
   const isShowPostUpload = ref(false);
   function toggleShowPostUpload(bool) {
     isShowPostUpload.value = bool;
@@ -203,8 +206,6 @@ export const usePostStore = defineStore("post", () => {
     postSnapshot.value = null;
   };
 
-  const userStore = useUserStore();
-
   async function uploadPost({ images, description }) {
     if (!userStore.isLoggedIn) return;
 
@@ -331,8 +332,6 @@ export const usePostStore = defineStore("post", () => {
     isLikedByMe.value = {};
     isSavedByMe.value = {};
   }
-
-  const commentStore = useCommentStore();
 
   const postIdClicked = ref(null);
 
@@ -531,17 +530,22 @@ export const usePostStore = defineStore("post", () => {
     return postSnap.exists() ? postSnap.data() : "NoSuchPost";
   };
 
-  const documentTitle = computed(() => {
-    if (!postSnapshot.value) return;
+  const creatorInfo = computed(
+    () => userStore.userInfoList[postSnapshot.value?.createdBy?.userId]
+  );
 
-    return postSnapshot.value === "noSuchPost"
-      ? "Post not found" + " • " + "Instaparody"
-      : postSnapshot.value?.createdBy?.displayName +
-          " | " +
-          postSnapshot.value?.description +
-          " | " +
-          "Instaparody";
-  });
+  const documentTitle = computed(() =>
+    !!postSnapshot.value && !!creatorInfo.value?.displayName
+      ? (postSnapshot.value === "noSuchPost"
+          ? "Post not found" + " • "
+          : postSnapshot.value?.description === ""
+          ? "Photo by " + "@" + postSnapshot.value?.createdBy?.username + " • "
+          : creatorInfo.value?.displayName +
+            " | " +
+            postSnapshot.value?.description +
+            " | ") + "Instaparody"
+      : null
+  );
 
   return {
     isShowPostUpload,
