@@ -534,18 +534,22 @@ export const usePostStore = defineStore("post", () => {
     () => userStore.userInfoList[postSnapshot.value?.createdBy?.userId]
   );
 
-  const documentTitle = computed(() =>
-    !!postSnapshot.value && !!creatorInfo.value?.displayName
-      ? (postSnapshot.value === "noSuchPost"
-          ? "Post not found" + " • "
-          : postSnapshot.value?.description === ""
+  const documentTitle = computed(() => {
+    if (!postSnapshot.value) return;
+
+    if (postSnapshot.value === "noSuchPost")
+      return "Post not found" + " • " + "Instaparody";
+
+    if (creatorInfo.value?.displayName)
+      return (
+        (postSnapshot.value?.description === ""
           ? "Photo by " + "@" + postSnapshot.value?.createdBy?.username + " • "
           : creatorInfo.value?.displayName +
             " | " +
             postSnapshot.value?.description +
             " | ") + "Instaparody"
-      : null
-  );
+      );
+  });
 
   return {
     isShowPostUpload,
