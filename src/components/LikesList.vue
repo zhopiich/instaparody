@@ -32,7 +32,8 @@
                       v-if="user.userId !== userStore.user.uid"
                       class="px-4 py-1.5 bg-blue-500 hover:bg-blue-600 active:bg-blue-400 rounded-md cursor-pointer"
                       :class="{
-                        'bg-sky-200 pointer-events-none': !userStore.isLoggedIn,
+                        'bg-blue-200 pointer-events-none':
+                          !userStore.isLoggedIn,
                       }"
                       @click="enterChat(user)"
                     >

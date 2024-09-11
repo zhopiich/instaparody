@@ -6,7 +6,7 @@
           <TransitionGroup name="slide" tag="ul">
             <div
               v-for="(image, index) in images"
-              class="imageItem relative inline-block"
+              class="imageItem relative inline-block bg-black"
               :key="image?.id || image"
             >
               <img

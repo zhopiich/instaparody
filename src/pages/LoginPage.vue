@@ -126,10 +126,12 @@ import { useUserStore } from "../stores/user";
 
 const isLoading = ref(false);
 
-const email = ref(null);
+const email = ref("demo_01@email.com");
+// const email = ref(null);
 const isEmailFocus = ref(false);
 
-const password = ref(null);
+const password = ref("00000000");
+// const password = ref(null);
 const isPasswordFocus = ref(false);
 
 const isBothOccupied = computed(() => email.value && password.value);

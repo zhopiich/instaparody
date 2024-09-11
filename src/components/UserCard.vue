@@ -64,7 +64,7 @@
         <div
           v-else
           class="m-4 rounded-lg py-1.5 grow *:text-center bg-sky-500 hover:bg-blue-500 active:bg-blue-400"
-          :class="{ 'bg-sky-200 pointer-events-none': !userStore.isLoggedIn }"
+          :class="{ '!bg-blue-200 pointer-events-none': !userStore.isLoggedIn }"
           @click="
             enterChat({
               username: user.username,
