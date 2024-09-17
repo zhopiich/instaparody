@@ -4,7 +4,7 @@
     :class="{ 'flex flex-col': isMobile }"
   >
     <div v-if="isMobile" class="relative h-[45px]">
-      <div class="w-full fixed top-0 h-[45px] border-b z-10 bg-white">
+      <div class="w-full fixed top-0 h-[45px] border-b bg-white z-[1]">
         <div class="size-full px-1 flex">
           <div class="flex items-center">
             <div
