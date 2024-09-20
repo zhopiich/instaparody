@@ -2,7 +2,7 @@
   <TheModal
     :customClass="['flex', 'flex-col', 'justify-center', 'items-stretch']"
     :isPointerEventsAuto="false"
-    @close="postStore.hidePostDetails"
+    @close="back"
   >
     <div
       class="flex justify-center items-start min-w-0 min-h-0 overflow-y-auto"
@@ -367,6 +367,26 @@ const descDisplay = computed(() => {
       : trimmed.substring(0, lastIndexOfSpace)) + "..."
   );
 });
+
+// Open this modal, change the URL, add a new history entry,
+// and keep the previous page as it was in the brackground.
+// Not sure how to achieve this with Vue Router.
+const newURL = "/post/" + postStore.postIdClicked;
+history.pushState(
+  {
+    ...history.state,
+    back: history.state.current,
+    current: newURL,
+    position: history.state.position + 1,
+    forward: null,
+  },
+  null,
+  newURL
+);
+
+const back = () => {
+  history.back();
+};
 
 onBeforeRouteUpdate(() => {
   postStore.hidePostDetails();
