@@ -168,7 +168,7 @@ onMounted(() => {
 
         setWatch();
       },
-      { once: true }
+      { once: true },
     );
   } else {
     customGender.value = props.gender.custom || "";

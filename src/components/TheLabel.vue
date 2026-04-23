@@ -63,7 +63,8 @@ const labelClicked = (e) => {
 }
 
 .transition-placeholder {
-  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0s,
+  transition:
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0s,
     color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0s,
     font-size 150ms cubic-bezier(0.4, 0, 0.2, 1) 0s,
     padding-top 150ms cubic-bezier(0.4, 0, 0.2, 1) 0s;

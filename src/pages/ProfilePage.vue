@@ -136,7 +136,7 @@ const tabs = computed(() =>
       icon: faBookmark,
       type: "saved",
     },
-  ].filter((tab) => !(tab.type === "saved" && !isMe.value))
+  ].filter((tab) => !(tab.type === "saved" && !isMe.value)),
 );
 
 const currentTab = ref(null);
@@ -207,7 +207,7 @@ onBeforeMount(async () => {
 
           loadPostsSaved();
         },
-        { once: true }
+        { once: true },
       );
     } else {
       isMe.value = userDocOfMine.value.username === route.params.username;

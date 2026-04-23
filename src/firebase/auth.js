@@ -18,7 +18,7 @@ export const signUp = async ({ email, username, password }) => {
     const credential = await createUserWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     const uid = credential.user.uid;
     await addUserDoc({ uid, username });
@@ -70,7 +70,7 @@ export const changePassword = async (email, currentPassword, newPassword) => {
   try {
     const res = await reauthenticateWithCredential(
       auth.currentUser,
-      credential
+      credential,
     );
   } catch (err) {
     return "incorrectPassword";

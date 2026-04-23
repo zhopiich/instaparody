@@ -117,7 +117,7 @@ const addImages = () => {
   const notImage = imagesArray.find((file) => !file.type.startsWith("image/"));
   if (notImage) {
     alertList.push(
-      `There's a file not supported. ${notImage.name} could not be uploaded.`
+      `There's a file not supported. ${notImage.name} could not be uploaded.`,
     );
 
     return;
@@ -126,14 +126,14 @@ const addImages = () => {
   const remaining = maxAllowed - imageFiles.value.length;
   if (remaining === 0) {
     alertList.push(
-      "Up to 10 photos could be uploaded. Please remove at least one to select another."
+      "Up to 10 photos could be uploaded. Please remove at least one to select another.",
     );
 
     return;
   }
   if (remaining < imagesArray.length) {
     alertList.push(
-      "Up to 10 photos could be uploaded. Any more than that were discarded."
+      "Up to 10 photos could be uploaded. Any more than that were discarded.",
     );
 
     imagesArray = imagesArray.slice(0, remaining);
@@ -154,7 +154,7 @@ watch(
   () => imageFiles.value.length,
   (newVal, oldVal) => {
     emit("editImagesFile", imageFiles.value);
-  }
+  },
 );
 
 const dragover = (e) => {

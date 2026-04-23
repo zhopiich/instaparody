@@ -196,7 +196,8 @@ const isConfirmPasswordError = ref(false);
 const isConfirmPasswordFocus = ref(false);
 
 const isAllOccupied = computed(
-  () => email.value && username.value && password.value && confirmPassword.value
+  () =>
+    email.value && username.value && password.value && confirmPassword.value,
 );
 
 const emailErrorType = ref(null);
@@ -289,7 +290,7 @@ const isAllValid = computed(
     !emailErrorType.value &&
     !usernameErrorType.value &&
     !passwordErrorType.value &&
-    !isConfirmPasswordError.value
+    !isConfirmPasswordError.value,
 );
 
 const handleSignUp = async () => {

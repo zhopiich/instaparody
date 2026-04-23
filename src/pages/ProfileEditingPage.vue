@@ -203,7 +203,7 @@ const isProfileValid = computed(
     isIntroValid.value &&
     isGenderValid.value &&
     isDisplayNameValid.value &&
-    isWebsiteValid.value
+    isWebsiteValid.value,
 );
 
 onMounted(async () => {

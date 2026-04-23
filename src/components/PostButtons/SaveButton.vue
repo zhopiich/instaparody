@@ -47,7 +47,7 @@ import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
 const isSavedByMe = computed(() =>
-  !props.isDisabled ? postStore.isSavedByMe[props.post.id] : null
+  !props.isDisabled ? postStore.isSavedByMe[props.post.id] : null,
 );
 
 onMounted(() => {

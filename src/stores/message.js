@@ -53,7 +53,7 @@ export const useMessageStore = defineStore("message", () => {
   const currentContact = computed(() => {
     if (!contactsList.value) return;
     return contactsList.value.find(
-      (contact) => contact.chatId === currentChatId.value
+      (contact) => contact.chatId === currentChatId.value,
     );
   });
 
@@ -76,7 +76,7 @@ export const useMessageStore = defineStore("message", () => {
 
     const q = query(
       collection(db, "messages"),
-      and(where(user(userId1), "==", true), where(user(userId2), "==", true))
+      and(where(user(userId1), "==", true), where(user(userId2), "==", true)),
     );
 
     const chats = await getDocs(q);
@@ -168,7 +168,7 @@ export const useMessageStore = defineStore("message", () => {
       };
 
       return contacts.sort(
-        (a, b) => lastTime(b.lastSeeAt) - lastTime(a.lastSeeAt)
+        (a, b) => lastTime(b.lastSeeAt) - lastTime(a.lastSeeAt),
       );
     };
 
@@ -195,7 +195,7 @@ export const useMessageStore = defineStore("message", () => {
     const messagesRef = collection(db, "messages");
     const q = query(
       messagesRef,
-      where(`users.${userStore.user.uid}`, "==", true)
+      where(`users.${userStore.user.uid}`, "==", true),
     );
 
     return onSnapshot(
@@ -232,7 +232,7 @@ export const useMessageStore = defineStore("message", () => {
               const modified = change.doc.data();
 
               const modifiedIndex = contactsList.value.findIndex(
-                (contact) => contact.chatId === change.doc.id
+                (contact) => contact.chatId === change.doc.id,
               );
 
               const oldLastAt =
@@ -280,7 +280,7 @@ export const useMessageStore = defineStore("message", () => {
 
                 if (isNewFromContact) {
                   contactsList.value.unshift(
-                    contactsList.value.splice(modifiedIndex, 1)[0]
+                    contactsList.value.splice(modifiedIndex, 1)[0],
                   );
                 }
               };
@@ -304,7 +304,7 @@ export const useMessageStore = defineStore("message", () => {
               setCurrentChat(null);
 
               contactsList.value = contactsList.value.filter(
-                (contact) => contact.chatId !== change.doc.id
+                (contact) => contact.chatId !== change.doc.id,
               );
             }
           });
@@ -314,7 +314,7 @@ export const useMessageStore = defineStore("message", () => {
         console.log(err.message);
 
         // contactsList.value = "error";
-      }
+      },
     );
   };
 
@@ -367,7 +367,7 @@ export const useMessageStore = defineStore("message", () => {
 
   const removeNewMessage = (id) => {
     newMessages.value = newMessages.value.filter(
-      (message) => message.id !== id
+      (message) => message.id !== id,
     );
   };
 
@@ -378,9 +378,9 @@ export const useMessageStore = defineStore("message", () => {
   const firstNewMessageId = computed(() =>
     newMessages.value.length > 0
       ? newMessages.value.reduce((acc, cur) =>
-          acc.at.seconds <= cur.at.seconds ? acc : cur
+          acc.at.seconds <= cur.at.seconds ? acc : cur,
         ).id
-      : null
+      : null,
   );
 
   const isChatMine = ref(false);
@@ -431,7 +431,7 @@ export const useMessageStore = defineStore("message", () => {
         console.log(err.message);
 
         messagesList.value = "error";
-      }
+      },
     );
   };
 
@@ -460,7 +460,7 @@ export const useMessageStore = defineStore("message", () => {
   const repliedMessage = reactive({ ...initialReplied });
 
   const isThereReplied = computed(() =>
-    ["content", "image"].some((type) => repliedMessage[type] !== null)
+    ["content", "image"].some((type) => repliedMessage[type] !== null),
   );
 
   const replyToWho = ref(null);
@@ -489,7 +489,7 @@ export const useMessageStore = defineStore("message", () => {
     const imageUrl = image
       ? await uploadFile(
           image,
-          "messageImages/" + userStore.userDoc.username + "/"
+          "messageImages/" + userStore.userDoc.username + "/",
         )
       : null;
 
@@ -507,13 +507,13 @@ export const useMessageStore = defineStore("message", () => {
 
     return await addDoc(
       collection(messagesRef, currentChatId.value, "chat"),
-      data
+      data,
     );
   };
 
   const updateLastMessage = async (
     { content = null, id = null, from = userStore.user.uid } = {},
-    isImageSent = isImageSending.value
+    isImageSent = isImageSending.value,
   ) => {
     if (!userStore.isLoggedIn) return;
 

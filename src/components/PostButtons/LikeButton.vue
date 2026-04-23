@@ -49,7 +49,7 @@ import { usePostStore } from "../../stores/post";
 const postStore = usePostStore();
 
 const isLikedByMe = computed(() =>
-  !props.isDisabled ? postStore.isLikedByMe[props.post.id] : null
+  !props.isDisabled ? postStore.isLikedByMe[props.post.id] : null,
 );
 
 const removeBounce = () => {

@@ -1,6 +1,6 @@
 export function dateToRelative(
   dateStr = null,
-  { short = false, interval = null } = {}
+  { short = false, interval = null } = {},
 ) {
   if (!dateStr) return "";
 

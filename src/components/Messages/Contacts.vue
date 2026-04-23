@@ -79,8 +79,8 @@
                           } sent a picture`
                         : "You sent a picture"
                       : contact.lastMessage?.content
-                      ? contact.lastMessage?.content
-                      : null
+                        ? contact.lastMessage?.content
+                        : null
                   }}
                 </p>
               </div>

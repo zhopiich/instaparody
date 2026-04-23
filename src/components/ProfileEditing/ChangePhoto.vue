@@ -73,7 +73,7 @@ const displayName = computed(() => {
 });
 
 const isTherePhoto = computed(
-  () => props.avatarURL !== null && props.avatarURL !== ""
+  () => props.avatarURL !== null && props.avatarURL !== "",
 );
 
 const isShowMenu = ref(false);
@@ -86,14 +86,14 @@ const uploadAvatar = async (e) => {
 
   const avatarUrl = await uploadFile(
     imageFile,
-    "avatars/" + userStore.userDoc.username + "/"
+    "avatars/" + userStore.userDoc.username + "/",
   );
 
   await Promise.all(
     [
       updateUserDoc(userStore.user.uid, { avatar: avatarUrl }),
       deleteFile(props.avatarURL),
-    ].slice(0, isTherePhoto.value ? 2 : 1)
+    ].slice(0, isTherePhoto.value ? 2 : 1),
   );
 
   await userStore.getUserDoc();

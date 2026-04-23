@@ -55,7 +55,7 @@ onMounted(() => {
 
         setWatch();
       },
-      { once: true }
+      { once: true },
     );
   } else {
     intro.value = props.initialIntro || "";

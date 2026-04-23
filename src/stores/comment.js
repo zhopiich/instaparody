@@ -38,7 +38,7 @@ export const useCommentStore = defineStore("comment", () => {
     const q = query(
       colRef,
       where("postId", "==", _postId),
-      orderBy("createdAt", "asc")
+      orderBy("createdAt", "asc"),
     );
 
     unsubscribe = onSnapshot(
@@ -53,7 +53,7 @@ export const useCommentStore = defineStore("comment", () => {
       },
       (err) => {
         console.log(err.message);
-      }
+      },
     );
   };
 

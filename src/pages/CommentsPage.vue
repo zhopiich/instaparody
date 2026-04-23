@@ -147,7 +147,7 @@ watch(
   () => {
     prevPath = router.options.history.state.back;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const back = () => {
@@ -164,7 +164,7 @@ watch(
     if (!newVal) return;
     document.title = newVal;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onBeforeRouteUpdate((to) => {

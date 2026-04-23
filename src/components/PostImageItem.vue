@@ -87,7 +87,7 @@ const isShowPostDetails = computed(() => postStore.isShowPostDetails);
 // const postIdClicked = computed(() => postStore.postIdClicked);
 
 const postId = computed(() =>
-  props.isLikedOrSaved ? props.post.postId : props.post.id
+  props.isLikedOrSaved ? props.post.postId : props.post.id,
 );
 
 const postSnap = ref(null);
@@ -116,12 +116,12 @@ const formatNumber = (number) =>
     : null;
 
 const likesCount = computed(() =>
-  formatNumber(props.isLikedOrSaved ? postSnap.value?.likes : props.post.likes)
+  formatNumber(props.isLikedOrSaved ? postSnap.value?.likes : props.post.likes),
 );
 const commentsCount = computed(() =>
   formatNumber(
-    props.isLikedOrSaved ? postSnap.value?.comments : props.post.comments
-  )
+    props.isLikedOrSaved ? postSnap.value?.comments : props.post.comments,
+  ),
 );
 </script>
 

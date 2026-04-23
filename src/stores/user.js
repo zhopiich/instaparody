@@ -72,7 +72,7 @@ export const useUserStore = defineStore("user", () => {
       if (username) {
         const q = query(
           collection(db, "users"),
-          where("username", "==", username)
+          where("username", "==", username),
         );
         const querySnap = await getDocs(q);
 
@@ -135,13 +135,13 @@ export const useUserStore = defineStore("user", () => {
       or(
         and(
           where("displayName", ">=", term),
-          where("displayName", "<=", term + "\uf8ff")
+          where("displayName", "<=", term + "\uf8ff"),
         ),
         and(
           where("username", ">=", term),
-          where("username", "<=", term + "\uf8ff")
-        )
-      )
+          where("username", "<=", term + "\uf8ff"),
+        ),
+      ),
     );
 
     const usersSnap = await getDocs(queryUsers);

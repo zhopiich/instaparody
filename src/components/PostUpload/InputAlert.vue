@@ -55,7 +55,7 @@ watch(
     }
 
     raiseAlert();
-  }
+  },
 );
 
 onBeforeUnmount(() => {

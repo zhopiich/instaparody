@@ -155,7 +155,7 @@ const messageContent = ref("");
 const trimmedContent = computed(() => messageContent.value.trim());
 
 const isInputValid = computed(
-  () => trimmedContent.value !== "" || messageStore.imageToBeSent
+  () => trimmedContent.value !== "" || messageStore.imageToBeSent,
 );
 
 const handleInput = (e) => {

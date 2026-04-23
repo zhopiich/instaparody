@@ -218,7 +218,7 @@ watch(
   (newVal) => {
     newVal.focus();
   },
-  { once: true }
+  { once: true },
 );
 
 const handleKeyDown = (e) => {

@@ -69,7 +69,7 @@ export const usePostStore = defineStore("post", () => {
         // Get a property key depending on its value
         `${filtered}By.${Object.keys(who).find((key) => who[key])}`,
         "==",
-        `${who.userId || who.username}`
+        `${who.userId || who.username}`,
       );
     }
 
@@ -88,7 +88,7 @@ export const usePostStore = defineStore("post", () => {
         filter,
         // ...search,
         orderBy(filtered ? `${filtered}At` : "createdAt", "desc"),
-      ].filter((i) => i)
+      ].filter((i) => i),
     );
 
     return onSnapshot(
@@ -105,7 +105,7 @@ export const usePostStore = defineStore("post", () => {
         console.log(err.message);
 
         receiver.value = "error";
-      }
+      },
     );
   }
 
@@ -150,7 +150,7 @@ export const usePostStore = defineStore("post", () => {
   // Upon a tab seleted
   async function loadPostsFiltered(
     type = "created",
-    who = { userId: userStore.user.userId }
+    who = { userId: userStore.user.userId },
   ) {
     if (postsFiltered[type].value) return;
 
@@ -183,7 +183,7 @@ export const usePostStore = defineStore("post", () => {
       },
       (err) => {
         console.log(err.message);
-      }
+      },
     );
   };
 
@@ -213,8 +213,8 @@ export const usePostStore = defineStore("post", () => {
 
     const imagesUrl = await Promise.all(
       images.map((image) =>
-        uploadFile(image, "images/" + userStore.userDoc.username + "/")
-      )
+        uploadFile(image, "images/" + userStore.userDoc.username + "/"),
+      ),
     );
 
     const docRef = await addPost({
@@ -313,7 +313,7 @@ export const usePostStore = defineStore("post", () => {
 
     const q = query(
       collection(db, col),
-      where(actedBy + ".userId", "==", userStore.user.uid)
+      where(actedBy + ".userId", "==", userStore.user.uid),
     );
 
     const postsActed = await getDocs(q);
@@ -358,9 +358,9 @@ export const usePostStore = defineStore("post", () => {
   const clickedPost = computed(() =>
     postIdClicked.value && (list.value || postsFiltered.created.value)
       ? (list.value || postsFiltered.created.value).find(
-          (post) => post.id === postIdClicked.value
+          (post) => post.id === postIdClicked.value,
         ) || "noSuchPost"
-      : null
+      : null,
   );
 
   // loaded every time enter the page
@@ -381,7 +381,7 @@ export const usePostStore = defineStore("post", () => {
 
   async function searchPosts(term) {
     const postsResult = await loadPosts(
-      "filters[description][$contains]=" + term
+      "filters[description][$contains]=" + term,
     );
     leadPostsShown(postsResult);
   }
@@ -426,7 +426,7 @@ export const usePostStore = defineStore("post", () => {
     const queryPosts = query(
       postsRef,
       where("createdBy.userId", "==", _userId),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
     );
 
     const [userSnap, postsSnap] = await Promise.all([
@@ -449,7 +449,7 @@ export const usePostStore = defineStore("post", () => {
     const postsRef = collection(db, "posts");
     const queryPosts = query(
       postsRef,
-      where("createdBy.username", "==", username)
+      where("createdBy.username", "==", username),
     );
 
     const postsSnap = await getDocs(queryPosts);
@@ -467,7 +467,7 @@ export const usePostStore = defineStore("post", () => {
             coll === "saves" &&
               // Required by the security rules
               where("createdBy.userId", "==", userStore.user.uid),
-          ].filter((bool) => bool)
+          ].filter((bool) => bool),
         );
         const querySnapshot = await getDocs(q);
 
@@ -478,7 +478,7 @@ export const usePostStore = defineStore("post", () => {
         });
 
         await Promise.all(
-          involvedList.map((id) => deleteDoc(doc(db, coll, id)))
+          involvedList.map((id) => deleteDoc(doc(db, coll, id))),
         );
       });
 
@@ -506,7 +506,7 @@ export const usePostStore = defineStore("post", () => {
 
   const deleteImage = async ({ postId, allImages, leftImages }) => {
     const discardedImages = allImages.filter(
-      (image) => !leftImages.includes(image)
+      (image) => !leftImages.includes(image),
     );
 
     const postRef = doc(db, "posts", postId);
@@ -531,7 +531,7 @@ export const usePostStore = defineStore("post", () => {
   };
 
   const creatorInfo = computed(
-    () => userStore.userInfoList[postSnapshot.value?.createdBy?.userId]
+    () => userStore.userInfoList[postSnapshot.value?.createdBy?.userId],
   );
 
   const documentTitle = computed(() => {

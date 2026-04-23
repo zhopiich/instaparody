@@ -57,8 +57,8 @@ import {
 
 import TheModal from "../TheModal.vue";
 
-const ConfirmModal = defineAsyncComponent(() =>
-  import("./ConfirmDeleteOrDiscard.vue")
+const ConfirmModal = defineAsyncComponent(
+  () => import("./ConfirmDeleteOrDiscard.vue"),
 );
 
 import { useRoute, useRouter } from "vue-router";

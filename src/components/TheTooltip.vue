@@ -9,8 +9,8 @@
       isLeanOnRight
         ? 'right-0'
         : !right || right > widthTooltip
-        ? 'left'
-        : 'right-0',
+          ? 'left'
+          : 'right-0',
     ]"
   >
     <slot></slot>

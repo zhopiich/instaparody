@@ -124,7 +124,7 @@ watch(
   () => {
     prevPath = router.options.history.state.back;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const back = () => {
