@@ -23,7 +23,10 @@
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",
+    "@types/jsdom": "^28.0.1",
+    "@types/node": "^24.12.2",
     "@vitejs/plugin-vue": "^6.0.6",
+    "@vue/tsconfig": "^0.9.1",
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.10.2",
     "postcss": "^8.4.38",
