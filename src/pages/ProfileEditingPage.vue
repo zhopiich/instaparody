@@ -145,7 +145,7 @@ const changeIntro = (changedIntro) => {
 };
 
 const isEdited = computed(() => {
-  if (profileData === {}) return false;
+  if (!profileData || Object.keys(profileData).length === 0) return false;
 
   const { gender, ...rest } = profileData;
 
@@ -183,11 +183,11 @@ const setValidGender = (bool) => {
 };
 
 const isDisplayNameValid = computed(() => {
-  if (profileData === {} || !profileData.displayName) return true;
+  if (!profileData?.displayName) return true;
   return profileData.displayName.length <= 20;
 });
 const isWebsiteValid = computed(() => {
-  if (profileData === {} || !profileData.website) return true;
+  if (!profileData?.website) return true;
 
   const url = profileData.website.trim();
   return (
