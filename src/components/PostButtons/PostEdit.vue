@@ -122,8 +122,8 @@ import ImageCarousel from "../ImageCarousel.vue";
 
 import { ref, computed, defineAsyncComponent } from "vue";
 
-const ConfirmModal = defineAsyncComponent(() =>
-  import("./ConfirmDeleteOrDiscard.vue")
+const ConfirmModal = defineAsyncComponent(
+  () => import("./ConfirmDeleteOrDiscard.vue"),
 );
 
 const props = defineProps(["postId", "desc", "images"]);
@@ -144,7 +144,7 @@ const currentImages = ref([...props.images]);
 
 const isDescEdited = computed(() => currentDescription.value !== props.desc);
 const isImagesEdited = computed(
-  () => currentImages.value.length !== props.images.length
+  () => currentImages.value.length !== props.images.length,
 );
 const isEdited = computed(() => isDescEdited.value || isImagesEdited.value);
 

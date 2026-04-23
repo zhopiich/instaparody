@@ -44,7 +44,7 @@ export const uploadFile = async (file, path = "images/") => {
             url = downloadURL;
             resolve();
           });
-        }
+        },
       );
     });
   };

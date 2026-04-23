@@ -116,7 +116,7 @@ watch(
     if (oldVal !== 0 && newVal > oldVal) {
       movement.value = oldVal;
     }
-  }
+  },
 );
 
 const emit = defineEmits(["switchFocus"]);

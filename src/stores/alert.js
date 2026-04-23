@@ -55,7 +55,7 @@ export const useAlertStore = defineStore("alert", () => {
       }
 
       raiseAlert();
-    }
+    },
   );
 
   const closeAlert = () => {

@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import sprite from "../assets/icons/sprite.svg"
+import sprite from "../assets/icons/sprite.svg";
 
 defineProps({
   icon: String,
@@ -13,7 +13,7 @@ defineProps({
     type: String,
     // default: null,
   },
-})
+});
 </script>
 
 <style scoped>

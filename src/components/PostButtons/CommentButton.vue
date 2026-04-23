@@ -9,8 +9,8 @@
         isToPage
           ? $router.push('/post/' + post.id + '/comments')
           : $route.name !== 'postDetails' && !postStore.isShowPostDetails
-          ? postStore.showPostDetails(post.id)
-          : emits('focusInput')
+            ? postStore.showPostDetails(post.id)
+            : emits('focusInput')
       "
       ref="commentButton"
     >

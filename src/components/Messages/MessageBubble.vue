@@ -191,7 +191,7 @@ const messageStore = useMessageStore();
 const isThereImage = computed(
   () =>
     (!props.message.at && messageStore.isImageSending) ||
-    (props.message.at && props.message.image)
+    (props.message.at && props.message.image),
 );
 
 import { useAlertStore } from "../../stores/alert";
@@ -218,7 +218,7 @@ const handleReply = () => {
       content: props.message.content || null,
       image: props.message.image || null,
     },
-    props.isFromMe
+    props.isFromMe,
   );
 
   messageStore.input.focus();
@@ -274,7 +274,7 @@ if (!props.message.at) {
 
         unwatch();
       }
-    }
+    },
   );
 } else {
   time = getTime(props.message.at.seconds);
@@ -308,7 +308,7 @@ const setObserver = (el) => {
     {
       // root: messagesViewport,
       // threshold: 1,
-    }
+    },
   );
 
   observer.observe(el);
@@ -327,7 +327,7 @@ const isSameMinute = computed(
     messageStore.firstNewMessageId !== props.nextMessage.id &&
     props.nextMessage.at.seconds - props.message.at.seconds < 60000 &&
     getDate(props.message.at.seconds).getMinutes() ===
-      getDate(props.nextMessage.at.seconds).getMinutes()
+      getDate(props.nextMessage.at.seconds).getMinutes(),
 );
 
 const isSameState = computed(() => {
@@ -344,11 +344,11 @@ const isChained = computed(
   () =>
     isSameMinute.value &&
     ((!props.isFromMe && props.nextMessage.from !== props.me) ||
-      isSameState.value)
+      isSameState.value),
 );
 
 const isNew = computed(() =>
-  messageStore.newMessages.some((message) => message.id === messageId)
+  messageStore.newMessages.some((message) => message.id === messageId),
 );
 
 const onRepliedMounted = () => {};
@@ -360,7 +360,7 @@ onMounted(() => {
       if (
         messageStore.newMessages.length > 0 &&
         !messageStore.newMessages.some(
-          (message) => message.id === props.prevMessage.id
+          (message) => message.id === props.prevMessage.id,
         )
       ) {
         messageStore.resetNewMessages();

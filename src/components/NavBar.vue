@@ -79,7 +79,7 @@ import { ref, computed } from "vue";
 const isShowDropdown = ref(false);
 const isResultsShown = ref(false);
 const isPersistent = computed(
-  () => isShowDropdown.value || isResultsShown.value
+  () => isShowDropdown.value || isResultsShown.value,
 );
 
 const avatarIcon = ref(null);

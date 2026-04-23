@@ -261,7 +261,7 @@ const postStore = usePostStore();
 
 const post = computed(() => postStore.postSnapshot);
 const isMe = computed(
-  () => post.value.createdBy?.userId === userStore.user?.uid
+  () => post.value.createdBy?.userId === userStore.user?.uid,
 );
 
 const commentInput = ref(null);
@@ -302,7 +302,7 @@ const descDisplay = computed(() => {
 });
 
 const commentsLink = computed(
-  () => "/post/" + route.params.postId + "/comments"
+  () => "/post/" + route.params.postId + "/comments",
 );
 
 const prevPath = ref(null);
@@ -311,7 +311,7 @@ watch(
   () => {
     prevPath.value = router.options.history.state.back;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const back = () => {
@@ -334,7 +334,7 @@ watch(
     if (!newVal) return;
     document.title = newVal;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onBeforeRouteUpdate((to) => {

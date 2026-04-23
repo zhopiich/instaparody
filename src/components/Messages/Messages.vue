@@ -81,8 +81,8 @@ import {
   defineAsyncComponent,
 } from "vue";
 
-const ConfirmDelete = defineAsyncComponent(() =>
-  import("./ConfirmDeleteMessage.vue")
+const ConfirmDelete = defineAsyncComponent(
+  () => import("./ConfirmDeleteMessage.vue"),
 );
 
 import { useRoute, useRouter } from "vue-router";
@@ -141,7 +141,7 @@ const observerBottom = new IntersectionObserver(
   },
   {
     threshold: 0,
-  }
+  },
 );
 
 // Determine whether messagesFlow will be scrolled.
@@ -206,7 +206,7 @@ setConditions();
 
 const scrollToBottom = (
   _el = null,
-  { block = "end", behavior = "smooth" } = {}
+  { block = "end", behavior = "smooth" } = {},
 ) => {
   let el = _el;
   if (!el) el = messagesFlow.value;
@@ -248,7 +248,7 @@ const setBottomObserver = () => {
           unwatch();
           unwatch = null;
         }
-      }
+      },
     );
   } else {
     observerBottom.observe(bottomBeacon.value);
@@ -268,7 +268,7 @@ if (route.name === "messages") {
 
       setConditions();
       setBottomObserver();
-    }
+    },
   );
 }
 

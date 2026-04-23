@@ -174,8 +174,8 @@
                                   post.comments === 1
                                     ? "the "
                                     : post.comments === 2
-                                    ? "both "
-                                    : "all " + post.comments + " "
+                                      ? "both "
+                                      : "all " + post.comments + " "
                                 }` +
                                 "comment" +
                                 `${post.comments > 1 ? "s" : ""}`
@@ -283,10 +283,10 @@ if (props.isLikedOrSaved) {
 }
 
 const post = computed(() =>
-  props.isLikedOrSaved ? postStore.postSnapshot : postStore.clickedPost
+  props.isLikedOrSaved ? postStore.postSnapshot : postStore.clickedPost,
 );
 const isMe = computed(
-  () => post.value.createdBy?.userId === userStore.user?.uid
+  () => post.value.createdBy?.userId === userStore.user?.uid,
 );
 
 const commentInput = ref(null);
@@ -304,7 +304,7 @@ const setInputRef = (val) => {
 // );
 
 const postId = computed(() =>
-  post.value && post.value !== "noSuchPost" ? post.value.id : null
+  post.value && post.value !== "noSuchPost" ? post.value.id : null,
 );
 const postCreatedBy = computed(() => post.value.createdBy?.userId);
 
@@ -344,8 +344,8 @@ const variableHeight = computed(() => {
     (squareImageWidth <= 450 || squareImageHeight <= 450
       ? 450
       : squareImageWidth <= squareImageHeight
-      ? squareImageWidth
-      : squareImageHeight) + "px"
+        ? squareImageWidth
+        : squareImageHeight) + "px"
   );
 });
 
@@ -381,7 +381,7 @@ history.pushState(
     forward: null,
   },
   null,
-  newURL
+  newURL,
 );
 
 const back = () => {

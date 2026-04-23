@@ -40,11 +40,11 @@ const prevTime = computed(() => props.prevMessageAt);
 const emit = defineEmits(["lastMounted"]);
 
 const isNew = computed(() =>
-  messageStore.newMessages.some((message) => message.id === props.messageId)
+  messageStore.newMessages.some((message) => message.id === props.messageId),
 );
 
 const isFirstNew = computed(
-  () => messageStore.firstNewMessageId === props.messageId
+  () => messageStore.firstNewMessageId === props.messageId,
 );
 
 const toDate = (time) => new Date(time * 1000);
@@ -56,7 +56,7 @@ const dates = computed(() =>
       date: date.getDate(),
       month: date.getMonth() + 1,
       year: date.getFullYear(),
-    }))
+    })),
 );
 
 const areSameDay = (date1, date2) => {

@@ -26,7 +26,7 @@ const timeDisplay = computed(() =>
   dateToRelative(props.timestamp, {
     short: true,
     interval: props.isKeptFull || isHovered.value ? null : "week",
-  })
+  }),
 );
 </script>
 

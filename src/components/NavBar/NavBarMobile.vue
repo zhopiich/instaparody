@@ -113,7 +113,7 @@ const props = defineProps(["avatar", "profilePageURL", "isLoggedIn"]);
 import { ref, computed } from "vue";
 
 const isThereNewMessage = computed(() =>
-  Object.values(messageStore.areThereNews).some((bool) => bool)
+  Object.values(messageStore.areThereNews).some((bool) => bool),
 );
 
 const navbarHeight = ref(48);
@@ -159,7 +159,7 @@ const menuList = computed(() =>
       name: "Messages",
       isActive: route.name === "messages",
     },
-  ].filter((item) => item.name !== "Post" || props.isLoggedIn)
+  ].filter((item) => item.name !== "Post" || props.isLoggedIn),
 );
 </script>
 

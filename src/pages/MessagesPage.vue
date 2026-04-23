@@ -183,7 +183,7 @@ const isEnterChat = computed(() => messageStore.isEnterChat);
 
 const currentContact = computed(() => messageStore.currentContact);
 const currentContactInfo = computed(
-  () => userStore.userInfoList[currentContact.value.userId]
+  () => userStore.userInfoList[currentContact.value.userId],
 );
 
 // Hold <Messages /> until contactsList in messageStore gets results
@@ -197,7 +197,7 @@ watch(
       router.push("/messages");
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const areThereNews = computed(() => messageStore.areThereNews);
@@ -207,7 +207,7 @@ const isThereAnyNew = computed(() => {
   return Object.values(areThereNews.value).some((bool) => bool);
 });
 const isThereNewFromOther = computed(
-  () => isThereAnyNew.value && !areThereNews.value[currentContact.value.chatId]
+  () => isThereAnyNew.value && !areThereNews.value[currentContact.value.chatId],
 );
 
 watch(
@@ -225,7 +225,7 @@ watch(
         "Instaparody";
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onBeforeRouteUpdate((to) => {

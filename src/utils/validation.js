@@ -17,7 +17,7 @@ export const isUsernameValid = [
     ...acc,
     [cur.type]: (username) => regexTest({ regex: cur.regex, str: username }),
   }),
-  {}
+  {},
 );
 
 // https://gist.github.com/ajaegers/2ed0ddf410ec1a762387
@@ -40,5 +40,5 @@ export const getUrlRegex = () =>
       "(\\#[-a-z\\d\\*_]*)?" + // fragment locator
       // "\\/?" +
       "",
-    "gi"
+    "gi",
   );

@@ -150,7 +150,7 @@ const newPassword = ref(null);
 const confirmPassword = ref(null);
 
 const isAllOccupied = computed(
-  () => currentPassword.value && newPassword.value && confirmPassword.value
+  () => currentPassword.value && newPassword.value && confirmPassword.value,
 );
 
 const isNewPasswordValid = () => newPassword.value.length >= 8;
@@ -181,7 +181,7 @@ const handleChangePassword = async () => {
   const result = await changePassword(
     userStore.user.email,
     currentPassword.value,
-    newPassword.value
+    newPassword.value,
   );
 
   switch (result) {
@@ -211,7 +211,7 @@ const demoAccounts = [
   "demo_03@email.com",
 ];
 const isDemoAccount = computed(() =>
-  demoAccounts.some((email) => email === userStore.user.email)
+  demoAccounts.some((email) => email === userStore.user.email),
 );
 </script>
 

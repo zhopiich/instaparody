@@ -47,7 +47,7 @@ watch(
       isShow.value = false;
       clearTimeout(timeoutID);
     }
-  }
+  },
 );
 
 const goToBottom = () => {
@@ -75,7 +75,8 @@ const goToBottom = () => {
 }
 
 .shadow-x {
-  box-shadow: rgba(101, 119, 134, 0.15) 0px 0px 8px,
+  box-shadow:
+    rgba(101, 119, 134, 0.15) 0px 0px 8px,
     rgba(101, 119, 134, 0.1) 0px 1px 3px 1px;
 }
 

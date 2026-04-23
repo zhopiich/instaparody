@@ -80,7 +80,8 @@ onBeforeUnmount(() => {
 <style scoped>
 #messagesContainer {
   left: calc(100dvw - 400px - 32px);
-  box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px,
+  box-shadow:
+    rgba(101, 119, 134, 0.2) 0px 0px 15px,
     rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
 }
 

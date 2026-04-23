@@ -64,7 +64,7 @@ watch(
   (newVal) => {
     isResultsShown.value = newVal;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 let delay;

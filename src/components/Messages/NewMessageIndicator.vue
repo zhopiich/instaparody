@@ -16,7 +16,7 @@ const emit = defineEmits(["mounted"]);
 const props = defineProps(["isMoreThanOne"]);
 
 const display = computed(() =>
-  !props.isMoreThanOne ? "A new message following" : "New messages following"
+  !props.isMoreThanOne ? "A new message following" : "New messages following",
 );
 
 onMounted(() => {

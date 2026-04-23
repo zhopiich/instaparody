@@ -183,7 +183,7 @@ watch(
   (newVal) => {
     postStore.getPostsCount(newVal);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const urlDisplay = computed(() => {

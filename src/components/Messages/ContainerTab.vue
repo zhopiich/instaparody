@@ -8,8 +8,8 @@
       isExtended && isEnterChat
         ? 'bg-white/75 backdrop-blur left-for-scrollbar'
         : !isExtended && isNotified
-        ? 'bg-blue-400'
-        : 'bg-white',
+          ? 'bg-blue-400'
+          : 'bg-white',
     ]"
     @click="messageStore.toggle"
     id="messageTab"
@@ -109,7 +109,7 @@ const messageStore = useMessageStore();
 
 const currentContact = computed(() => messageStore.currentContact);
 const currentContactInfo = computed(
-  () => userStore.userInfoList[currentContact.value.userId]
+  () => userStore.userInfoList[currentContact.value.userId],
 );
 
 const leaveChat = () => {
@@ -132,10 +132,10 @@ const isThereAnyNew = computed(() => {
   return Object.values(areThereNews.value).some((bool) => bool);
 });
 const isThereNewFromOther = computed(
-  () => isThereAnyNew.value && !areThereNews.value[currentContact.value.chatId]
+  () => isThereAnyNew.value && !areThereNews.value[currentContact.value.chatId],
 );
 const isThereNewCurrent = computed(
-  () => areThereNews.value[currentContact.value.chatId]
+  () => areThereNews.value[currentContact.value.chatId],
 );
 
 const isNotified = ref(false);
@@ -159,7 +159,7 @@ watch(
       isNotified.value = false;
       countdown = null;
     }
-  }
+  },
 );
 </script>
 
